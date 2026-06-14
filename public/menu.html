@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sweet Event DZ | قائمة الحلويات الفاخرة</title>
+
+    <!-- Font Awesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@200;300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700;800&family=El+Messiri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ملف التنسيقات الرئيسي -->
+    <link rel="stylesheet" href="css-project/sweet.css">
+    
+    <style>
+        /* نفس تخصيصات صفحة الكعكات – خلفية داكنة بأناقة */
+        :root {
+            --gold: #c9963e;
+            --gold-dark: #a87a2e;
+            --gold-light: #e0b867;
+            --glass-bg: rgba(20, 15, 12, 0.65);
+            --glass-strong: rgba(20, 15, 12, 0.85);
+            --glass-ultra: rgba(20, 15, 12, 0.95);
+            --glass-border: rgba(255, 215, 150, 0.15);
+            --card-hover: rgba(201, 150, 62, 0.12);
+            --shadow-glass: 0 12px 32px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 40px rgba(201, 150, 62, 0.2);
+            --radius-card: 24px;
+            --transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            --bg-page: #0a0705;
+            --text: #f5efe7;
+            --text-soft: #d4c5b5;
+            --text-muted: #b8a595;
+        }
+
+        body {
+            background: var(--bg-page);
+            color: var(--text);
+            font-family: 'Poppins', 'Tajawal', 'Cairo', sans-serif;
+        }
+
+        /* الخلفية الزجاجية المتحركة */
+        .bg-glass-particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .bg-glass-particles .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(201, 150, 62, 0.08);
+            filter: blur(80px);
+            animation: floatParticle 22s infinite ease-in-out;
+        }
+        .bg-glass-particles .particle:nth-child(1) { width: 400px; height: 400px; top: -10%; left: -10%; animation-duration: 20s; }
+        .bg-glass-particles .particle:nth-child(2) { width: 350px; height: 350px; top: 60%; right: -15%; animation-duration: 25s; background: rgba(180, 130, 100, 0.06); }
+        .bg-glass-particles .particle:nth-child(3) { width: 280px; height: 280px; bottom: -15%; left: 25%; animation-duration: 18s; background: rgba(201, 150, 62, 0.05); }
+        .bg-glass-particles .particle:nth-child(4) { width: 220px; height: 220px; top: 30%; left: 55%; animation-duration: 28s; background: rgba(220, 180, 140, 0.05); }
+        @keyframes floatParticle {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(70px, -50px) scale(1.2); }
+            50% { transform: translate(-40px, 60px) scale(0.85); }
+            75% { transform: translate(-60px, -30px) scale(1.1); }
+        }
+
+        .scroll-progress {
+            position: fixed;
+            top: 59px;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            z-index: 10001;
+            transition: width 0.1s linear;
+        }
+
+        /* حاوية الصفحة */
+        .sweets-main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* الهيدر الزجاجي للقسم */
+        .hero-sweets {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(18px);
+            border-radius: 48px;
+            border: 1px solid var(--glass-border);
+        }
+        .hero-sweets h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, var(--gold), #ffe6c4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero-sweets p {
+            color: var(--text-soft);
+            font-size: 1.1rem;
+        }
+
+        /* السلايدر */
+        .slide {
+            position: relative;
+            width: 100%;
+            height: 520px;
+            overflow: hidden;
+            border-radius: 32px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--glass-border);
+        }
+        .slide .item {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slide .item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4));
+        }
+        .slide .item.active { opacity: 1; z-index: 1; }
+        .content-img {
+            background: var(--glass-strong);
+            backdrop-filter: blur(24px);
+            padding: 2rem;
+            border-radius: 36px;
+            max-width: 460px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid rgba(201,150,62,0.4);
+            transform: translateY(30px);
+            transition: 0.6s;
+            opacity: 0;
+        }
+        .slide .item.active .content-img {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .glass-featured-image {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            margin: 0 auto 1rem;
+        }
+        .content-img .name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+        }
+        .content-img .price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+        }
+        .content-img .dec {
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+        .slider-controls {
+            text-align: center;
+            margin: -1rem 0 2rem;
+        }
+        .slider-controls button {
+            background: var(--glass-ultra);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .slider-controls button:hover {
+            background: var(--gold);
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        /* شبكة الحلويات */
+        .sweets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .sweet-card {
+            background: var(--glass-strong);
+            backdrop-filter: blur(16px);
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            transition: 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        .sweet-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold);
+            box-shadow: var(--shadow-hover);
+        }
+        .sweet-img {
+            position: relative;
+            height: 260px;
+            overflow: hidden;
+        }
+        .sweet-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .sweet-card:hover .sweet-img img {
+            transform: scale(1.08);
+        }
+        .sweet-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 800;
+        }
+        .sweet-info {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .sweet-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--text);
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .unit-badge {
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.75rem;
+            background: rgba(201, 150, 62, 0.2);
+            border: 1px solid rgba(201, 150, 62, 0.4);
+            border-radius: 20px;
+            padding: 0.2rem 0.6rem;
+            font-weight: 500;
+            color: var(--gold-light);
+            white-space: nowrap;
+        }
+        .sweet-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .sweet-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .sweet-price {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--gold);
+        }
+        .price-unit-suffix {
+            font-size: 0.85rem;
+            color: var(--text-soft);
+            font-weight: 500;
+        }
+        .sweet-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        .btn-cart, .btn-order-direct {
+            flex: 1;
+            padding: 0.7rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            transition: 0.3s;
+        }
+        .btn-cart {
+            background: rgba(201, 150, 62, 0.2);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+        .btn-cart:hover {
+            background: var(--gold);
+            color: #000;
+        }
+        .btn-order-direct {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+        }
+        .btn-order-direct:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(201,150,62,0.5);
+        }
+
+        /* رسالة الخطأ أو عدم وجود منتجات */
+        .no-data-message {
+            text-align: center;
+            padding: 3rem;
+            background: var(--glass-bg);
+            border-radius: 32px;
+            color: var(--text-soft);
+        }
+
+        /* تذييل */
+        footer {
+            background: #0a0705;
+            margin-top: 4rem;
+        }
+        .toast-notify {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c1810;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 50px;
+            z-index: 99999;
+            opacity: 0;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+        .toast-notify.show { opacity: 1; }
+        
+        /* تنسيق احترافي لزر إضافة للسلة فوق الصور المتغيرة */
+        .elegant-cart-btn {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 19, 16, 0.85);
+            backdrop-filter: blur(5px);
+            border: 1px solid #c9963e;
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 25px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .elegant-cart-btn:hover {
+            background: #c9963e;
+            color: #1a1310;
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 6px 20px rgba(201, 150, 62, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-glass-particles">
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+</div>
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<header dir="ltr">
+    <div class="logo"><i class="fa-solid fa-cake-candles gold-text"></i><span>Sweet<br>Event DZ</span></div>
+    <nav dir="ltr">
+        <ul>
+            <li><a href="/cakes" class="nav-link" data-lang="cakes">Cakes</a></li>
+            <li><a href="/decor" class="nav-link" data-lang="decor">Decor</a></li>
+            <li><a href="/" class="nav-link" data-lang="home">Home</a></li>
+            <li><a href="/photography" class="nav-link" data-lang="photography">Photography</a></li>
+            <li><a href="/menu" class="nav-link active" data-lang="sweets">Sweets</a></li>
+        </ul>
+    </nav>
+<div class="header-actions">
+    <div id="google_translate_element"></div>
+    <button id="customLangBtn" class="custom-lang-btn">AR</button>
+    <div class="toggle-switch" id="themeToggle">
+        <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+    </div>
+    <button class="btn-icon" id="accountBtn"><i class="fa-regular fa-user"></i></button>
+    <span id="userGreetingContainer"></span>
+    <button class="btn-primary" id="mainRegisterBtn" data-lang="nav_register">إنشاء حساب</button>
+</div>
+</header>
+
+<main class="sweets-main">
+    <div class="hero-sweets">
+        <h1>🍰 قائمة الحلويات الفاخرة</h1>
+        <p>تشكيلة راقية من أشهى الحلويات الشرقية والغربية – اختر حلوياتك المفضلة لتنال إعجاب ضيوفك</p>
+    </div>
+
+    <!-- السلايدر -->
+    <div class="slide" id="productSlider"></div>
+    <div class="slider-controls">
+        <button id="prevSlideBtn"><i class="fa-solid fa-arrow-left"></i></button>
+        <button id="nextSlideBtn"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <!-- شبكة الحلويات -->
+    <div class="sweets-section">
+        <div class="section-title">🍬 أصنافنا المتميزة</div>
+        <div id="sweetsGridContainer" class="sweets-grid">
+            <!-- سيتم تعبئتها بواسطة JS -->
+        </div>
+    </div>
+</main>
+
+<!-- نافذة تسجيل الدخول -->
+<div class="modal-overlay" id="authModal">
+    <div class="modal">
+        <button class="close-modal" id="closeModal">&times;</button>
+        <div id="loginForm"><h3>تسجيل الدخول</h3><div class="input-group"><i class="fa-regular fa-envelope"></i><input type="email" id="loginEmail" placeholder="البريد الإلكتروني" required></div><div class="input-group"><i class="fa-solid fa-lock"></i><input type="password" id="loginPassword" placeholder="كلمة المرور" required></div><button class="btn-primary w-100" id="loginBtn">دخول</button><p class="switch-link"><span>ليس لديك حساب؟</span> <a id="showRegister">إنشاء حساب</a></p></div>
+        <div id="registerForm" style="display:none;"><h3>إنشاء حساب جديد</h3><div class="input-row"><div class="input-group"><i class="fa-regular fa-user"></i><input type="text" id="regUsername" placeholder="اسم المستخدم" required></div><div class="input-group"><i class="fa-solid fa-signature"></i><input type="text" id="regLastName" placeholder="اللقب" required></div></div><div class="input-group"><i class="fa-solid fa-phone"></i><input type="tel" id="regPhone1" placeholder="رقم الهاتف" required></div><div class="input-group"><i class="fa-solid fa-mobile-screen"></i><input type="tel" id="regPhone2" placeholder="رقم ثانٍ (اختياري)"></div><div class="input-group"><i class="fa-regular fa-envelope"></i><input type="email" id="regEmail" placeholder="البريد الإلكتروني" required></div><div class="input-row"><div class="input-group"><i class="fa-solid fa-lock"></i><input type="password" id="regPassword" placeholder="كلمة المرور" required></div><div class="input-group"><i class="fa-solid fa-shield-check"></i><input type="password" id="regConfirmPassword" placeholder="تأكيد كلمة المرور" required></div></div><small id="passwordMatchMsg"></small><div class="input-group"><i class="fa-solid fa-location-dot"></i><select id="regWilaya" required><option value="" disabled selected>اختر الولاية</option><option value="18">18 - جيجل</option><option value="16">16 - الجزائر</option><option value="31">31 - وهران</option></select></div><button class="btn-primary w-100" id="registerBtn">إنشاء الحساب</button><p class="switch-link"><span>لديك حساب؟</span> <a id="showLogin">سجل دخولك</a></p></div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-cols"><div class="col brand"><div class="logo"><i class="fa-solid fa-cake-candles gold-text"></i><span>Sweet<br>Event DZ</span></div><div class="socials"><a href="#" class="fa-brands fa-facebook"></a><a href="https://www.instagram.com/gateaux_hassen_taher_/" class="fa-brands fa-instagram"></a></div></div><div class="col"><h4>روابط سريعة</h4><ul><li><a href="/">الرئيسية</a></li><li><a href="/cakes">كيك</a></li><li><a href="/menu">حلويات</a></li><li><a href="/decor">ديكور</a></li><li><a href="/photography">تصوير</a></li></ul></div><div class="col"><h4>الدعم</h4><ul><li><a href="/order">طلب شامل</a></li><li><a href="/reviews">تقييمات</a></li><li><a href="/about">من نحن</a></li><li><a href="contact.html">اتصل بنا</a></li></ul></div><div class="col contact"><h4>نحن نقدم خدمة مرموقة</h4><p>نصنع أحلاماً ونحولها إلى واقع ملموس في كل مناسبة.</p><p><i class="fa-solid fa-phone"></i> +213 794 48 98 33</p><p><i class="fa-solid fa-envelope"></i> hassenboukhemkhem@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> الجزائر - جيجل - الطاهير</p></div></div>
+    <div class="footer-bottom"><p>© 2026 Sweet Event DZ. جميع الحقوق محفوظة.</p></div>
+</footer>
+
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'ar',            // لغة الموقع الأساسية (العربية)
+    includedLanguages: 'ar,en,fr', // اللغات التي تظهر للزوار (عربي، إنجليزي، فرنسي)
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script src="script.js"></script>
+<script>
+    let dynamicSweets = [];
+    let currentSlideIndex = 0;
+    let slideInterval;
+
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+    
+    function showToast(msg) {
+        let toast = document.querySelector('.toast-notify');
+        if(!toast){ toast=document.createElement('div'); toast.className='toast-notify'; document.body.appendChild(toast); }
+        toast.textContent=msg; toast.classList.add('show');
+        setTimeout(()=>toast.classList.remove('show'),2500);
+    }
+
+    // دالة مساعدة لعرض نص الوحدة بشكل جميل
+    function getUnitDisplayText(unitType) {
+        if (unitType === 'kg') return 'لكل كيلوغرام';
+        if (unitType === 'piece') return 'لكل قطعة';
+        return '';
+    }
+
+    function getUnitBadgeIcon(unitType) {
+        if (unitType === 'kg') return '⚖️';
+        if (unitType === 'piece') return '🍬';
+        return '';
+    }
+
+    async function loadSweets() {
+        try {
+            dynamicSweets = await window.fetchProductsByCategory('sweet');
+            renderSlider(dynamicSweets);
+            renderSweetsGrid(dynamicSweets);
+            startAutoSlide();
+        } catch(e) {
+            console.error(e);
+            document.getElementById('sweetsGridContainer').innerHTML = '<div class="no-data-message">⚠️ تعذر تحميل الحلويات، تأكد من تشغيل السيرفر.</div>';
+        }
+    }
+
+    function renderSlider(sweets) {
+        const slider = document.getElementById('productSlider');
+        if(!slider) return;
+        if(!sweets.length) { slider.innerHTML = `<div class="item active"><div class="content-img"><div class="name">لا توجد حلويات</div></div></div>`; return; }
+        
+        slider.innerHTML = sweets.map((p,idx)=> {
+            const unitText = getUnitDisplayText(p.UnitType);
+            const priceDisplay = parseFloat(p.Price).toLocaleString();
+            const priceHtml = unitText 
+                ? `<div class="price">${priceDisplay} <span style="font-size:0.9rem;">دج / ${unitText}</span></div>`
+                : `<div class="price">${priceDisplay} دج</div>`;
+            
+            return `
+            <div class="item ${idx===0?'active':''}" style="background-image: url('${p.ImageUrl||'default.jpg'}');">
+                <div class="content-img">
+                    <img src="${p.ImageUrl||'default.jpg'}" class="glass-featured-image" onerror="this.src='https://placehold.co/200x200'">
+                    <div class="name">${escapeHtml(p.Name)}</div>
+                    ${priceHtml}
+                    <div class="dec">${escapeHtml(p.Description||'')}</div>
+                    <button class="elegant-cart-btn" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${p.ImageUrl||''}" data-cat="sweet">
+                        <i class="fa-solid fa-cart-plus"></i> أضف للسلة
+                    </button>
+                </div>
+            </div>
+        `}).join('');
+
+        document.querySelectorAll('.elegant-cart-btn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                window.CartManager.addItem({
+                    productId: parseInt(btn.dataset.id), 
+                    name: btn.dataset.name, 
+                    price: parseFloat(btn.dataset.price), 
+                    image: btn.dataset.img
+                }, btn.dataset.cat);
+                if (window.CartManager) window.CartManager.updateUI();
+                showToast(`✅ تمت إضافة ${btn.dataset.name} إلى السلة`);
+            });
+        });
+    }
+
+function renderSweetsGrid(sweets) {
+        const container = document.getElementById('sweetsGridContainer');
+        if(!container) return;
+        if(!sweets.length) { container.innerHTML = '<div class="no-data-message">😕 لا توجد حلويات متاحة حالياً. أضف حلويات من لوحة الإدارة أولاً.</div>'; return; }
+        
+        container.innerHTML = sweets.map(p=>{
+            const imgUrl = `${p.ImageUrl||'default.jpg'}`;
+            const unitText = getUnitDisplayText(p.UnitType);
+            const unitIcon = getUnitBadgeIcon(p.UnitType);
+            const priceDisplay = parseFloat(p.Price).toLocaleString();
+            
+            const priceHtml = unitText 
+                ? `<div class="sweet-price-row">
+                        <span class="sweet-price">${priceDisplay} دج</span>
+                        <span class="price-unit-suffix">/ ${unitText}</span>
+                   </div>`
+                : `<div class="sweet-price">${priceDisplay} دج</div>`;
+            
+            const unitBadgeHtml = unitIcon 
+                ? `<span class="unit-badge">${unitIcon} ${unitText}</span>` 
+                : '';
+            
+            // تحضير مصفوفة الصور للنافذة المنبثقة والتقليب
+            let mediaJson = `[&quot;${imgUrl}&quot;]`;
+            if (p.MediaFiles && p.MediaFiles !== '[]') {
+                mediaJson = escapeHtml(p.MediaFiles);
+            }
+            
+            return `
+                <div class="sweet-card">
+                    <div class="sweet-img popup-media-trigger" style="cursor: pointer;" title="انقر لرؤية الصور">
+                        <img src="${imgUrl}" class="dynamic-product-img" data-media="${mediaJson}" alt="${escapeHtml(p.Name)}" loading="lazy" onerror="this.src='https://placehold.co/300x240'">
+                        <div class="sweet-badge">${priceDisplay} دج</div>
+                    </div>
+                    <div class="sweet-info">
+                        <h3 class="sweet-title">
+                            ${escapeHtml(p.Name)}
+                            ${unitBadgeHtml}
+                        </h3>
+                        <p class="sweet-desc">${escapeHtml(p.Description||'حلوى فاخرة')}</p>
+                        ${priceHtml}
+                        <div class="sweet-actions">
+                            <button class="btn-cart" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="sweet"><i class="fa-solid fa-cart-plus"></i> إضافة للسلة</button>
+                            <button class="btn-order-direct" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="sweet"><i class="fa-solid fa-bolt"></i> اطلب الآن</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // إضافة أحداث النقر لفتح النافذة المنبثقة الأنيقة
+        document.querySelectorAll('#sweetsGridContainer .popup-media-trigger').forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const img = trigger.querySelector('.dynamic-product-img');
+                const mediaData = img.getAttribute('data-media');
+                if (mediaData) {
+                    try {
+                        const mediaArray = JSON.parse(mediaData.replace(/&quot;/g, '"'));
+                        if (mediaArray && mediaArray.length > 0) {
+                            window.openProductGallery(mediaArray);
+                        }
+                    } catch(err) {
+                        window.openProductGallery([img.src]); // في حالة حدوث خطأ، نفتح الصورة الأساسية
+                    }
+                }
+            });
+        });
+
+        // تشغيل تأثير تغيير الصور التلقائي لو كان المنتج يحتوي عدة صور
+        if (typeof window.startProductCarousels === 'function') {
+            window.startProductCarousels();
+        }
+
+        document.querySelectorAll('.btn-cart').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                window.CartManager.addItem({
+                    productId: parseInt(btn.dataset.id), 
+                    name: btn.dataset.name, 
+                    price: parseFloat(btn.dataset.price), 
+                    image: btn.dataset.img 
+                }, btn.dataset.cat);
+                if (window.CartManager) window.CartManager.updateUI();
+                btn.innerHTML='<i class="fa-solid fa-check"></i> تم';
+                setTimeout(()=>btn.innerHTML='<i class="fa-solid fa-cart-plus"></i> إضافة للسلة',1000);
+                showToast(`✅ تمت إضافة ${btn.dataset.name} إلى السلة`);
+            });
+        });
+
+        document.querySelectorAll('.btn-order-direct').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                window.CartManager.addItem({
+                    productId: parseInt(btn.dataset.id), 
+                    name: btn.dataset.name, 
+                    price: parseFloat(btn.dataset.price), 
+                    image: btn.dataset.img
+                }, btn.dataset.cat);
+                window.location.href = 'order.html';
+            });
+        });
+    }
+    function showSlide(index) { 
+        const items=document.querySelectorAll('#productSlider .item'); 
+        if(!items.length) return; 
+        if(index<0) index=items.length-1; 
+        if(index>=items.length) index=0; 
+        items.forEach((item,i)=>item.classList.toggle('active',i===index)); 
+        currentSlideIndex=index; 
+    }
+    
+    function nextSlide(){ showSlide(currentSlideIndex+1); }
+    function prevSlide(){ showSlide(currentSlideIndex-1); }
+    
+    function startAutoSlide(){ 
+        if(slideInterval) clearInterval(slideInterval); 
+        slideInterval=setInterval(nextSlide,5000); 
+    }
+
+    document.getElementById('prevSlideBtn')?.addEventListener('click', prevSlide);
+    document.getElementById('nextSlideBtn')?.addEventListener('click', nextSlide);
+    window.addEventListener('scroll',()=>{ 
+        const p = window.scrollY/(document.documentElement.scrollHeight-window.innerHeight)*100; 
+        const bar=document.getElementById('scrollProgress'); 
+        if(bar) bar.style.width=p+'%'; 
+    });
+    
+    window.addEventListener('DOMContentLoaded', async()=>{ 
+        await loadSweets(); 
+        if(window.CartManager) window.CartManager.updateUI(); 
+    });
+</script>
+</body>
+</html>

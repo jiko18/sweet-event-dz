@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+   <script>
+// التحقق السريع من التوكن قبل عرض الصفحة
+(async function() {
+    const token = localStorage.getItem('sweet_event_token');
+    if (!token) {
+        window.location.href = '/';
+        return;
+    }
+    try {
+        // التصحيح: استخدام مسار التحقق من المستخدم الموجود بالفعل في server.js
+        const res = await fetch('/api/user', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Invalid token');
+    } catch(e) {
+        localStorage.removeItem('sweet_event_token');
+        window.location.href = '/';
+    }
+})();
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Event DZ | لوحة تحكمي الشخصية</title>
+
+    <link rel="stylesheet" href="css-project/sweet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@200;300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- html2pdf -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --profile-bg: #fefaf7;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --card-bg-strong: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(201, 150, 62, 0.25);
+            --gold: #c9963e;
+            --text: #2c1810;
+            --text-soft: #6b5b4e;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --pending: #f39c12;
+            --studying: #3498db;
+            --approved: #2ecc71;
+            --inprogress: #e67e22;
+            --delivered: #27ae60;
+            --cancelled: #e74c3c;
+        }
+        .dark-mode {
+            --profile-bg: #0d0907;
+            --card-bg: rgba(24, 18, 14, 0.7);
+            --card-bg-strong: rgba(24, 18, 14, 0.9);
+            --card-border: rgba(201, 150, 62, 0.12);
+            --text: #e8d5c0;
+            --text-soft: #b4a292;
+        }
+
+        body {
+            padding-top: 100px;
+            background: var(--profile-bg);
+            transition: background 0.5s ease;
+            min-height: 100vh;
+            font-family: 'Poppins', 'Tajawal', 'Cairo', sans-serif;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 2.5rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10000;
+            background: rgba(255, 248, 240, 0.5);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            direction: ltr;
+        }
+        .dark-mode header {
+            background: rgba(26, 19, 16, 0.6);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+        }
+        .logo i { font-size: 1.6rem; color: var(--gold); }
+        .logo span { font-size: 1rem; line-height: 1.2; }
+        nav ul {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text);
+            padding: 8px 18px;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+        nav ul li a:hover { color: var(--gold); }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: inherit;
+        }
+
+        .dashboard-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 1rem 2rem 3rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 1.8rem;
+        }
+
+        .sidebar-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            text-align: center;
+            height: fit-content;
+            position: sticky;
+            top: 110px;
+        }
+        .avatar-section {
+            position: relative;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+        .avatar-img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--gold);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background: #ddd;
+            transition: transform 0.2s ease;
+        }
+        .avatar-img:hover {
+            transform: scale(1.02);
+            filter: brightness(0.98);
+        }
+        .avatar-upload-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 15px;
+            background: var(--gold);
+            color: #000;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 2px solid white;
+        }
+        .avatar-upload-btn:hover {
+            transform: scale(1.1);
+            background: #b08235;
+        }
+        .avatar-upload-btn input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .user-name-card {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+        .user-email-card {
+            color: var(--text-soft);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            word-break: break-all;
+        }
+        .stats-mini {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--card-border);
+        }
+        .stat-mini-item {
+            text-align: center;
+        }
+        .stat-mini-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .stat-mini-label {
+            font-size: 0.7rem;
+            color: var(--text-soft);
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid var(--card-border);
+            padding: 1.8rem;
+            margin-bottom: 1.8rem;
+        }
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 0.5rem;
+        }
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.85rem;
+        }
+        .input-glass {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            background: rgba(255,255,255,0.4);
+            color: var(--text);
+            font-family: inherit;
+            transition: 0.3s;
+            outline: none;
+        }
+        .dark-mode .input-glass {
+            background: rgba(0,0,0,0.3);
+        }
+        .input-glass:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201,150,62,0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), #b08235);
+            color: #000;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(201,150,62,0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .status-Pending { background: var(--pending); }
+        .status-Studying { background: var(--studying); }
+        .status-Approved { background: var(--approved); }
+        .status-InProgress { background: var(--inprogress); }
+        .status-Delivered { background: var(--delivered); }
+        .status-Completed { background: var(--delivered); }
+        .status-Cancelled { background: var(--cancelled); }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .orders-table th, .orders-table td {
+            padding: 0.8rem 0.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .orders-table th {
+            color: var(--gold);
+            font-weight: 600;
+        }
+        .view-details-btn {
+            background: none;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .view-details-btn:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid var(--card-border);
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            color: var(--text-soft);
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 30px 30px 0 0;
+        }
+        .tab-btn.active {
+            color: var(--gold);
+            border-bottom: 3px solid var(--gold);
+            background: rgba(201,150,62,0.1);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--card-bg-strong);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.8rem;
+            border: 1px solid var(--gold);
+            position: relative;
+        }
+        .modal-content .close-order-modal {
+            position: sticky;
+            top: 0;
+            float: left;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .modal-content .close-order-modal:hover {
+            background: var(--danger);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        
+        .avatar-lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 30000;
+            cursor: pointer;
+        }
+        .avatar-lightbox.active {
+            display: flex;
+        }
+        .avatar-lightbox img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 16px;
+            border: 4px solid var(--gold);
+            object-fit: contain;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        .avatar-lightbox .close-lightbox {
+            position: absolute;
+            top: 25px;
+            left: 35px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .avatar-lightbox .close-lightbox:hover {
+            color: var(--gold);
+            transform: scale(1.1);
+        }
+        
+        .product-image-lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 35000;
+            cursor: pointer;
+        }
+        .product-image-lightbox.active {
+            display: flex;
+        }
+        .product-image-lightbox img {
+            max-width: 85vw;
+            max-height: 85vh;
+            border-radius: 12px;
+            border: 3px solid var(--gold);
+            object-fit: contain;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c1810;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 40px;
+            z-index: 99999;
+            opacity: 0;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+
+        .btn-download-pdf {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            margin-bottom: 1rem;
+        }
+        .btn-download-pdf:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .order-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .order-items-table th, .order-items-table td {
+            border: 1px solid var(--card-border);
+            padding: 8px;
+            text-align: center;
+        }
+        .product-img-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 1px solid var(--gold);
+        }
+        .product-img-thumb:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .sidebar-card { position: static; margin-bottom: 1.5rem; }
+            .dashboard-container { padding: 1rem; }
+        }
+        @media (max-width: 600px) {
+            .orders-table, .orders-table tbody, .orders-table tr, .orders-table td {
+                display: block;
+                width: 100%;
+            }
+            .orders-table thead { display: none; }
+            .orders-table tr { margin-bottom: 1rem; border: 1px solid var(--card-border); border-radius: 16px; padding: 0.5rem; }
+            .orders-table td { display: flex; justify-content: space-between; border: none; padding: 0.4rem; }
+            .orders-table td::before { content: attr(data-label); font-weight: bold; color: var(--gold); }
+        }
+
+        /* ---------- تنسيقات زر تسجيل الخروج الخاص بالهواتف ---------- */
+        /* إخفاء الزر تلقائياً في شاشات الكمبيوتر */
+        .profile-mobile-logout-container {
+            display: none;
+        }
+
+        /* إظهار وتنسيق الزر فقط على الهواتف والشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .profile-mobile-logout-container {
+                display: block;
+                margin-top: 25px;
+                width: 100%;
+            }
+            
+            .btn-profile-logout {
+                width: 100%;
+                background-color: #e74c3c; /* لون أحمر واضح */
+                color: #ffffff;
+                border: none;
+                padding: 12px;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: bold;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+                transition: background 0.2s;
+            }
+
+            .btn-profile-logout:active {
+                background-color: #c0392b;
+            }
+        }
+    </style>
+</head> 
+
+<body>
+
+    <header dir="ltr">
+        <div class="logo">
+            <i class="fa-solid fa-cake-candles gold-text"></i>
+            <span>Sweet<br>Event DZ</span>
+        </div>
+        <nav dir="ltr">
+            <ul>
+                <li><a href="/cakes" class="nav-link">Cakes</a></li>
+                <li><a href="/decor" class="nav-link">Decor</a></li>
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/photography" class="nav-link">Photography</a></li>
+                <li><a href="/menu" class="nav-link">Menu</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <div id="google_translate_element"></div>
+            <div class="toggle-switch" id="themeToggle">
+                <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+            </div>
+            <button class="btn-icon" id="logoutBtn"><i class="fa-solid fa-sign-out-alt"></i></button>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="dashboard-grid">
+            <aside class="sidebar-card">
+                <div class="avatar-section" id="avatarClickArea">
+                    <img id="avatarImg" class="avatar-img" src="" alt="الصورة الشخصية">
+                    <label class="avatar-upload-btn">
+                        <i class="fa-solid fa-camera"></i>
+                        <input type="file" id="avatarUpload" accept="image/jpeg,image/png,image/jpg">
+                    </label>
+                </div>
+               <div class="user-name-card" id="sidebarUserName">...</div>
+<div class="user-email-card" id="sidebarUserEmail">...</div>
+<div class="stats-mini">
+    <div class="stat-mini-item">
+        <div class="stat-mini-number" id="statOrdersCount">0</div>
+        <div class="stat-mini-label" data-lang="profile_orders_label">طلبات</div>
+    </div>
+    <div class="stat-mini-item">
+        <div class="stat-mini-number" id="statTotalSpent">0</div>
+        <div class="stat-mini-label" data-lang="profile_total_label">إجمالي (دج)</div>
+    </div>
+    <div class="stat-mini-item">
+        <div class="stat-mini-number" id="statProductsCount">0</div>
+        <div class="stat-mini-label" data-lang="profile_products_label">منتجات</div>
+    </div>
+</div>
+</aside>
+
+<main class="main-content">
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="info" data-lang="profile_info_tab">👤 معلوماتي الشخصية</button>
+        <button class="tab-btn" data-tab="orders" data-lang="profile_orders_tab">📦 طلباتي</button>
+        <button class="tab-btn" data-tab="reviews" data-lang="profile_reviews_tab">⭐ تقييماتي</button>
+        <button class="tab-btn" data-tab="security" data-lang="profile_security_tab">🔐 الأمان</button>
+    </div>
+
+    <div id="infoTab" class="tab-content active">
+        <div class="main-card">
+            <div class="card-title"><i class="fa-regular fa-address-card"></i> <span data-lang="profile_edit_title">تعديل الملف الشخصي</span></div>
+            <form id="profileForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label data-lang="profile_firstname_label">الاسم الأول</label>
+                        <input type="text" id="profUsername" class="input-glass" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-lang="profile_lastname_label">اللقب</label>
+                        <input type="text" id="profLastname" class="input-glass" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label data-lang="profile_email_label">البريد الإلكتروني</label>
+                    <input type="email" id="profEmail" class="input-glass" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label data-lang="profile_phone_label">رقم الهاتف</label>
+                        <input type="tel" id="profPhone" class="input-glass" placeholder="05XXXXXXXX" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-lang="profile_backup_phone_label">رقم هاتف احتياطي (اختياري)</label>
+                        <input type="tel" id="profBackupPhone" class="input-glass" placeholder="05XXXXXXXX">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label data-lang="profile_wilaya_label">الولاية</label>
+                    <select id="profWilaya" class="input-glass">
+                        <option value="18">18 - جيجل</option>
+                        <option value="16">16 - الجزائر العاصمة</option>
+                        <option value="31">31 - وهران</option>
+                    </select>
+                </div>
+                <!-- زر حفظ التغييرات داخل النموذج -->
+                <button type="submit" class="btn-primary" id="saveInfoBtn">
+                    <i class="fa-solid fa-save"></i> <span data-lang="profile_save_btn">حفظ التغييرات</span>
+                </button>
+            </form>
+
+            <!-- زر تسجيل الخروج الجديد للهواتف (خارج النموذج، تحت زر الحفظ) -->
+            <div class="profile-mobile-logout-container">
+                <button type="button" id="profileTabLogoutBtn" class="btn-profile-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج من الحساب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ordersTab" class="tab-content">
+        <div class="main-card">
+            <div class="card-title"><i class="fa-solid fa-receipt"></i> <span data-lang="profile_orders_title">سجل طلباتي</span></div>
+            <div style="overflow-x: auto;">
+                <table class="orders-table" id="ordersTable">
+                    <thead>
+                        <tr><th data-lang="profile_order_id">رقم الطلب</th><th data-lang="profile_order_date">التاريخ</th><th data-lang="profile_order_total">المجموع</th><th data-lang="profile_order_status">الحالة</th><th data-lang="profile_order_products">المنتجات</th><th></th></tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr><td colspan="6"><span data-lang="loading_orders">جاري تحميل الطلبات...</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="reviewsTab" class="tab-content">
+        <div class="main-card">
+            <div class="card-title"><i class="fa-solid fa-star"></i> <span data-lang="profile_reviews_title">تقييماتي السابقة</span></div>
+            <div id="userReviewsContainer">
+                <p data-lang="loading_reviews">جاري تحميل التقييمات...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="securityTab" class="tab-content">
+        <div class="main-card">
+            <div class="card-title"><i class="fa-solid fa-lock"></i> <span data-lang="profile_security_title">تغيير كلمة المرور</span></div>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label data-lang="profile_current_password_label">كلمة المرور الحالية</label>
+                    <input type="password" id="currentPassword" class="input-glass" required>
+                </div>
+                <div class="form-group">
+                    <label data-lang="profile_new_password_label">كلمة المرور الجديدة</label>
+                    <input type="password" id="newPassword" class="input-glass" required>
+                </div>
+                <div class="form-group">
+                    <label data-lang="profile_confirm_password_label">تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" id="confirmPassword" class="input-glass" required>
+                </div>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-key"></i> <span data-lang="profile_change_password_btn">تغيير كلمة المرور</span></button>
+                <div class="status-message" id="passStatus"></div>
+            </form>
+        </div>
+    </div>
+</main>
+</div>
+
+<!-- نافذة تفاصيل الطلب (Modal) -->
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <button class="close-order-modal" id="closeOrderModalBtn">&times;</button>
+        <div id="orderDetails"></div>
+        <button class="btn-download-pdf" id="downloadOrderPdfBtn"><i class="fa-solid fa-file-pdf"></i> <span data-lang="download_pdf_btn">تحميل تفاصيل الطلب (PDF)</span></button>
+    </div>
+</div>
+
+<!-- نافذة عرض الصورة الشخصية المكبرة -->
+<div id="avatarLightbox" class="avatar-lightbox">
+    <button class="close-lightbox" id="closeLightboxBtn">&times;</button>
+    <img id="lightboxImg" src="" alt="الصورة الشخصية مكبرة">
+</div>
+
+<!-- نافذة عرض صورة المنتج بشكل أكبر -->
+<div id="productImageLightbox" class="product-image-lightbox">
+    <img id="productLightboxImg" src="" alt="صورة المنتج">
+</div>
+
+<div class="toast" id="toastMsg"></div>
+
+<script>
+    const API_BASE = '/api';
+    let token = localStorage.getItem('sweet_event_token');
+    let currentUser = null;
+    let productsCache = {};
+
+    if (!token) {
+        window.location.href = '/';
+    }
+
+    function getOrderStatusText(status) {
+        const statusMap = {
+            'Pending': 'قيد الانتظار',
+            'Studying': 'قيد الدراسة',
+            'Approved': 'تم التأكيد',
+            'InProgress': 'قيد الإنجاز',
+            'Delivered': 'تم التسليم',
+            'Completed': 'مكتمل',
+            'Cancelled': 'ملغي'
+        };
+        return statusMap[status] || status;
+    }
+
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toastMsg');
+        toast.textContent = msg;
+        toast.style.background = isError ? '#e74c3c' : '#2c1810';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    async function fetchUserData() {
+        try {
+            const res = await fetch(`${API_BASE}/user/details`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentUser = data.user;
+                document.getElementById('profUsername').value = currentUser.Username || '';
+                document.getElementById('profLastname').value = currentUser.LastName || '';
+                document.getElementById('profEmail').value = currentUser.Email || '';
+                document.getElementById('profPhone').value = currentUser.Phone || '';
+                document.getElementById('profBackupPhone').value = currentUser.BackupPhone || '';
+                document.getElementById('profWilaya').value = currentUser.Wilaya || '18';
+                document.getElementById('sidebarUserName').innerText = `${currentUser.Username || ''} ${currentUser.LastName || ''}`;
+                document.getElementById('sidebarUserEmail').innerText = currentUser.Email || '';
+                const avatarUrl = currentUser.AvatarUrl ? `${currentUser.AvatarUrl}` : 'https://placehold.co/130x130/2c1810/c9963e?text=User';
+                document.getElementById('avatarImg').src = avatarUrl;
+                return true;
+            }
+            return false;
+        } catch (err) {
+            showToast('خطأ في تحميل البيانات', true);
+            return false;
+        }
+    }
+
+    // جلب صورة المنتج من قاعدة البيانات وتخزينها مؤقتاً
+    async function fetchProductImage(productId) {
+        if (productsCache[productId]) return productsCache[productId];
+        try {
+            const res = await fetch(`${API_BASE}/products?category=all`);
+            const data = await res.json();
+            if (data.success) {
+                const product = data.products.find(p => p.ProductId == productId);
+                if (product && product.ImageUrl) {
+                    const imgUrl = `${product.ImageUrl}`;
+                    productsCache[productId] = imgUrl;
+                    return imgUrl;
+                }
+            }
+            productsCache[productId] = 'https://placehold.co/50x50/2c1810/c9963e?text=No+Img';
+            return productsCache[productId];
+        } catch(e) {
+            console.error('خطأ في جلب صورة المنتج', e);
+            return 'https://placehold.co/50x50/2c1810/c9963e?text=Error';
+        }
+    }
+
+    async function fetchOrders() {
+        try {
+            const res = await fetch(`${API_BASE}/user/orders`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success && data.orders) {
+                const tbody = document.getElementById('ordersTableBody');
+                if (data.orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">لا توجد طلبات حتى الآن</td>';
+                    document.getElementById('statOrdersCount').innerText = '0';
+                    document.getElementById('statTotalSpent').innerText = '0';
+                    document.getElementById('statProductsCount').innerText = '0';
+                    return;
+                }
+                let totalSpent = 0;
+                let totalProducts = 0;
+                tbody.innerHTML = data.orders.map(order => {
+                    totalSpent += parseFloat(order.TotalAmount);
+                    const itemsCount = order.Items ? order.Items.split(',').length : 0;
+                    totalProducts += itemsCount;
+                    const statusClass = order.Status;
+                    return `
+                        <tr>
+                            <td data-label="رقم الطلب">#${order.OrderId}</td>
+                            <td data-label="التاريخ">${new Date(order.OrderDate).toLocaleDateString('ar')}</td>
+                            <td data-label="المجموع">${parseFloat(order.TotalAmount).toLocaleString()} دج</td>
+                            <td data-label="الحالة"><span class="status-badge status-${statusClass}">${getOrderStatusText(order.Status)}</span></td>
+                            <td data-label="المنتجات">${order.Items || '-'}</td>
+                            <td data-label=""><button class="view-details-btn" data-id="${order.OrderId}">تفاصيل</button></td>
+                        </tr>
+                    `;
+                }).join('');
+                document.getElementById('statOrdersCount').innerText = data.orders.length;
+                document.getElementById('statTotalSpent').innerText = totalSpent.toLocaleString();
+                document.getElementById('statProductsCount').innerText = totalProducts;
+                document.querySelectorAll('.view-details-btn').forEach(btn => {
+                    btn.addEventListener('click', () => showOrderDetails(btn.dataset.id));
+                });
+            } else {
+                document.getElementById('ordersTableBody').innerHTML = '<tr><td colspan="6">فشل تحميل الطلبات</td></tr>';
+            }
+        } catch (err) {
+            console.error(err);
+            document.getElementById('ordersTableBody').innerHTML = '<tr><td colspan="6">خطأ في الاتصال</td></tr>';
+        }
+    }
+
+    async function showOrderDetails(orderId) {
+        try {
+            const res = await fetch(`${API_BASE}/orders/${orderId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (data.success && data.order) {
+                const itemsArray = data.items || [];
+                
+                let itemsHtml = '<table class="order-items-table"><thead><tr><th>المنتج</th><th>السعر</th><th>الكمية</th><th>المجموع</th></tr></thead><tbody>';
+                
+                if (itemsArray.length > 0) {
+                    itemsArray.forEach(item => {
+                        const unitPrice = item.UnitPrice || 0;
+                        const qty = item.Quantity || 1;
+                        const name = item.Name || 'منتج غير معروف';
+                        const imgUrl = item.ImageUrl ? (item.ImageUrl.startsWith('http') ? item.ImageUrl : '/uploads/' + item.ImageUrl) : 'https://placehold.co/50x50/2c1810/c9963e?text=No+Img';
+                        
+                        itemsHtml += `
+                            <tr>
+                                <td style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+                                    <img src="${imgUrl}" class="product-img-thumb" data-img="${imgUrl}" style="cursor:pointer;" alt="${name}">
+                                    ${name}
+                                </td>
+                                <td>${unitPrice.toLocaleString()} دج</td>
+                                <td>${qty}</td>
+                                <td>${(unitPrice * qty).toLocaleString()} دج</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    itemsHtml += '<tr><td colspan="4">لا توجد تفاصيل للمنتجات في هذا الطلب</td></tr>';
+                }
+                itemsHtml += '</tbody></table>';
+                
+                const orderStatus = data.order.Status || 'Pending';
+                const orderTotal = data.order.TotalAmount || 0;
+                
+                const detailsHtml = `
+                    <h3 style="color: var(--gold); margin-bottom: 1rem;">تفاصيل الطلب #${data.order.OrderId}</h3>
+                    <div style="margin-bottom: 15px;">
+                        <p><strong>📅 تاريخ الطلب:</strong> ${data.order.OrderDate ? new Date(data.order.OrderDate).toLocaleDateString('ar') : 'غير متوفر'}</p>
+                        <p><strong>📅 تاريخ المناسبة (التسليم):</strong> ${data.order.DeliveryDate ? new Date(data.order.DeliveryDate).toLocaleDateString('ar') : 'غير محدد'}</p>
+                        <p><strong>👤 العميل:</strong> ${data.order.CustomerName || 'غير متوفر'}</p>
+                        <p><strong>📞 الهاتف:</strong> ${data.order.CustomerPhone || 'غير متوفر'}</p>
+                        <p><strong>📍 عنوان التسليم:</strong> ${data.order.DeliveryAddress ? data.order.DeliveryAddress : 'لم يتم تحديد عنوان (الاستلام من المحل)'}</p>
+                        <p><strong>📝 ملاحظات:</strong> ${data.order.Notes || 'لا توجد ملاحظات'}</p>
+                        <p><strong>💰 الحالة:</strong> <span class="status-badge status-${orderStatus}">${getOrderStatusText(orderStatus)}</span></p>
+                    </div>
+                    <h4>المنتجات المطلوبة:</h4>
+                    ${itemsHtml}
+                    <div style="margin-top: 15px; text-align: left; font-size: 1.2rem; font-weight: bold;">
+                        <strong>المجموع الكلي:</strong> ${parseFloat(orderTotal).toLocaleString()} دج
+                    </div>
+                `;
+                
+                document.getElementById('orderDetails').innerHTML = detailsHtml;
+                
+                // تفعيل تكبير الصور عند الضغط عليها
+                document.querySelectorAll('.product-img-thumb').forEach(img => {
+                    img.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const src = img.getAttribute('data-img') || img.src;
+                        if (src) {
+                            const lightbox = document.getElementById('productImageLightbox');
+                            const lightboxImg = document.getElementById('productLightboxImg');
+                            lightboxImg.src = src;
+                            lightbox.classList.add('active');
+                        }
+                    });
+                });
+                
+                // حفظ البيانات للاستخدام عند تحميل الـ PDF
+                window.currentOrderForPdf = { order: data.order, items: itemsArray };
+                document.getElementById('orderModal').classList.add('active');
+            } else {
+                console.error("البيانات غير مكتملة:", data);
+                showToast(data.error || 'فشل تحميل تفاصيل الطلب', true);
+            }
+        } catch (err) {
+            console.error("حدث خطأ أثناء الاتصال:", err);
+            showToast('فشل الاتصال بالخادم', true);
+        }
+    }
+
+    function downloadOrderPDF() {
+        if (!window.currentOrderForPdf) return;
+        const { order, items } = window.currentOrderForPdf;
+        
+        const qrDataText = `طلب رقم: ${order.OrderId} | العميل: ${order.CustomerName} | المجموع: ${parseFloat(order.TotalAmount).toLocaleString()} دج | الحالة: ${getOrderStatusText(order.Status)}`;
+        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrDataText)}&margin=1`;
+
+        const pdfContent = document.createElement('div');
+        pdfContent.style.padding = '20px';
+        pdfContent.style.fontFamily = 'Arial, sans-serif';
+        pdfContent.style.direction = 'rtl';
+        
+        pdfContent.innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #c9963e;">Sweet Event DZ</h1>
+                <h2>تفاصيل الطلب #${order.OrderId}</h2>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <p><strong>📅 تاريخ الطلب:</strong> ${new Date(order.OrderDate).toLocaleDateString('ar')}</p>
+                <p><strong>👤 اسم العميل:</strong> ${order.CustomerName}</p>
+                <p><strong>📞 رقم الهاتف:</strong> ${order.CustomerPhone}</p>
+                <p><strong>📍 عنوان التسليم:</strong> ${order.DeliveryAddress ? order.DeliveryAddress : 'لم يتم التحديد'}</p>
+                <p><strong>💰 حالة الطلب:</strong> ${getOrderStatusText(order.Status)}</p>
+            </div>
+            <h3>المنتجات المطلوبة:</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th style="border: 1px solid #ddd; padding: 8px;">المنتج</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">السعر (دج)</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">الكمية</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">المجموع (دج)</th>
+                     </tr>
+                </thead>
+                <tbody>
+                    ${items.length > 0 ? items.map(item => `
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${item.Name}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${(item.UnitPrice || 0).toLocaleString()}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${item.Quantity || 1}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${((item.UnitPrice || 0) * (item.Quantity || 1)).toLocaleString()}</td>
+                        </tr>
+                    `).join('') : '<tr><td colspan="4" style="text-align:center;">لا توجد بيانات</td></tr>'}
+                </tbody>
+            </table>
+            <div style="text-align: left; font-size: 1.2rem; font-weight: bold; padding-top: 10px; border-top: 2px solid #c9963e;">
+                <strong>المجموع الكلي:</strong> ${parseFloat(order.TotalAmount).toLocaleString()} دج
+            </div>
+            
+            <div style="margin-top: 40px; text-align: center; border-top: 1px dashed #ccc; padding-top: 20px;">
+                <h4 style="margin-bottom: 10px; color: #2c1810;">امسح الرمز للتحقق من الطلب</h4>
+                <img src="${qrCodeUrl}" alt="QR Code" crossorigin="anonymous" style="width: 120px; height: 120px; border: 2px solid #c9963e; border-radius: 8px; padding: 5px;">
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #888;">
+                تم إنشاء هذا التقرير بواسطة Sweet Event DZ - شكراً لثقتكم بنا
+            </div>
+        `;
+        
+        const opt = {
+            margin: [0.5, 0.5, 0.5, 0.5],
+            filename: `order_${order.OrderId}_details.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, letterRendering: true, useCORS: true },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        
+        const btn = document.getElementById('downloadOrderPdfBtn');
+        const originalBtnHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التجهيز...';
+        btn.disabled = true;
+
+        html2pdf().set(opt).from(pdfContent).save().then(() => {
+            btn.innerHTML = originalBtnHtml;
+            btn.disabled = false;
+        }).catch(err => {
+            console.error("خطأ في إنشاء PDF:", err);
+            btn.innerHTML = originalBtnHtml;
+            btn.disabled = false;
+            showToast('حدث خطأ أثناء تحميل الملف', true);
+        });
+    }
+
+    async function fetchUserReviews() {
+        try {
+            const res = await fetch(`${API_BASE}/user/reviews`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            const container = document.getElementById('userReviewsContainer');
+            if (data.success && data.reviews.length) {
+                container.innerHTML = data.reviews.map(r => `
+                    <div style="background: rgba(201,150,62,0.1); border-radius: 16px; padding: 1rem; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                            <span style="color: var(--gold);">${'⭐'.repeat(r.Rating)}</span>
+                            <span style="font-size: 0.8rem;">${new Date(r.CreatedAt).toLocaleDateString('ar')}</span>
+                        </div>
+                        <p style="margin-top: 0.5rem;">${r.Comment}</p>
+                        <span style="font-size: 0.7rem; color: var(--text-soft);">${r.IsApproved ? '✓ معتمد' : '⏳ قيد المراجعة'}</span>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p>لم تقم بإضافة أي تقييم بعد</p>';
+            }
+        } catch (err) {
+            document.getElementById('userReviewsContainer').innerHTML = '<p>فشل تحميل التقييمات</p>';
+        }
+    }
+
+    // تحديث المعلومات الشخصية
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('saveInfoBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+
+        const payload = {
+            username: document.getElementById('profUsername').value.trim(),
+            lastname: document.getElementById('profLastname').value.trim(),
+            newEmail: document.getElementById('profEmail').value.trim(),
+            phone: document.getElementById('profPhone').value.trim(),
+            backupPhone: document.getElementById('profBackupPhone').value.trim() || undefined,
+            wilaya: document.getElementById('profWilaya').value
+        };
+
+        try {
+            const res = await fetch(`${API_BASE}/user/update`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (data.token) localStorage.setItem('sweet_event_token', data.token);
+                token = localStorage.getItem('sweet_event_token');
+                await fetchUserData();
+                showToast('تم تحديث الملف الشخصي');
+            } else {
+                showToast(data.error, true);
+            }
+        } catch (err) {
+            showToast('خطأ في الاتصال', true);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-save"></i> حفظ التغييرات';
+        }
+    });
+
+    // تغيير كلمة المرور
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const current = document.getElementById('currentPassword').value;
+        const newPass = document.getElementById('newPassword').value;
+        const confirm = document.getElementById('confirmPassword').value;
+        if (newPass !== confirm) {
+            document.getElementById('passStatus').innerHTML = '<span style="color: #e74c3c;">كلمتا المرور غير متطابقتين</span>';
+            return;
+        }
+        if (newPass.length < 6) {
+            document.getElementById('passStatus').innerHTML = '<span style="color: #e74c3c;">كلمة المرور يجب أن تكون 6 أحرف على الأقل</span>';
+            return;
+        }
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري...';
+        try {
+            const res = await fetch(`${API_BASE}/user/update`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({
+                    currentPassword: current,
+                    newPassword: newPass,
+                    username: currentUser.Username,
+                    lastname: currentUser.LastName,
+                    newEmail: currentUser.Email,
+                    phone: currentUser.Phone,
+                    wilaya: currentUser.Wilaya
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('passStatus').innerHTML = '<span style="color: #27ae60;">✅ تم تغيير كلمة المرور بنجاح</span>';
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+                showToast('تم تغيير كلمة المرور');
+            } else {
+                document.getElementById('passStatus').innerHTML = `<span style="color: #e74c3c;">⚠️ ${data.error}</span>`;
+            }
+        } catch (err) {
+            document.getElementById('passStatus').innerHTML = '<span style="color: #e74c3c;">⚠️ خطأ في الاتصال</span>';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-key"></i> تغيير كلمة المرور';
+        }
+    });
+
+    // رفع الصورة الرمزية
+    async function handleAvatarUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('avatar', file);
+        const btn = document.querySelector('.avatar-upload-btn');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        
+        try {
+            const res = await fetch(`${API_BASE}/user/avatar`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            });
+            const data = await res.json();
+            if (data.success) {
+                await fetchUserData();
+                showToast('تم تحديث الصورة الشخصية');
+            } else {
+                showToast(data.error || 'فشل رفع الصورة', true);
+            }
+        } catch (err) {
+            showToast('خطأ في رفع الصورة', true);
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-camera"></i><input type="file" id="avatarUpload" accept="image/jpeg,image/png,image/jpg" style="position:absolute; opacity:0; width:100%; height:100%; cursor:pointer;">';
+            document.getElementById('avatarUpload').addEventListener('change', handleAvatarUpload);
+        }
+    }
+
+    // عرض الصورة الشخصية بشكل مكبّر
+    const avatarImg = document.getElementById('avatarImg');
+    const lightbox = document.getElementById('avatarLightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const closeLightboxBtn = document.getElementById('closeLightboxBtn');
+
+    function openLightbox() {
+        const currentSrc = avatarImg.src;
+        if (!currentSrc) return;
+        lightboxImg.src = currentSrc;
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    const avatarClickArea = document.getElementById('avatarClickArea');
+    avatarClickArea.addEventListener('click', (e) => {
+        if (e.target.closest('.avatar-upload-btn')) return;
+        openLightbox();
+    });
+
+    closeLightboxBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+            closeLightbox();
+        }
+    });
+
+    // إغلاق نافذة تفاصيل الطلب
+    function closeOrderModal() {
+        document.getElementById('orderModal').classList.remove('active');
+        window.currentOrderForPdf = null;
+    }
+    document.getElementById('closeOrderModalBtn').addEventListener('click', closeOrderModal);
+    window.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('orderModal')) {
+            closeOrderModal();
+        }
+    });
+    
+    // زر تحميل PDF
+    document.getElementById('downloadOrderPdfBtn').addEventListener('click', () => {
+        if (window.currentOrderForPdf) {
+            downloadOrderPDF();
+        } else {
+            showToast('لا توجد بيانات للتحميل', true);
+        }
+    });
+
+    // إغلاق نافذة عرض صورة المنتج
+    const productLightbox = document.getElementById('productImageLightbox');
+    productLightbox.addEventListener('click', () => {
+        productLightbox.classList.remove('active');
+    });
+
+    document.getElementById('avatarUpload').addEventListener('change', handleAvatarUpload);
+
+    // التبويبات
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tabId = btn.dataset.tab;
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`${tabId}Tab`).classList.add('active');
+            if (tabId === 'orders') fetchOrders();
+            if (tabId === 'reviews') fetchUserReviews();
+        });
+    });
+
+    // تسجيل الخروج من زر الهيدر
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('sweet_event_token');
+        window.location.href = '/';
+    });
+
+    // تفعيل زر تسجيل الخروج الجديد الخاص بالهواتف داخل التبويب
+    document.getElementById('profileTabLogoutBtn')?.addEventListener('click', () => {
+        if (confirm("هل أنت متأكد من رغبتك في تسجيل الخروج؟")) {
+            localStorage.removeItem('sweet_event_token');
+            window.location.href = '/';
+        }
+    });
+
+    // تهيئة الصفحة
+    (async function init() {
+        await fetchUserData();
+        await fetchOrders();
+        await fetchUserReviews();
+        const themeToggle = document.getElementById('themeToggle');
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        });
+    })();
+</script>
+</body>
+</html>

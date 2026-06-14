@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Event DZ | ديكور وكعك المناسبات</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css-project/sweet.css">
+    <script src="https://unpkg.com/scrollreveal"></script>
+
+    <style>
+        :root {
+            --decor-page-bg: #fdfaf7;
+            --card-bg: #ffffff;
+            --card-border: #e5d5c0;
+            --gold-soft: rgba(201, 150, 62, 0.15);
+        }
+        .dark-mode {
+            --decor-page-bg: #0a0a0a;
+            --card-bg: #1e1814;
+            --card-border: #3d2e20;
+            --gold-soft: rgba(201, 150, 62, 0.08);
+        }
+        body {
+            background-color: var(--decor-page-bg);
+            transition: background-color 0.4s;
+        }
+        .decor-page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+
+        /* بطل الصفحة */
+        .hero-decor {
+            position: relative;
+            padding: 5rem 0 4rem;
+            text-align: center;
+            overflow: hidden;
+        }
+        .hero-decor::before {
+            content: '';
+            position: absolute;
+            top: -150px;
+            right: -150px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+            opacity: 0.08;
+            border-radius: 50%;
+        }
+        .hero-decor h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 5rem);
+            color: var(--gold);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .hero-decor .sub-title {
+            font-size: 1.3rem;
+            color: var(--text-light, #5a4a3a);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            position: relative;
+        }
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        /* أزرار مخصصة */
+        .btn-decor {
+            padding: 0.9rem 2.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+        .btn-decor-primary {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            box-shadow: 0 10px 25px rgba(201, 150, 62, 0.3);
+        }
+        .btn-decor-primary:hover {
+            background: #b08235;
+            transform: translateY(-4px);
+            box-shadow: 0 18px 35px rgba(201, 150, 62, 0.45);
+        }
+        .btn-decor-outline {
+            background: transparent;
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        .btn-decor-outline:hover {
+            background: var(--gold);
+            color: #000;
+            transform: translateY(-4px);
+        }
+        .dark-mode .btn-decor-primary {
+            color: #0d0806;
+            font-weight: 700;
+        }
+
+        /* قسم Before/After (ثابت) */
+        .before-after-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+            align-items: center;
+            margin: 5rem 0;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            border-radius: 40px;
+            padding: 3rem 2.5rem;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        }
+        .dark-mode .before-after-showcase {
+            background: rgba(21, 21, 21, 0.7);
+        }
+        .image-pair {
+            flex: 1 1 480px;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+        .img-frame {
+            flex: 1;
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+            background: var(--card-bg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: transform 0.4s ease;
+        }
+        .img-frame:hover {
+            transform: scale(1.02);
+        }
+        .img-frame img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            display: block;
+        }
+        .img-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--gold);
+            color: #000;
+            padding: 0.4rem 1.4rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .showcase-text {
+            flex: 1 1 300px;
+        }
+        .showcase-text h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+        .showcase-text p {
+            font-size: 1.15rem;
+            line-height: 2;
+            color: var(--text-light, #5a4a3a);
+            margin-bottom: 2rem;
+        }
+
+        /* شبكة الخدمات (ديناميكية) */
+        .services-decor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+        .service-decor-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border: 1px solid var(--card-border);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .service-decor-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(201, 150, 62, 0.15);
+        }
+        .service-decor-card i {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        .service-decor-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+            color: var(--text);
+        }
+        .service-decor-card p {
+            font-size: 0.9rem;
+            color: var(--text-soft, #5a4a3a);
+            line-height: 1.6;
+            flex: 1;
+        }
+        .service-decor-card .price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 0.5rem 0;
+        }
+        .btn-add-to-cart {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            flex: 1;
+        }
+        .btn-add-to-cart:hover {
+            background: #b08235;
+            transform: scale(1.02);
+        }
+        .btn-buy-now {
+            background: #27ae60;
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            flex: 1;
+        }
+        .btn-buy-now:hover {
+            background: #219653;
+            transform: scale(1.02);
+        }
+        .category-badge {
+            display: inline-block;
+            background: rgba(201, 150, 62, 0.2);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 50px 5% 20px;
+            margin-top: 80px;
+        }
+        /* Toast */
+        .toast-notify {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c1810;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 40px;
+            z-index: 99999;
+            opacity: 0;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+        .toast-notify.show { opacity: 1; }
+        @media (max-width: 768px) {
+            .before-after-showcase { flex-direction: column; padding: 2rem 1.5rem; }
+            .image-pair { flex-direction: column; gap: 1.5rem; }
+        }
+
+        /* شريط التقدم عند التمرير */
+        .scroll-progress {
+            position: fixed;
+            top: 59px;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), #e0b867);
+            z-index: 10001;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <header dir="ltr">
+        <div class="logo">
+            <i class="fa-solid fa-cake-candles gold-text"></i>
+            <span>Sweet<br>Event DZ</span>
+        </div>
+        <nav dir="ltr">
+            <ul>
+                <li><a href="/cakes" class="nav-link" data-lang="cakes">Cakes</a></li>
+                <li><a href="/decor" class="nav-link active" data-lang="decor">Decor</a></li>
+                <li><a href="/" class="nav-link" data-lang="home">Home</a></li>
+                <li><a href="/photography" class="nav-link" data-lang="photography">Photography</a></li>
+                <li><a href="/menu" class="nav-link" data-lang="sweets">Sweets</a></li>
+            </ul>
+        </nav>
+   <div class="header-actions">
+    <div id="google_translate_element"></div>
+    <button id="customLangBtn" class="custom-lang-btn">AR</button>
+    <div class="toggle-switch" id="themeToggle">
+        <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+    </div>
+    <button class="btn-icon" id="accountBtn"><i class="fa-regular fa-user"></i></button>
+    <span id="userGreetingContainer"></span>
+    <button class="btn-primary" id="mainRegisterBtn" data-lang="nav_register">إنشاء حساب</button>
+</div>
+    </header>
+
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <button class="close-modal" id="closeModal">×</button>
+            <div id="loginForm">
+                <h3 data-lang="login_title">تسجيل الدخول</h3>
+                <div class="input-group"><i class="fa-regular fa-envelope"></i><input type="email" id="loginEmail" data-lang-placeholder="email_placeholder" placeholder="البريد الإلكتروني" required></div>
+                <div class="input-group"><i class="fa-solid fa-lock"></i><input type="password" id="loginPassword" data-lang-placeholder="password_placeholder" placeholder="كلمة المرور" required></div>
+                <button class="btn-primary w-100" id="loginBtn" data-lang="login_btn">دخول</button>
+                <p class="switch-link"><span data-lang="no_account">ليس لديك حساب؟</span> <a id="showRegister" data-lang="create_account_link">إنشاء حساب</a></p>
+            </div>
+            <div id="registerForm" style="display: none;">
+                <h3 data-lang="register_title">إنشاء حساب جديد</h3>
+                <div class="input-row">
+                    <div class="input-group"><i class="fa-regular fa-user"></i><input type="text" id="regUsername" data-lang-placeholder="username_placeholder" placeholder="اسم المستخدم" required></div>
+                    <div class="input-group"><i class="fa-solid fa-signature"></i><input type="text" id="regLastName" data-lang-placeholder="lastname_placeholder" placeholder="اللقب" required></div>
+                </div>
+                <div class="input-group"><i class="fa-solid fa-phone"></i><input type="tel" id="regPhone1" data-lang-placeholder="phone_placeholder" placeholder="رقم الهاتف (أساسي)" required></div>
+                <div class="input-group"><i class="fa-solid fa-mobile-screen"></i><input type="tel" id="regPhone2" data-lang-placeholder="backup_phone_placeholder" placeholder="رقم هاتف ثانٍ (اختياري)"></div>
+                <div class="input-group"><i class="fa-regular fa-envelope"></i><input type="email" id="regEmail" data-lang-placeholder="email_placeholder" placeholder="البريد الإلكتروني" required></div>
+                <div class="input-row">
+                    <div class="input-group"><i class="fa-solid fa-lock"></i><input type="password" id="regPassword" data-lang-placeholder="password_placeholder" placeholder="كلمة المرور" required></div>
+                    <div class="input-group"><i class="fa-solid fa-shield-check"></i><input type="password" id="regConfirmPassword" data-lang-placeholder="confirm_password_placeholder" placeholder="تأكيد كلمة المرور" required></div>
+                </div>
+                <small id="passwordMatchMsg"></small>
+                <div class="input-group"><i class="fa-solid fa-location-dot"></i><select id="regWilaya" required>
+                    <option value="" disabled selected data-lang="select_wilaya">اختر الولاية</option>
+                    <option value="18">18 - جيجل</option>
+                    <option value="16">16 - الجزائر العاصمة</option>
+                    <option value="31">31 - وهران</option>
+                </select></div>
+                <button class="btn-primary w-100" id="registerBtn" data-lang="register_btn">إنشاء الحساب</button>
+                <p class="switch-link"><span data-lang="have_account">لديك حساب بالفعل؟</span> <a id="showLogin" data-lang="login_link">سجل دخولك هنا</a></p>
+            </div>
+        </div>
+    </div>
+
+    <main class="decor-page">
+        <section class="hero-decor">
+            <h1 data-lang="decor_hero_title">✨ تصاميم الكعك والديكور ✨</h1>
+            <p class="sub-title" data-lang="decor_hero_desc">نحن متخصصون في <strong>صناعة وتزيين الكعك</strong> الفاخر، ونهتم بأدق تفاصيل الديكور لتحويل مناسبتك إلى لوحة فنية. نضيف لك باقة خدمات الإضاءة والليزر والبالونات لتكتمل الصورة.</p>
+        </section>
+
+        <div class="before-after-showcase">
+            <div class="image-pair">
+                <div class="img-frame">
+                    <img id="beforeImage" src="" alt="قبل التجهيز" onerror="this.src='https://placehold.co/600x400/2a1e14/d4af37?text=Before'">
+                    <span class="img-badge" data-lang="decor_before">قبل</span>
+                </div>
+                <div class="img-frame">
+                    <img id="afterImage" src="" alt="بعد الديكور" onerror="this.src='https://placehold.co/600x400/1a1310/d4af37?text=After'">
+                    <span class="img-badge" data-lang="decor_after">بعد</span>
+                </div>
+            </div>
+            <div class="showcase-text">
+                <h3 data-lang="decor_showcase_title">تحويلة ساحرة</h3>
+                <p data-lang="decor_showcase_desc">من فكرة إلى واقع مذهل. نبدأ معك من تصميم الكعكة التي تحلم بها، ثم نكمل المشهد بديكور يسرق الأضواء. كل ركن في قاعتك يعكس ذوقك الرفيع.</p>
+            </div>
+        </div>
+
+        <section style="margin: 5rem 0;">
+            <h2 style="text-align:center; font-family:'Playfair Display', serif; font-size:2.8rem; color:var(--text); margin-bottom:2.5rem;" data-lang="decor_services_title">باقة خدماتنا المتكاملة</h2>
+            <div class="services-decor-grid" id="servicesGrid">
+                <div style="text-align:center; width:100%;" data-lang="loading">⏳ جاري تحميل الخدمات...</div>
+            </div>
+        </section>
+
+        <div style="text-align:center; margin:6rem 0 3rem;">
+            <h3 style="font-family:'Playfair Display', serif; font-size:2.2rem; color:var(--text);" data-lang="decor_cta_title">هل أنت مستعد لتحويل مناسبتك إلى أسطورة؟</h3>
+            <div style="display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap; margin-top:2rem;">
+                <a href="portfail.html" class="btn-decor btn-decor-outline" data-lang="decor_cta_gallery"><i class="fa-regular fa-images"></i> معرض الأعمال</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-cols">
+            <div class="col brand"><div class="logo"><i class="fa-solid fa-cake-candles"></i><span>Sweet<br>Event DZ</span></div><div class="socials"><a href="#" class="fa-brands fa-facebook"></a><a href="https://www.instagram.com/gateaux_hassen_taher_/" class="fa-brands fa-instagram"></a></div></div>
+            <div class="col"><h4 data-lang="footer_links">روابط سريعة</h4><ul><li><a href="/" data-lang="home">الرئيسية</a></li><li><a href="/cakes" data-lang="cakes">كيك</a></li><li><a href="/menu" data-lang="sweets">حلويات</a></li><li><a href="/decor" data-lang="decor">ديكور</a></li><li><a href="/photography" data-lang="photography">تصوير</a></li></ul></div>
+            <div class="col"><h4 data-lang="footer_support">الدعم</h4><ul><li><a href="/order" data-lang="order">طلب</a></li><li><a href="/reviews" data-lang="reviews">تقييمات</a></li><li><a href="/about" data-lang="about">من نحن</a></li><li><a href="contact.html" data-lang="contact">اتصل بنا</a></li></ul></div>
+            <div class="col contact"><h4 data-lang="footer_slogan_title">نحن نقدم خدمة مرموقة</h4><p data-lang="footer_slogan_desc">نصنع أحلاماً ونحولها إلى واقع ملموس في كل مناسبة.</p><p><i class="fa-solid fa-phone"></i> +213 794 48 98 33</p><p><i class="fa-solid fa-envelope"></i> hassenboukhemkhem@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> الجزائر - جيجل - الطاهير</p></div>
+        </div>
+        <div class="footer-bottom"><p data-lang="copyright">© 2026 Sweet Event DZ. جميع الحقوق محفوظة.</p></div>
+    </footer>
+
+    <div class="floating-actions">
+        <a href="/about" class="float-btn info-btn"><i class="fa-solid fa-circle-info"></i><span class="float-tooltip" data-lang="about_tooltip">معلومات عنا</span></a>
+        <div class="float-btn location-btn" onclick="window.open('https://maps.app.goo.gl/...', '_blank')"><i class="fa-solid fa-location-dot"></i><span class="float-tooltip" data-lang="location_tooltip">موقعنا</span></div>
+        <a href="https://wa.me/213794489833?text=مرحباً، أريد الاستفسار عن خدمات الديكور والكعك" target="_blank" class="float-btn whatsapp-btn"><i class="fa-brands fa-whatsapp"></i><span class="float-tooltip" data-lang="whatsapp_tooltip">واتساب</span></a>
+    </div>
+
+    <script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'ar',            // لغة الموقع الأساسية (العربية)
+    includedLanguages: 'ar,en,fr', // اللغات التي تظهر للزوار (عربي، إنجليزي، فرنسي)
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script src="script.js"></script>
+    <script>
+        // دالة لجلب صور قبل وبعد من قاعدة البيانات عبر الـ API
+        async function loadBeforeAfterImages() {
+            try {
+                // جلب صورة "قبل"
+                const resBefore = await fetch('/api/gallery?category=decor_before');
+                const dataBefore = await resBefore.json();
+                if (dataBefore.success && dataBefore.images.length > 0) {
+                    document.getElementById('beforeImage').src = `${dataBefore.images[0].ImageUrl}`;
+                }
+
+                // جلب صورة "بعد"
+                const resAfter = await fetch('/api/gallery?category=decor_after');
+                const dataAfter = await resAfter.json();
+                if (dataAfter.success && dataAfter.images.length > 0) {
+                    document.getElementById('afterImage').src = `${dataAfter.images[0].ImageUrl}`;
+                }
+            } catch (err) {
+                console.error("خطأ في تحميل صور الديكور قبل/بعد:", err);
+            }
+        }
+
+        // استدعاء الدالة عند تحميل الصفحة مع باقي الدوال
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBeforeAfterImages();
+        });
+
+        // ========== دوال مساعدة ==========
+        function showToast(msg) {
+            let toast = document.querySelector('.toast-notify');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.className = 'toast-notify';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        function formatPrice(price) {
+            return Number(price).toLocaleString('en-US') + ' دج';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // ========== ترجمة الفئات حسب اللغة ==========
+        function getCategoryTranslation(lang, category) {
+            const categoryMap = {
+                ar: { hall: 'صالة', decor: 'إضافة ديكورية', cake: 'كعكة' },
+                en: { hall: 'Hall', decor: 'Decor Add-on', cake: 'Cake' },
+                fr: { hall: 'Salle', decor: 'Ajout décoratif', cake: 'Gâteau' }
+            };
+            const map = categoryMap[lang] || categoryMap.ar;
+            return map[category] || category;
+        }
+
+        // ========== جلب وعرض الخدمات من API ==========
+        async function loadServices() {
+            const grid = document.getElementById('servicesGrid');
+            if (!grid) return;
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                if (!data.success || !data.products.length) {
+                    grid.innerHTML = `<div style="text-align:center; width:100%;" data-lang="no_data">لا توجد خدمات متاحة حالياً</div>`;
+                    return;
+                }
+                // تصفية المنتجات النشطة من فئات: hall, decor
+                const services = data.products.filter(p => p.IsActive == 1 && (p.Category === 'hall' || p.Category === 'decor'));
+                if (services.length === 0) {
+                    grid.innerHTML = `<div style="text-align:center; width:100%;" data-lang="no_data">لا توجد خدمات متاحة حالياً</div>`;
+                    return;
+                }
+
+                const currentLang = localStorage.getItem('lang') || 'ar';
+                grid.innerHTML = services.map(service => {
+                    const imgUrl = service.ImageUrl ? `${service.ImageUrl}` : 'https://placehold.co/300x200/1e1814/c9963e?text=Decor';
+                    const mediaJson = service.MediaFiles ? escapeHtml(service.MediaFiles) : '[]';
+                    let parsedMedia = [];
+                    try { parsedMedia = JSON.parse(service.MediaFiles || '[]'); } catch(e) {}
+
+                    return `
+                    <div class="service-decor-card">
+                        <div style="position:relative; width:100%; height:180px; border-radius:18px; overflow:hidden; margin-bottom:1rem; cursor:pointer;" class="decor-media-trigger" data-media="${mediaJson}">
+                            <img src="${imgUrl}" class="dynamic-product-img" data-media="${mediaJson}" style="width:100%; height:100%; object-fit:cover;" alt="${escapeHtml(service.Name)}">
+                            ${parsedMedia.length > 1 ? '<div style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); color:#fff; font-size:0.75rem; padding:4px 8px; border-radius:10px;"><i class="fa-solid fa-clone"></i> عرض الوسائط</div>' : ''}
+                        </div>
+                        <span class="category-badge">${getCategoryTranslation(currentLang, service.Category)}</span>
+                        <h4>${escapeHtml(service.Name)}</h4>
+                        <p>${escapeHtml(service.Description || 'لا يوجد وصف')}</p>
+                        <div class="price">${formatPrice(service.Price)}</div>
+                        <div style="display: flex; gap: 8px; justify-content: center; margin-top: 0.5rem;">
+                            <button class="btn-add-to-cart" data-id="${service.ProductId}" data-name="${escapeHtml(service.Name)}" data-price="${service.Price}" data-cat="${service.Category}" data-image="${imgUrl}">
+                                <i class="fa-solid fa-cart-plus"></i> <span data-lang="add_to_cart">للسلة</span>
+                            </button>
+                            <button class="btn-buy-now" data-id="${service.ProductId}" data-name="${escapeHtml(service.Name)}" data-price="${service.Price}" data-cat="${service.Category}">
+                                <i class="fa-solid fa-bolt"></i> <span data-lang="order_now">اطلب الآن</span>
+                            </button>
+                        </div>
+                    </div>
+                `}).join('');
+
+                // ربط أزرار الإضافة إلى السلة
+                grid.querySelectorAll('.btn-add-to-cart').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const product = {
+                            productId: parseInt(btn.dataset.id),
+                            name: btn.dataset.name,
+                            price: parseFloat(btn.dataset.price),
+                            image: btn.dataset.image,
+                            category: btn.dataset.cat
+                        };
+                        if (window.CartManager && typeof window.CartManager.addItem === 'function') {
+                            window.CartManager.addItem(product, 'decor');
+                            showToast('✅ تمت إضافة ' + product.name + ' إلى السلة');
+                        }
+                    });
+                });
+
+                // ربط أزرار اطلب الآن المباشرة
+                grid.querySelectorAll('.btn-buy-now').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const product = {
+                            productId: parseInt(btn.dataset.id),
+                            name: btn.dataset.name,
+                            price: parseFloat(btn.dataset.price),
+                            category: btn.dataset.cat
+                        };
+                        if (window.CartManager && typeof window.CartManager.addItem === 'function') {
+                            window.CartManager.addItem(product, product.category);
+                            window.location.href = 'order.html';
+                        }
+                    });
+                });
+
+                // ربط النافذة المنبثقة للصور والفيديوهات (Lightbox)
+                grid.querySelectorAll('.decor-media-trigger').forEach(trigger => {
+                    trigger.addEventListener('click', (e) => {
+                        if(e.target.closest('.btn-add-to-cart') || e.target.closest('.btn-buy-now')) return;
+                        const mediaData = trigger.getAttribute('data-media');
+                        if (mediaData) {
+                            try {
+                                const mediaArray = JSON.parse(mediaData);
+                                if (mediaArray && mediaArray.length > 0) {
+                                    window.openProductGallery(mediaArray);
+                                }
+                            } catch(err) {
+                                console.error("حدث خطأ في قراءة الصور:", err);
+                            }
+                        }
+                    });
+                });
+                // تفعيل التقليب التلقائي للصور 
+                if (window.startProductCarousels) window.startProductCarousels();
+
+            } catch (err) {
+                console.error("Error loading services:", err);
+                grid.innerHTML = '<div style="text-align:center; width:100%;">⚠️ تعذر تحميل الخدمات</div>';
+            }
+        }
+
+        // ========== الاستماع لتغيير اللغة وتحديث المحتوى الديناميكي ==========
+        window.addEventListener('globalLanguageChanged', (e) => {
+            loadServices(); // إعادة تحميل الخدمات لتحديث الفئات والنصوص
+        });
+
+        // ========== وظائف النافذة المنبثقة للتسجيل ==========
+        const modal = document.getElementById('authModal');
+        const loginFormDiv = document.getElementById('loginForm');
+        const registerFormDiv = document.getElementById('registerForm');
+
+        function openModal(showRegister = true) {
+            modal.classList.add('active');
+            loginFormDiv.style.display = showRegister ? 'none' : 'block';
+            registerFormDiv.style.display = showRegister ? 'block' : 'none';
+        }
+        function closeModal() { modal.classList.remove('active'); }
+
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.getElementById('showRegister').addEventListener('click', () => { loginFormDiv.style.display = 'none'; registerFormDiv.style.display = 'block'; });
+        document.getElementById('showLogin').addEventListener('click', () => { registerFormDiv.style.display = 'none'; loginFormDiv.style.display = 'block'; });
+
+        const regPassword = document.getElementById('regPassword');
+        const regConfirmPassword = document.getElementById('regConfirmPassword');
+        const matchMsg = document.getElementById('passwordMatchMsg');
+        function checkMatch() {
+            if (!regConfirmPassword.value) { matchMsg.textContent = ''; return; }
+            if (regPassword.value === regConfirmPassword.value) {
+                matchMsg.textContent = '✓ كلمتا المرور متطابقتان';
+                matchMsg.style.color = '#27ae60';
+            } else {
+                matchMsg.textContent = '✗ كلمتا المرور غير متطابقتين';
+                matchMsg.style.color = '#e74c3c';
+            }
+        }
+        regPassword.addEventListener('input', checkMatch);
+        regConfirmPassword.addEventListener('input', checkMatch);
+
+        // ========== تهيئة الصفحة ==========
+        loadServices();
+
+        // تأثيرات ScrollReveal
+        if (typeof ScrollReveal !== 'undefined') {
+            ScrollReveal().reveal('.hero-decor', { delay: 200, origin: 'top', distance: '50px' });
+            ScrollReveal().reveal('.before-after-showcase', { delay: 300, origin: 'bottom', distance: '50px' });
+            ScrollReveal().reveal('.service-decor-card', { delay: 300, origin: 'bottom', distance: '40px', interval: 100 });
+        }
+
+        // تشغيل شريط التمرير (الخط الذهبي)
+        window.addEventListener('scroll', () => {
+            const scrollPercentage = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+            const progressBar = document.getElementById('scrollProgress');
+            if (progressBar) {
+                progressBar.style.width = scrollPercentage + '%';
+            }
+        });
+    </script>
+</body>
+</html>

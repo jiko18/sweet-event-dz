@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Event DZ | معرض الأعمال - صور وفيديوهات المناسبات</title>
+    
+    <link rel="stylesheet" href="css-project/sweet.css">  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/scrollreveal"></script>
+
+    <style>
+        :root {
+            --gold: #c9963e;
+            --gold-dark: #a87a2e;
+            --bg-light: #fdfaf7;
+            --bg-dark: #0a0a0a;
+            --card-bg-light: rgba(255, 255, 255, 0.85);
+            --card-bg-dark: rgba(30, 20, 12, 0.85);
+            --border-light: 1px solid rgba(201, 150, 62, 0.2);
+            --border-dark: 1px solid rgba(201, 150, 62, 0.1);
+            --shadow-light: 0 15px 35px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 25px 45px rgba(201, 150, 62, 0.15);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #f7f0e6 100%);
+            background-attachment: fixed;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.4s;
+        }
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a110a 0%, #0f0804 100%);
+        }
+
+        .gallery-page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+
+        .gallery-hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+        .gallery-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        .gallery-hero p {
+            font-size: 1.2rem;
+            color: #5c4a3a;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        body.dark-mode .gallery-hero p {
+            color: #c9b896;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .work-card {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s;
+            border: var(--border-light);
+            box-shadow: var(--shadow-light);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        body.dark-mode .work-card {
+            background: var(--card-bg-dark);
+            border: var(--border-dark);
+        }
+        .work-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--gold);
+        }
+
+        .work-media {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+            background: #1a110a;
+        }
+        .work-media img, .work-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .work-card:hover .work-media img,
+        .work-card:hover .work-media video {
+            transform: scale(1.05);
+        }
+
+        .video-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            color: var(--gold);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 2;
+            border: 1px solid rgba(201, 150, 62, 0.4);
+        }
+
+        .work-caption {
+            padding: 1.2rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text);
+            background: inherit;
+            border-top: 1px solid rgba(201, 150, 62, 0.2);
+            font-size: 1rem;
+        }
+        body.dark-mode .work-caption {
+            color: #e8d5c0;
+            border-top-color: rgba(201, 150, 62, 0.15);
+        }
+
+        .back-home {
+            text-align: center;
+            margin: 3rem 0 2rem;
+        }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(201, 150, 62, 0.3);
+        }
+        .btn-back:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(201, 150, 62, 0.5);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            border: 1px dashed var(--gold);
+        }
+        .empty-state i {
+            font-size: 3.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+        body.dark-mode .empty-state {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .lb-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .lb-overlay.active {
+            display: flex;
+        }
+        .lb-container {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 85vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lb-media {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 20px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            display: none;
+        }
+        .lb-media.active {
+            display: block;
+        }
+        .lb-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            font-size: 2.5rem;
+            color: var(--gold);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .lb-close:hover {
+            transform: scale(1.1);
+            color: #fff;
+        }
+        .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(201, 150, 62, 0.6);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #000;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .lb-nav.prev {
+            left: -60px;
+        }
+        .lb-nav.next {
+            right: -60px;
+        }
+        .lb-nav:hover {
+            background: var(--gold);
+            transform: translateY(-50%) scale(1.1);
+        }
+        @media (max-width: 768px) {
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .work-media { height: 240px; }
+            .lb-nav.prev { left: 5px; }
+            .lb-nav.next { right: 5px; }
+            .lb-close { top: -40px; right: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+<header dir="ltr">
+    <div class="logo">
+        <i class="fa-solid fa-cake-candles gold-text"></i>
+        <span>Sweet<br>Event DZ</span>
+    </div>
+    <nav dir="ltr">
+        <ul>
+            <li><a href="/cakes" class="nav-link" data-lang="cakes">Cakes</a></li>
+            <li><a href="/decor" class="nav-link" data-lang="decor">Decor</a></li>
+            <li><a href="/" class="nav-link" data-lang="home">Home</a></li>
+            <li><a href="/photography" class="nav-link" data-lang="photography">Photography</a></li>
+            <li><a href="/menu" class="nav-link" data-lang="sweets">Sweets</a></li>
+        </ul>
+    </nav>
+    <div class="header-actions">
+        <div id="google_translate_element"></div>
+        
+        <button id="customLangBtn" class="custom-lang-btn">AR</button>
+        
+        <div class="toggle-switch" id="themeToggle">
+            <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+        </div>
+            <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+        </div>
+        <button class="btn-icon" id="accountBtn"><i class="fa-regular fa-user"></i></button>
+        <span id="userGreetingContainer"></span>
+        <button class="btn-primary" id="mainRegisterBtn" data-lang="nav_register">Create Account</button>
+    </div>
+</header>
+
+<main class="gallery-page">
+    <div class="gallery-hero">
+        <h1 data-lang="portfolio_title">🌟 معرض الأعمال المميزة</h1>
+        <p data-lang="portfolio_desc">نحن نهتم بأدق التفاصيل لجعل مناسبتكم لا تُنسى</p>
+    </div>
+
+    <div id="portfolioGrid" class="portfolio-grid">
+        <div class="empty-state">
+            <i class="fa-regular fa-hourglass-half"></i>
+            <p>جاري تحميل الأعمال...</p>
+        </div>
+    </div>
+
+    <div class="back-home">
+        <a href="/" class="btn-back"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</a>
+    </div>
+</main>
+
+<div id="galleryLightbox" class="lb-overlay">
+    <span class="lb-close" id="lbClose">&times;</span>
+    <div class="lb-container">
+        <div class="lb-nav prev" id="lbPrev"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="lb-nav next" id="lbNext"><i class="fa-solid fa-chevron-left"></i></div>
+        <img src="" alt="معاينة" class="lb-media" id="lbImage">
+        <video src="" controls class="lb-media" id="lbVideo"></video>
+    </div>
+</div>
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'ar',            // لغة الموقع الأساسية (العربية)
+    includedLanguages: 'ar,en,fr', // اللغات التي تظهر للزوار (عربي، إنجليزي، فرنسي)
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script src="script.js"></script>
+<script>
+    (function() {
+        // جلب البيانات من API وتصفيتها لعرض فقط فئة "general" (الأعمال)
+        async function loadPortfolio() {
+            const grid = document.getElementById('portfolioGrid');
+            if (!grid) return;
+            try {
+                const response = await fetch('/api/gallery');
+                const data = await response.json();
+                if (data.success && data.images && data.images.length > 0) {
+                    // ✅ الفلتر المهم: نعرض فقط الصور التي فئتها "general" (الأعمال)
+                    // يمكنك لاحقاً إضافة فئات أخرى مثل "portfolio" إذا أردت تخصيصاً أفضل
+const images = data.images.filter(img => img.Category === 'general' || img.Category === 'portfolio');
+                    if (images.length === 0) {
+                        grid.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fa-regular fa-images"></i>
+                                <p>📸 لا توجد أعمال مضافة بعد</p>
+                                <p style="font-size:0.9rem; margin-top:0.5rem;">يمكنك إضافة صور وفيديوهات من لوحة التحكم (فئة "عام")</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    renderGallery(images);
+                } else {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-regular fa-images"></i>
+                            <p>📸 لا توجد أعمال مضافة حتى الآن</p>
+                            <p style="font-size:0.9rem; margin-top:0.5rem;">سيتم إضافة الصور والفيديوهات قريباً</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error("خطأ في تحميل المعرض:", err);
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <p>⚠️ تعذر الاتصال بخادم المعرض</p>
+                        <p style="font-size:0.9rem;">تأكد من تشغيل السيرفر (node server.js)</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderGallery(items) {
+            const grid = document.getElementById('portfolioGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = items.map((item, index) => {
+                let mediaUrl = item.ImageUrl;
+                // معالجة الرابط: إذا لم يبدأ بـ http، نضيف /uploads/ (للتوافق مع التخزين المحلي القديم)
+                if (mediaUrl && !mediaUrl.startsWith('http') && !mediaUrl.startsWith('https')) {
+                    mediaUrl = `/uploads/${mediaUrl}`;
+                }
+                const title = escapeHtml(item.Title) || ' ';
+                const isVideo = mediaUrl && (mediaUrl.toLowerCase().endsWith('.mp4') || mediaUrl.toLowerCase().endsWith('.webm') || mediaUrl.toLowerCase().endsWith('.ogg') || mediaUrl.toLowerCase().endsWith('.mov'));
+                
+                let mediaTag = '';
+                if (isVideo) {
+                    mediaTag = `
+                        <video class="gallery-video" preload="metadata" muted>
+                            <source src="${mediaUrl}" type="video/mp4">
+                            متصفحك لا يدعم الفيديو.
+                        </video>
+                    `;
+                } else {
+                    mediaTag = `<img src="${mediaUrl || 'https://placehold.co/600x400/2a1e14/c9963e?text=No+Image'}" alt="${title}" loading="lazy" onerror="this.src='https://placehold.co/600x400/2a1e14/c9963e?text=Image+Error'">`;
+                }
+
+                return `
+                    <div class="work-card" data-url="${mediaUrl}" data-isvideo="${isVideo}" data-index="${index}">
+                        <div class="work-media">
+                            ${mediaTag}
+                            ${isVideo ? `<div class="video-badge"><i class="fa-solid fa-video"></i> فيديو</div>` : ''}
+                        </div>
+                        <div class="work-caption">${title}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.work-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'VIDEO' || e.target.closest('video')) return;
+                    const url = card.dataset.url;
+                    const isVideo = card.dataset.isvideo === 'true';
+                    openLightbox(url, isVideo);
+                });
+            });
+        }
+
+        // ========== نظام Lightbox (نفس السابق) ==========
+        const lightbox = document.getElementById('galleryLightbox');
+        const lbImage = document.getElementById('lbImage');
+        const lbVideo = document.getElementById('lbVideo');
+        let currentMedia = { url: '', isVideo: false };
+
+        function openLightbox(url, isVideo) {
+            if (!url) return;
+            currentMedia = { url, isVideo };
+            if (isVideo) {
+                lbVideo.src = url;
+                lbVideo.classList.add('active');
+                lbImage.classList.remove('active');
+                lbVideo.play();
+            } else {
+                lbImage.src = url;
+                lbImage.classList.add('active');
+                lbVideo.classList.remove('active');
+                lbVideo.pause();
+                lbVideo.src = '';
+            }
+            lightbox.classList.add('active');
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            lbVideo.pause();
+            lbVideo.src = '';
+            lbImage.src = '';
+        }
+
+        document.getElementById('lbClose').addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        let allItems = [];
+        let currentIndex = 0;
+
+        function updateLightboxWithNavigation(index) {
+            if (!allItems.length) return;
+            const item = allItems[index];
+            if (!item) return;
+            if (item.isVideo) {
+                lbVideo.src = item.url;
+                lbVideo.classList.add('active');
+                lbImage.classList.remove('active');
+                lbVideo.play();
+            } else {
+                lbImage.src = item.url;
+                lbImage.classList.add('active');
+                lbVideo.classList.remove('active');
+                lbVideo.pause();
+                lbVideo.src = '';
+            }
+            currentIndex = index;
+        }
+
+        function cacheGalleryItems() {
+            const cards = document.querySelectorAll('.work-card');
+            allItems = Array.from(cards).map(card => ({
+                url: card.dataset.url,
+                isVideo: card.dataset.isvideo === 'true'
+            }));
+        }
+
+        function bindNavButtons() {
+            const prevBtn = document.getElementById('lbPrev');
+            const nextBtn = document.getElementById('lbNext');
+            if (prevBtn && nextBtn) {
+                const newPrev = prevBtn.cloneNode(true);
+                const newNext = nextBtn.cloneNode(true);
+                prevBtn.parentNode.replaceChild(newPrev, prevBtn);
+                nextBtn.parentNode.replaceChild(newNext, nextBtn);
+                newPrev.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (allItems.length === 0) cacheGalleryItems();
+                    if (allItems.length > 1) {
+                        currentIndex = (currentIndex - 1 + allItems.length) % allItems.length;
+                        updateLightboxWithNavigation(currentIndex);
+                    }
+                });
+                newNext.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (allItems.length === 0) cacheGalleryItems();
+                    if (allItems.length > 1) {
+                        currentIndex = (currentIndex + 1) % allItems.length;
+                        updateLightboxWithNavigation(currentIndex);
+                    }
+                });
+            }
+        }
+
+        const originalOpen = openLightbox;
+        window.openLightbox = function(url, isVideo) {
+            cacheGalleryItems();
+            currentIndex = allItems.findIndex(item => item.url === url);
+            if (currentIndex === -1) currentIndex = 0;
+            originalOpen(url, isVideo);
+        };
+        openLightbox = function(url, isVideo) {
+            cacheGalleryItems();
+            currentIndex = allItems.findIndex(item => item.url === url);
+            if (currentIndex === -1) currentIndex = 0;
+            originalOpen(url, isVideo);
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadPortfolio();
+            cacheGalleryItems();
+            bindNavButtons();
+            if (typeof ScrollReveal !== 'undefined') {
+                ScrollReveal().reveal('.gallery-hero', { delay: 100, origin: 'top', distance: '40px' });
+                ScrollReveal().reveal('.work-card', { delay: 150, interval: 120, origin: 'bottom', distance: '50px' });
+            }
+        });
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Event DZ | تصوير المناسبات - فوتوغرافي وفيديو</title>
+    <link rel="stylesheet" href="css-project/sweet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <style>
+        /* ========== تخصيص الصفحة ========== */
+        :root {
+            --photography-gold: #c9963e;
+            --photography-dark: #1a110a;
+            --photography-light: #fef9f2;
+            --card-radius: 32px;
+            --transition-smooth: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .photography-page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+
+        /* الهيرو - عنوان الصفحة */
+        .photo-hero {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        .photo-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 7vw, 4.5rem);
+            background: linear-gradient(135deg, var(--photography-gold) 0%, #e6b860 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+        .photo-hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        .hero-icon {
+            font-size: 3rem;
+            color: var(--photography-gold);
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        /* شبكة البطاقات */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        /* بطاقة الخدمة */
+        .photo-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            transition: var(--transition-smooth);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .photo-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 45px rgba(201, 150, 62, 0.2);
+            border-color: var(--photography-gold);
+        }
+
+        /* حاوية الصورة / الفيديو */
+        .card-media {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        .card-media img, .card-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .photo-card:hover .card-media img,
+        .photo-card:hover .card-media video {
+            transform: scale(1.08);
+        }
+
+        /* شارة الوسائط (فيديو / صور متعددة) */
+        .media-badge {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            color: var(--photography-gold);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 2;
+            letter-spacing: 0.5px;
+        }
+        .badge-left {
+            left: 15px;
+            right: auto;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* محتوى البطاقة */
+        .card-content {
+            padding: 1.8rem 1.5rem 1.8rem;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+        .price {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--photography-gold);
+            margin: 0.5rem 0;
+            letter-spacing: -0.5px;
+        }
+        .description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 1.2rem;
+            flex-grow: 1;
+        }
+
+        /* أزرار الإجراءات */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+        .btn-cart, .btn-buy {
+            flex: 1;
+            padding: 0.7rem 0;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            background: none;
+        }
+        .btn-cart {
+            background: transparent;
+            border: 2px solid var(--photography-gold);
+            color: var(--photography-gold);
+        }
+        .btn-cart:hover {
+            background: var(--photography-gold);
+            color: #1a110a;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(201,150,62,0.3);
+        }
+        .btn-buy {
+            background: var(--photography-gold);
+            color: #1a110a;
+            box-shadow: 0 5px 12px rgba(201,150,62,0.3);
+        }
+        .btn-buy:hover {
+            background: #b08235;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(201,150,62,0.4);
+        }
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 6px 14px;
+            border-radius: 40px;
+            background: #28a74515;
+            border: 1px solid #28a745;
+            color: #28a745;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: 0.3s;
+            width: fit-content;
+            align-self: center;
+        }
+        .btn-download:hover {
+            background: #28a745;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* زر معرض الأعمال */
+        .more-works {
+            text-align: center;
+            margin: 4rem 0 2rem;
+        }
+        .more-works a {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--photography-gold), #b08235);
+            padding: 0.9rem 2.2rem;
+            border-radius: 60px;
+            color: #000;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(201,150,62,0.3);
+        }
+        .more-works a:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 30px rgba(201,150,62,0.5);
+            letter-spacing: 1px;
+        }
+
+        /* تحسين التوافق مع الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .photography-page { padding: 1rem 4%; }
+            .photo-grid { grid-template-columns: 1fr; }
+            .card-media { height: 220px; }
+            .card-content h3 { font-size: 1.4rem; }
+            .price { font-size: 1.3rem; }
+        }
+
+        /* تحسين الوضع المظلم (يتم توريثه من الموقع الرئيسي) */
+        .dark-mode .photo-card {
+            background: rgba(30, 20, 12, 0.85);
+        }
+        .dark-mode .media-badge {
+            background: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+<!-- الهيدر (نفس هيكل الموقع) -->
+<header dir="ltr">
+    <div class="logo">
+        <i class="fa-solid fa-cake-candles gold-text"></i>
+        <span>Sweet<br>Event DZ</span>
+    </div>
+    <nav dir="ltr">
+        <ul>
+            <li><a href="/cakes" class="nav-link" data-lang="cakes">Cakes</a></li>
+            <li><a href="/decor" class="nav-link" data-lang="decor">Decor</a></li>
+            <li><a href="/" class="nav-link" data-lang="home">Home</a></li>
+            <li><a href="/photography" class="nav-link active" data-lang="photography">Photography</a></li>
+            <li><a href="/menu" class="nav-link" data-lang="sweets">Sweets</a></li>
+        </ul>
+    </nav>
+ <div class="header-actions">
+    <div id="google_translate_element"></div>
+    <button id="customLangBtn" class="custom-lang-btn">AR</button>
+    <div class="toggle-switch" id="themeToggle">
+        <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+    </div>
+    <button class="btn-icon" id="accountBtn"><i class="fa-regular fa-user"></i></button>
+    <span id="userGreetingContainer"></span>
+    <button class="btn-primary" id="mainRegisterBtn" data-lang="nav_register">إنشاء حساب</button>
+</div>
+</header>
+
+<main class="photography-page">
+    <div class="photo-hero">
+        <div class="hero-icon"><i class="fa-solid fa-camera-retro"></i></div>
+        <h1 data-lang="photography_hero_title">📸 لحظات تستحق الخلود</h1>
+        <p data-lang="photography_hero_sub">نوثّق مناسبتك بأعلى معايير الجمال والاحترافية – صور وفيديوهات تخطف الأنفاس</p>
+    </div>
+
+    <div id="photoServicesGrid" class="photo-grid">
+        <div style="text-align:center; width:100%; padding:2rem;">⏳ جاري تحميل خدمات التصوير...</div>
+    </div>
+
+    <div class="more-works">
+        <a href="portfail.html"><i class="fa-regular fa-images"></i> معرض الأعمال – شاهد المزيد</a>
+    </div>
+</main>
+
+<!-- الفوتر -->
+<footer>
+    <div class="footer-cols">
+        <div class="col brand"><div class="logo"><i class="fa-solid fa-cake-candles"></i><span>Sweet<br>Event DZ</span></div><div class="socials"><a href="#" class="fa-brands fa-facebook"></a><a href="https://www.instagram.com/gateaux_hassen_taher_/" class="fa-brands fa-instagram"></a></div></div>
+        <div class="col"><h4 data-lang="footer_links">روابط سريعة</h4><ul><li><a href="/" data-lang="home">الرئيسية</a></li><li><a href="/cakes" data-lang="cakes">كيك</a></li><li><a href="/menu" data-lang="sweets">حلويات</a></li><li><a href="/decor" data-lang="decor">ديكور</a></li><li><a href="/photography" data-lang="photography">تصوير</a></li></ul></div>
+        <div class="col"><h4 data-lang="footer_support">الدعم</h4><ul><li><a href="/order" data-lang="order">طلب</a></li><li><a href="/reviews" data-lang="reviews">تقييمات</a></li><li><a href="/about" data-lang="about">من نحن</a></li><li><a href="contact.html" data-lang="contact">اتصل بنا</a></li></ul></div>
+        <div class="col contact"><h4 data-lang="footer_slogan_title">نحن نقدم خدمة مرموقة</h4><p data-lang="footer_slogan_desc">نصنع أحلاماً ونحولها إلى واقع ملموس في كل مناسبة.</p><p><i class="fa-solid fa-phone"></i> +213 794 48 98 33</p><p><i class="fa-solid fa-envelope"></i> hassenboukhemkhem@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> الجزائر - جيجل - الطاهير</p></div>
+    </div>
+    <div class="footer-bottom"><p data-lang="copyright">© 2026 Sweet Event DZ. جميع الحقوق محفوظة.</p></div>
+</footer>
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'ar',            // لغة الموقع الأساسية (العربية)
+    includedLanguages: 'ar,en,fr', // اللغات التي تظهر للزوار (عربي، إنجليزي، فرنسي)
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script src="script.js"></script>
+<script>
+    (function() {
+        const API_BASE = '/api';
+
+        // دوال مساعدة (مشتركة من script.js)
+        function getTranslation(key) {
+            const lang = localStorage.getItem('lang') || 'ar';
+            if(window.translations && window.translations[lang] && window.translations[lang][key])
+                return window.translations[lang][key];
+            return key;
+        }
+
+        function showToast(msg) {
+            let toast = document.querySelector('.toast-notify');
+            if(!toast) {
+                toast = document.createElement('div');
+                toast.className = 'toast-notify';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        function formatPrice(price) {
+            return Number(price).toLocaleString('en-US') + ' دج';
+        }
+
+        function escapeHtml(str) {
+            if(!str) return '';
+            return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+        }
+
+        function isVideoFile(url) {
+            if(!url) return false;
+            return /\.(mp4|webm|ogg|mov|avi)$/i.test(url);
+        }
+
+        // تحميل خدمات التصوير من API
+        async function loadPhotographyServices() {
+            const grid = document.getElementById('photoServicesGrid');
+            if(!grid) return;
+            try {
+                const response = await fetch(`${API_BASE}/products?category=photo`);
+                const data = await response.json();
+                if(!data.success || !data.products.length) {
+                    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem;">
+                        <i class="fa-solid fa-camera-slash" style="font-size:3rem; opacity:0.5; color:var(--gold);"></i>
+                        <p style="margin-top:1rem;" data-lang="no_photo_services">لا توجد خدمات تصوير أو فيديو متاحة حالياً</p>
+                    </div>`;
+                    return;
+                }
+                const services = data.products.filter(p => p.IsActive == 1);
+                const addToCartText = getTranslation('add_to_cart') || "أضف إلى السلة";
+                const buyNowText = getTranslation('order_now') || "اطلب الآن";
+                const videoText = getTranslation('video_available') || "فيديو";
+                const downloadText = getTranslation('download_video') || "تحميل الفيديو";
+                const defaultDesc = getTranslation('photo_default_desc') || "خدمة احترافية مميزة تغطي جميع لحظاتكم الثمينة بأعلى دقة.";
+
+                grid.innerHTML = services.map(service => {
+                    const isVideo = isVideoFile(service.ImageUrl);
+                    let mediaUrl = service.ImageUrl ? `${service.ImageUrl}` : '';
+                    let thumbUrl = mediaUrl;
+                    if(isVideo || !service.ImageUrl) {
+                        thumbUrl = 'https://placehold.co/600x400/1a110a/c9963e?text=Video+Preview+🎬';
+                    }
+                    const mediaFilesJson = service.MediaFiles ? escapeHtml(service.MediaFiles) : '[]';
+                    let parsedMedia = [];
+                    try { parsedMedia = JSON.parse(service.MediaFiles || '[]'); } catch(e) {}
+                    const hasMultiple = parsedMedia.length > 1;
+
+                    return `
+                        <div class="photo-card" data-id="${service.ProductId}">
+                            <div class="card-media">
+                                <img src="${thumbUrl}" alt="${escapeHtml(service.Name)}" class="dynamic-product-img" data-media='${mediaFilesJson}' loading="lazy">
+                                ${isVideo ? `<div class="media-badge"><i class="fa-solid fa-video"></i> ${videoText}</div>` : ''}
+                                ${hasMultiple ? `<div class="media-badge badge-left"><i class="fa-regular fa-images"></i> ${parsedMedia.length} ملف</div>` : ''}
+                            </div>
+                            <div class="card-content">
+                                <h3>${escapeHtml(service.Name)}</h3>
+                                <div class="price">${formatPrice(service.Price)}</div>
+                                <p class="description">${escapeHtml(service.Description || defaultDesc)}</p>
+                                <div class="action-buttons">
+                                    <button class="btn-cart add-to-cart" data-id="${service.ProductId}" data-name="${escapeHtml(service.Name)}" data-price="${service.Price}" data-image="${thumbUrl}" data-cat="photo"><i class="fa-solid fa-cart-plus"></i> ${addToCartText}</button>
+                                    <button class="btn-buy buy-now" data-id="${service.ProductId}" data-name="${escapeHtml(service.Name)}" data-price="${service.Price}" data-cat="photo"><i class="fa-solid fa-bolt"></i> ${buyNowText}</button>
+                                </div>
+                                ${isVideo && service.ImageUrl ? `<a href="${mediaUrl}" download class="btn-download"><i class="fa-solid fa-download"></i> ${downloadText}</a>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // ربط أحداث الأزرار
+                document.querySelectorAll('.add-to-cart').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const product = {
+                            productId: parseInt(btn.dataset.id),
+                            name: btn.dataset.name,
+                            price: parseFloat(btn.dataset.price),
+                            image: btn.dataset.image
+                        };
+                        if(window.CartManager?.addItem) {
+                            window.CartManager.addItem(product, btn.dataset.cat);
+                            showToast(`✅ ${getTranslation('added_to_cart') || 'تمت الإضافة'} "${product.name}"`);
+                        }
+                    });
+                });
+                document.querySelectorAll('.buy-now').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const product = {
+                            productId: parseInt(btn.dataset.id),
+                            name: btn.dataset.name,
+                            price: parseFloat(btn.dataset.price),
+                            image: btn.dataset.image
+                        };
+                        if(window.CartManager?.addItem) {
+                            window.CartManager.addItem(product, btn.dataset.cat);
+                            window.location.href = 'order.html';
+                        }
+                    });
+                });
+
+                // تفعيل عرض الوسائط المتعددة (Lightbox) عند النقر على الصورة
+                if(typeof window.startProductCarousels === 'function') window.startProductCarousels();
+                document.querySelectorAll('.card-media img').forEach(img => {
+                    img.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const mediaAttr = img.getAttribute('data-media');
+                        if(mediaAttr && mediaAttr !== '[]') {
+                            try {
+                                const mediaArr = JSON.parse(mediaAttr);
+                                if(mediaArr.length && typeof window.openProductGallery === 'function') {
+                                    window.openProductGallery(mediaArr);
+                                }
+                            } catch(e) {}
+                        }
+                    });
+                });
+            } catch(err) {
+                console.error("خطأ في تحميل خدمات التصوير:", err);
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--danger);">⚠️ فشل الاتصال بالخادم. تأكد من تشغيل السيرفر.</div>';
+            }
+        }
+
+        // إعادة التحميل عند تغيير اللغة
+        window.addEventListener('globalLanguageChanged', () => loadPhotographyServices());
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPhotographyServices();
+            if(typeof ScrollReveal !== 'undefined') {
+                ScrollReveal().reveal('.photo-hero', { delay: 100, origin: 'top', distance: '40px', duration: 800 });
+                ScrollReveal().reveal('.photo-card', { delay: 150, interval: 100, origin: 'bottom', distance: '50px', duration: 800, easing: 'ease-out' });
+            }
+        });
+    })();
+</script>
+</body>
+</html>

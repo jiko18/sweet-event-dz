@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Event DZ | خريطة الصالات التفاعلية 🏰</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@200;300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- ملف التنسيقات الرئيسي -->
+    <link rel="stylesheet" href="css-project/sweet.css">
+
+    <style>
+        :root {
+            --map-bg: #fefaf7;
+            --glass: rgba(255, 255, 255, 0.45);
+            --glass-strong: rgba(255, 255, 255, 0.78);
+            --glass-ultra: rgba(255, 255, 255, 0.92);
+            --border-glass: rgba(201, 150, 62, 0.25);
+            --border-glass-strong: rgba(201, 150, 62, 0.5);
+            --shadow-glass: 0 12px 40px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 20px 50px rgba(201, 150, 62, 0.18);
+            --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.06);
+            --gold: #c9963e;
+            --gold-dark: #a87a2e;
+            --gold-light: #e0b867;
+            --gold-soft: rgba(201, 150, 62, 0.07);
+            --gold-glow: rgba(201, 150, 62, 0.25);
+            --text-soft: #6b5b4e;
+            --text-muted: #8a7a6e;
+            --radius-sm: 12px;
+            --radius: 20px;
+            --radius-lg: 28px;
+            --radius-xl: 36px;
+            --transition-fast: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-smooth: 0.35s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+            --transition-bounce: 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --info: #3498db;
+            --warning: #f39c12;
+        }
+        .dark-mode {
+            --map-bg: #0d0907;
+            --glass: rgba(24, 18, 14, 0.5);
+            --glass-strong: rgba(24, 18, 14, 0.8);
+            --glass-ultra: rgba(24, 18, 14, 0.94);
+            --border-glass: rgba(201, 150, 62, 0.12);
+            --border-glass-strong: rgba(201, 150, 62, 0.22);
+            --shadow-glass: 0 12px 40px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 50px rgba(201, 150, 62, 0.1);
+            --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.25);
+            --text-soft: #b4a292;
+            --text-muted: #8a7a6a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', 'Tajawal', 'Cairo', sans-serif;
+            background: var(--map-bg);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+            position: relative;
+        }
+
+        .golden-particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .golden-particles .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: orbFloat 25s infinite ease-in-out;
+        }
+        .golden-particles .orb:nth-child(1) {
+            width: 450px;
+            height: 450px;
+            background: rgba(201, 150, 62, 0.06);
+            top: -8%;
+            right: -10%;
+            animation-delay: 0s;
+            animation-duration: 28s;
+        }
+        .golden-particles .orb:nth-child(2) {
+            width: 350px;
+            height: 350px;
+            background: rgba(180, 130, 100, 0.04);
+            bottom: -10%;
+            left: -8%;
+            animation-delay: -8s;
+            animation-duration: 22s;
+        }
+        .golden-particles .orb:nth-child(3) {
+            width: 280px;
+            height: 280px;
+            background: rgba(201, 150, 62, 0.05);
+            top: 40%;
+            left: 50%;
+            animation-delay: -15s;
+            animation-duration: 20s;
+        }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -40px) scale(1.12); }
+            50% { transform: translate(-30px, 45px) scale(0.9); }
+            75% { transform: translate(-55px, -25px) scale(1.06); }
+        }
+
+        /* تعديل شريط التقدم ليكون مضبوطاً مع الهيدر */
+        .scroll-progress {
+            position: fixed;
+            top: 59px;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+            z-index: 10001;
+            transition: width 0.1s linear;
+            border-radius: 0 3px 3px 0;
+            box-shadow: 0 0 12px var(--gold-glow);
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            min-height: calc(100vh - 80px);
+            gap: 0;
+        }
+
+        /* تعديل عرض الـ Sidebar ليصبح أصغر */
+        .sidebar-filter {
+            width: 280px;
+            min-width: 280px;
+            background: var(--glass-ultra);
+            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(25px);
+            border-left: 1px solid var(--border-glass);
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            padding: 1.5rem 1.3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
+            position: sticky;
+            top: 30px;
+            z-index: 50;
+            box-shadow: var(--shadow-glass);
+            transition: all 0.4s ease;
+        }
+        .sidebar-filter.collapsed {
+            min-width: 0;
+            width: 0;
+            padding: 1.5rem 0;
+            border: none;
+            opacity: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .sidebar-filter .filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar-filter .filter-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar-filter .filter-header h3 i {
+            color: var(--gold);
+            font-size: 1.4rem;
+        }
+        .btn-collapse-sidebar {
+            background: none;
+            border: 1px solid var(--border-glass);
+            color: var(--gold);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-collapse-sidebar:hover {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+        }
+
+        .filter-block {
+            background: var(--glass);
+            border-radius: var(--radius);
+            padding: 1rem 1.1rem;
+            border: 1px solid var(--border-glass);
+            transition: var(--transition-smooth);
+        }
+        .filter-block:hover {
+            border-color: var(--border-glass-strong);
+            box-shadow: var(--shadow-hover);
+        }
+        .filter-block h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--gold);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        .filter-block h4 i {
+            font-size: 0.95rem;
+        }
+        .filter-block select,
+        .filter-block input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 25px;
+            border: 1px solid var(--border-glass);
+            background: var(--glass-strong);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: var(--transition-fast);
+            outline: none;
+        }
+        .filter-block select:focus,
+        .filter-block input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(201, 150, 62, 0.08);
+        }
+        .range-group {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+        }
+        .range-group input {
+            flex: 1;
+            text-align: center;
+        }
+        .range-group span {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .check-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .check-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            background: var(--glass);
+            cursor: pointer;
+            font-size: 0.78rem;
+            transition: var(--transition-fast);
+            color: var(--text);
+            white-space: nowrap;
+            user-select: none;
+        }
+        .check-chip:hover {
+            border-color: var(--gold);
+            background: var(--gold-soft);
+        }
+        .check-chip.active {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            font-weight: 600;
+            box-shadow: 0 4px 14px var(--gold-glow);
+        }
+        .check-chip input {
+            display: none;
+        }
+
+        .btn-reset-filters {
+            width: 100%;
+            padding: 10px;
+            border-radius: 25px;
+            border: 2px dashed var(--border-glass-strong);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition-fast);
+        }
+        .btn-reset-filters:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(231, 76, 60, 0.05);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            padding: 1rem 1.5rem 1.5rem;
+            gap: 1.2rem;
+            overflow: hidden;
+        }
+        .main-content.expanded {
+            padding-right: 0.5rem;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding: 0.8rem 1.2rem;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-glass);
+            box-shadow: var(--shadow-glass);
+        }
+        .toolbar .view-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--glass-strong);
+            border-radius: 25px;
+            padding: 3px;
+            border: 1px solid var(--border-glass);
+        }
+        .toolbar .view-btn {
+            width: 38px;
+            height: 34px;
+            border: none;
+            background: transparent;
+            border-radius: 22px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .toolbar .view-btn.active {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 4px 12px var(--gold-glow);
+        }
+        .toolbar .view-btn:hover:not(.active) {
+            color: var(--gold);
+        }
+        .toolbar .result-count {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+            margin-right: auto;
+        }
+        .toolbar .result-count span {
+            color: var(--gold);
+            font-size: 1.1rem;
+        }
+
+        .btn-toggle-sidebar {
+            background: var(--glass-strong);
+            border: 1px solid var(--border-glass);
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-fast);
+            white-space: nowrap;
+        }
+        .btn-toggle-sidebar:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-soft);
+        }
+        .btn-toggle-sidebar i {
+            font-size: 0.9rem;
+        }
+
+        .map-arena {
+            flex: 1;
+            min-height: 380px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-glass);
+            box-shadow: var(--shadow-glass);
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        .map-arena.half {
+            flex: 0 0 50%;
+            min-height: 350px;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+        .map-arena .locate-btn {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 1000;
+            background: var(--glass-ultra);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 50px;
+            padding: 9px 20px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+            font-family: inherit;
+        }
+        .map-arena .locate-btn:hover {
+            background: var(--gold);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--gold-glow);
+        }
+        .map-overlay-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+            background: var(--glass-ultra);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text);
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .map-overlay-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.6); }
+            50% { box-shadow: 0 0 0 10px rgba(39, 174, 96, 0); }
+        }
+
+        /* تنسيقات Popup المحسنة */
+        .custom-popup .leaflet-popup-content-wrapper {
+            background: rgba(30, 25, 20, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid var(--gold);
+            color: #f5efe7;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .custom-popup .leaflet-popup-tip {
+            background: rgba(30, 25, 20, 0.95);
+            border-top: 1px solid var(--gold);
+        }
+        .custom-popup a {
+            color: var(--gold) !important;
+            text-decoration: none;
+        }
+
+        .halls-grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 0.3rem 0;
+            scroll-behavior: smooth;
+        }
+        .halls-grid-view::-webkit-scrollbar {
+            width: 5px;
+        }
+        .halls-grid-view::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+        .halls-grid-view.hidden {
+            display: none;
+        }
+
+        .hall-card-detailed {
+            background: var(--glass-strong);
+            backdrop-filter: blur(16px);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border-glass);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .hall-card-detailed:hover {
+            transform: translateY(-6px);
+            border-color: var(--border-glass-strong);
+            box-shadow: var(--shadow-hover);
+        }
+        .hall-card-detailed.selected {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.15);
+        }
+        .hall-card-detailed .card-img-wrap {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hall-card-detailed .card-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .hall-card-detailed:hover .card-img-wrap img {
+            transform: scale(1.06);
+        }
+        .hall-card-detailed .card-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--gold);
+            color: #000;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+        .hall-card-detailed .card-fav {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+            transition: var(--transition-fast);
+            z-index: 10;
+            color: #888;
+        }
+        .hall-card-detailed .card-fav:hover {
+            background: #fff;
+            transform: scale(1.1);
+        }
+        .hall-card-detailed .card-fav.favorited {
+            color: #e74c3c;
+        }
+        .hall-card-detailed .card-body {
+            padding: 1rem 1.2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .hall-card-detailed .card-body h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            color: var(--text);
+            margin: 0;
+        }
+        .hall-card-detailed .card-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .hall-card-detailed .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .hall-card-detailed .card-meta i {
+            color: var(--gold);
+            font-size: 0.85rem;
+        }
+        .hall-card-detailed .card-price {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+        .hall-card-detailed .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .hall-card-detailed .card-features .ftag {
+            background: var(--gold-soft);
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-size: 0.7rem;
+            color: var(--text);
+            border: 1px solid var(--border-glass);
+        }
+        .hall-card-detailed .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+            padding-top: 0.5rem;
+        }
+        .btn-card-action {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 25px;
+            border: 1px solid var(--border-glass);
+            background: var(--glass);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 500;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: var(--text);
+            white-space: nowrap;
+        }
+        .btn-card-action:hover {
+            border-color: var(--gold);
+            background: var(--gold-soft);
+        }
+        .btn-card-action.primary-action {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            font-weight: 600;
+        }
+        .btn-card-action.primary-action:hover {
+            background: var(--gold-dark);
+            border-color: var(--gold-dark);
+        }
+
+        .halls-dock {
+            background: var(--glass);
+            backdrop-filter: blur(28px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-glass);
+            padding: 1rem 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            z-index: 20;
+            transition: all 0.3s ease;
+        }
+        .halls-dock .dock-label {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.85rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .halls-dock .dock-slider {
+            display: flex;
+            gap: 0.8rem;
+            overflow-x: auto;
+            padding: 0.4rem 0;
+            scroll-behavior: smooth;
+            flex: 2;
+        }
+        .halls-dock .dock-slider::-webkit-scrollbar {
+            height: 4px;
+        }
+        .halls-dock .dock-slider::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+        .hall-chip {
+            background: var(--glass-strong);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius);
+            min-width: 190px;
+            padding: 0.7rem 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            transition: var(--transition-smooth);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+            user-select: none;
+        }
+        .hall-chip:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold);
+            box-shadow: var(--shadow-hover);
+        }
+        .hall-chip.selected {
+            background: rgba(201, 150, 62, 0.12);
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px var(--gold-glow);
+        }
+        .hall-chip img {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        .hall-chip .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .hall-chip .name {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .hall-chip .capacity {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .hall-chip .price {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .hall-chip .btn-info-chip {
+            background: none;
+            border: none;
+            color: var(--gold);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+            transition: var(--transition-fast);
+        }
+        .hall-chip .btn-info-chip:hover {
+            transform: scale(1.2);
+            color: var(--gold-dark);
+        }
+
+        .summary-float {
+            background: var(--glass-strong);
+            backdrop-filter: blur(22px);
+            border: 1px solid var(--border-glass);
+            border-radius: 50px;
+            padding: 0.7rem 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow-glass);
+            white-space: nowrap;
+        }
+        .summary-float .badge-count {
+            background: var(--gold);
+            color: #000;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .summary-float .total-text {
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 1rem;
+        }
+        /* تغيير نص الزر إلى "احجز الصالة" */
+        .btn-order-now {
+            background: linear-gradient(135deg, #c9963e, #b08235);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            padding: 0.65rem 1.6rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            white-space: nowrap;
+            font-family: inherit;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-order-now:hover {
+            transform: scale(1.04);
+            box-shadow: 0 10px 25px var(--gold-glow);
+        }
+        .btn-order-now:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .detail-fullscreen {
+            position: fixed;
+            inset: 0;
+            z-index: 20000;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .detail-fullscreen.active {
+            display: flex;
+        }
+        .detail-card {
+            background: var(--glass-ultra);
+            backdrop-filter: blur(35px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 1050px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2.2rem;
+            box-shadow: 0 35px 90px rgba(0, 0, 0, 0.35);
+            position: relative;
+        }
+        .detail-card::-webkit-scrollbar {
+            width: 6px;
+        }
+        .detail-card::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+        .detail-card .close-detail {
+            position: sticky;
+            top: 5px;
+            float: left;
+            background: var(--glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.4rem;
+            color: var(--text);
+            transition: var(--transition-smooth);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-detail:hover {
+            color: #fff;
+            background: var(--danger);
+            border-color: var(--danger);
+            transform: rotate(90deg);
+        }
+        .detail-card .gallery-slider {
+            display: flex;
+            gap: 0.8rem;
+            overflow-x: auto;
+            padding: 0.8rem 0;
+            scroll-snap-type: x mandatory;
+            margin: 1.2rem 0;
+            border-radius: var(--radius);
+        }
+        .gallery-slider img,
+        .gallery-slider video {
+            height: 240px;
+            border-radius: var(--radius);
+            object-fit: cover;
+            scroll-snap-align: start;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 2px solid var(--border-glass);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+        }
+        .gallery-slider img:hover,
+        .gallery-slider video:hover {
+            transform: scale(1.04);
+            border-color: var(--gold);
+        }
+        .detail-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.6rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+        .detail-location {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+        .detail-location i {
+            color: var(--gold);
+        }
+        .detail-desc {
+            font-size: 1rem;
+            line-height: 1.9;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+        .detail-stats {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 1.2rem 0;
+        }
+        .detail-stat {
+            text-align: center;
+            padding: 0.8rem 1.2rem;
+            background: var(--glass);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glass);
+        }
+        .detail-stat .val {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .detail-stat .lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 1.2rem 0;
+        }
+        .feature-tag {
+            background: var(--gold-soft);
+            border: 1px solid var(--border-glass);
+            border-radius: 25px;
+            padding: 6px 16px;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .feature-tag i {
+            color: var(--gold);
+            font-size: 0.75rem;
+        }
+        .detail-action-row {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid var(--border-glass);
+        }
+        .btn-detail-action {
+            padding: 0.75rem 1.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+            border: none;
+        }
+        .btn-detail-select {
+            background: var(--gold);
+            color: #000;
+        }
+        .btn-detail-select:hover {
+            background: var(--gold-dark);
+        }
+        .btn-detail-direction {
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+        }
+        .btn-detail-direction:hover {
+            background: var(--gold);
+            color: #000;
+        }
+        .btn-detail-share {
+            background: transparent;
+            border: 2px solid var(--border-glass);
+            color: var(--text);
+        }
+        .btn-detail-share:hover {
+            border-color: var(--info);
+            color: var(--info);
+        }
+
+        .compare-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--glass-ultra);
+            backdrop-filter: blur(30px);
+            border-top: 2px solid var(--border-glass-strong);
+            z-index: 15000;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .compare-panel.active {
+            transform: translateY(0);
+        }
+        .compare-panel h4 {
+            font-family: 'Playfair Display', serif;
+            color: var(--text);
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+        .compare-panel .compare-items {
+            display: flex;
+            gap: 0.8rem;
+            flex: 1;
+            overflow-x: auto;
+        }
+        .compare-panel .compare-item {
+            background: var(--glass);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border-glass);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .compare-panel .compare-item .remove-compare {
+            cursor: pointer;
+            color: var(--danger);
+            font-size: 0.9rem;
+            transition: var(--transition-fast);
+        }
+        .compare-panel .compare-item .remove-compare:hover {
+            transform: scale(1.2);
+        }
+        .btn-compare-go {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: var(--transition-fast);
+        }
+        .btn-compare-go:hover {
+            background: var(--gold-dark);
+        }
+        .btn-compare-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition-fast);
+        }
+        .btn-compare-close:hover {
+            color: var(--danger);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c1810;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 40px;
+            z-index: 99999;
+            opacity: 0;
+            transition: opacity 0.4s;
+            font-weight: 500;
+            font-size: 0.9rem;
+            pointer-events: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .toast.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .sidebar-filter { width: 280px; min-width: 280px; padding: 1rem; }
+            .hall-card-detailed .card-img-wrap { height: 160px; }
+            .detail-card { padding: 1.5rem; max-width: 95vw; }
+            .detail-title { font-size: 2rem; }
+            .gallery-slider img,
+            .gallery-slider video { height: 180px; }
+        }
+        @media (max-width: 800px) {
+            .app-container { flex-direction: column; }
+            .sidebar-filter {
+                position: fixed;
+                top: 80px;
+                right: 0;
+                width: 85vw;
+                max-width: 350px;
+                height: calc(100vh - 80px);
+                z-index: 15000;
+                border-radius: 0;
+                transform: translateX(100%);
+                transition: transform 0.4s ease;
+                border: none;
+                border-left: 2px solid var(--border-glass-strong);
+            }
+            .sidebar-filter.mobile-open { transform: translateX(0); }
+            .sidebar-filter.collapsed { transform: translateX(100%); opacity: 1; pointer-events: none; }
+            .main-content { padding: 0.5rem; }
+            .halls-dock { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+            .summary-float { justify-content: center; }
+            .map-arena { min-height: 280px; }
+            .map-arena.half { flex: 0 0 280px; }
+            .halls-grid-view { grid-template-columns: 1fr; max-height: 400px; }
+            .compare-panel { flex-wrap: wrap; padding: 0.8rem 1rem; }
+        }
+        @media (max-width: 480px) {
+            .toolbar { gap: 0.5rem; padding: 0.6rem 0.8rem; }
+            .toolbar .view-btn { width: 30px; height: 28px; font-size: 0.85rem; }
+            .detail-card { padding: 1rem; border-radius: var(--radius); }
+            .detail-title { font-size: 1.6rem; }
+            .gallery-slider img,
+            .gallery-slider video { height: 140px; }
+            .btn-detail-action { padding: 0.6rem 1.2rem; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- جسيمات ذهبية -->
+    <div class="golden-particles">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <!-- شريط التقدم -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- الهيدر الموحد -->
+    <header dir="ltr">
+        <div class="logo">
+            <i class="fa-solid fa-cake-candles gold-text"></i>
+            <span>Sweet<br>Event DZ</span>
+        </div>
+        <nav dir="ltr">
+            <ul>
+                <li><a href="/cakes" class="nav-link" data-lang="cakes">Cakes</a></li>
+                <li><a href="/decor" class="nav-link" data-lang="decor">Decor</a></li>
+                <li><a href="/" class="nav-link" data-lang="home">Home</a></li>
+                <li><a href="/photography" class="nav-link" data-lang="photography">Photography</a></li>
+                <li><a href="/menu" class="nav-link" data-lang="menu">Menu</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <div id="google_translate_element"></div>
+            <div class="toggle-switch" id="themeToggle">
+                <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+            </div>
+            <button class="btn-icon" id="accountBtn"><i class="fa-regular fa-user"></i></button>
+            <span id="userGreetingContainer"></span>
+            <button class="btn-primary" id="mainRegisterBtn" data-lang="nav_register">إنشاء حساب</button>
+        </div>
+    </header>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="app-container" id="appContainer">
+        <aside class="sidebar-filter" id="sidebarFilter">
+            <div class="filter-header">
+                <h3><i class="fa-solid fa-sliders"></i> تصفية متقدمة</h3>
+                <button class="btn-collapse-sidebar" id="btnCollapseSidebar" title="طي القائمة">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="filter-block">
+                <h4><i class="fa-solid fa-magnifying-glass"></i> بحث</h4>
+                <input type="text" id="searchHallInput" placeholder="🔍 ابحث باسم الصالة أو المنطقة...">
+            </div>
+            <div class="filter-block">
+                <h4><i class="fa-solid fa-tag"></i> نطاق السعر (دج)</h4>
+                <div class="range-group">
+                    <input type="number" id="priceMin" placeholder="من" value="0" min="0" step="5000">
+                    <span>—</span>
+                    <input type="number" id="priceMax" placeholder="إلى" value="100000" min="0" step="5000">
+                </div>
+            </div>
+            <div class="filter-block">
+                <h4><i class="fa-solid fa-chair"></i> السعة الدنيا (شخص)</h4>
+                <input type="number" id="capacityMin" placeholder="أدنى سعة" value="0" min="0" step="10">
+            </div>
+            <div class="filter-block">
+                <h4><i class="fa-solid fa-location-dot"></i> المنطقة</h4>
+                <select id="locationFilter">
+                    <option value="all">جميع المناطق</option>
+                    <option value="جيجل">📍 جيجل</option>
+                    <option value="الطاهير">📍 الطاهير</option>
+                    <option value="الميناء">📍 الميناء</option>
+                    <option value="الشاطئ">📍 طريق الشاطئ</option>
+                    <option value="الحي الراقي">📍 الحي الراقي</option>
+                    <option value="البلدية">📍 قرب البلدية</option>
+                </select>
+            </div>
+            <div class="filter-block">
+                <h4><i class="fa-solid fa-wand-magic-sparkles"></i> التجهيزات</h4>
+                <div class="check-group" id="featuresCheckGroup">
+                    <label class="check-chip"><input type="checkbox" value="إضاءة LED">إضاءة LED</label>
+                    <label class="check-chip"><input type="checkbox" value="نظام صوتي">نظام صوتي</label>
+                    <label class="check-chip"><input type="checkbox" value="مدخل خاص">مدخل خاص</label>
+                    <label class="check-chip"><input type="checkbox" value="تكييف مركزي">تكييف مركزي</label>
+                    <label class="check-chip"><input type="checkbox" value="شاشة عرض">شاشة عرض</label>
+                    <label class="check-chip"><input type="checkbox" value="إطلالة بانورامية">إطلالة</label>
+                    <label class="check-chip"><input type="checkbox" value="شرفة خارجية">شرفة</label>
+                    <label class="check-chip"><input type="checkbox" value="ديكور ذهبي">ديكور ذهبي</label>
+                    <label class="check-chip"><input type="checkbox" value="مسرح صغير">مسرح</label>
+                    <label class="check-chip"><input type="checkbox" value="نوافير مائية">نوافير</label>
+                    <label class="check-chip"><input type="checkbox" value="حديقة نخيل">حديقة</label>
+                    <label class="check-chip"><input type="checkbox" value="موقف سيارات">موقف</label>
+                </div>
+            </div>
+            <div class="filter-block">
+                <h4><i class="fa-solid fa-arrow-down-wide-short"></i> ترتيب حسب</h4>
+                <select id="sortSelect">
+                    <option value="default">📋 الافتراضي</option>
+                    <option value="price-asc">💰 الأقل سعراً</option>
+                    <option value="price-desc">💰 الأعلى سعراً</option>
+                    <option value="capacity-desc">👥 الأكبر سعة</option>
+                    <option value="capacity-asc">👥 الأصغر سعة</option>
+                    <option value="nearest">📍 الأقرب إليّ</option>
+                </select>
+            </div>
+            <button class="btn-reset-filters" id="btnResetFilters">
+                <i class="fa-solid fa-arrow-rotate-left"></i> إعادة ضبط الفلاتر
+            </button>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <div class="toolbar">
+                <button class="btn-toggle-sidebar" id="btnToggleSidebar"><i class="fa-solid fa-sliders"></i> الفلاتر</button>
+                <div class="view-toggle" id="viewToggle">
+                    <button class="view-btn active" data-view="map" title="عرض الخريطة"><i class="fa-solid fa-map"></i></button>
+                    <button class="view-btn" data-view="split" title="عرض مزدوج"><i class="fa-solid fa-table-columns"></i></button>
+                    <button class="view-btn" data-view="grid" title="عرض الشبكة"><i class="fa-solid fa-grid-2"></i></button>
+                </div>
+                <div class="result-count" id="resultCount">عرض <span id="visibleCount">0</span> من أصل <span id="totalCount">0</span> صالة</div>
+                <button class="btn-toggle-sidebar" id="btnCompareToggle" title="مقارنة الصالات"><i class="fa-solid fa-scale-balanced"></i> مقارنة <span id="compareBadge" style="display:none;">0</span></button>
+            </div>
+            <div class="map-arena" id="mapArena"><div id="map"></div><button class="locate-btn" id="locateBtn"><i class="fa-solid fa-location-crosshairs"></i> حدد موقعي</button><div class="map-overlay-badge"><span class="dot"></span> مباشر</div></div>
+            <div class="halls-grid-view" id="hallsGridView"></div>
+            <div class="halls-dock" id="hallsDock">
+                <span class="dock-label"><i class="fa-solid fa-building"></i> الصالات:</span>
+                <div class="dock-slider" id="hallDockSlider"></div>
+                <div class="summary-float">
+                    <span style="font-size:0.8rem;color:var(--text-muted);">المختارة</span>
+                    <span class="badge-count" id="selectedBadge">0</span>
+                    <span class="total-text" id="totalPrice">0 دج</span>
+                    <button class="btn-order-now" id="goToOrderBtn" disabled><i class="fa-solid fa-calendar-check"></i> احجز الصالة</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="detail-fullscreen" id="detailFullscreen"><div class="detail-card" id="detailCard"></div></div>
+    <div class="compare-panel" id="comparePanel">
+        <h4><i class="fa-solid fa-scale-balanced"></i> مقارنة:</h4>
+        <div class="compare-items" id="compareItems"></div>
+        <button class="btn-compare-go" id="btnCompareGo" disabled>قارن الآن</button>
+        <button class="btn-compare-close" id="btnCompareClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <footer>
+        <div class="footer-cols">
+            <div class="col brand"><div class="logo"><i class="fa-solid fa-cake-candles gold-text"></i><span>Sweet<br>Event DZ</span></div><div class="socials"><a href="#" class="fa-brands fa-facebook"></a><a href="https://www.instagram.com/gateaux_hassen_taher_/" class="fa-brands fa-instagram"></a></div></div>
+            <div class="col"><h4 data-lang="footer_links">روابط سريعة</h4><ul><li><a href="/">الرئيسية</a></li><li><a href="/cakes">كيك</a></li><li><a href="/menu">حلويات</a></li><li><a href="/decor">ديكور</a></li><li><a href="/photography">تصوير</a></li></ul></div>
+            <div class="col"><h4 data-lang="footer_support">الدعم</h4><ul><li><a href="/order">طلب</a></li><li><a href="/reviews">تقييمات</a></li><li><a href="/about">من نحن</a></li><li><a href="contact.html">اتصل بنا</a></li></ul></div>
+            <div class="col contact"><h4 data-lang="footer_slogan_title">نحن نقدم خدمة مرموقة</h4><p data-lang="footer_slogan_desc">نصنع أحلاماً ونحولها إلى واقع ملموس في كل مناسبة.</p><p><i class="fa-solid fa-phone"></i> +213 794 48 98 33</p><p><i class="fa-solid fa-envelope"></i> hassenboukhemkhem@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> الجزائر - جيجل - الطاهير</p></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2026 Sweet Event DZ. جميع الحقوق محفوظة.</p></div>
+    </footer>
+
+    <div style="position:fixed;bottom:30px;left:30px;z-index:9999;display:flex;flex-direction:column-reverse;gap:15px;">
+        <a href="/about" style="width:50px;height:50px;border-radius:50%;background:#c9963e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,0.25);"><i class="fa-solid fa-circle-info"></i></a>
+        <a href="https://wa.me/213794489833" target="_blank" rel="noopener noreferrer" style="width:50px;height:50px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,0.25);"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'ar',            // لغة الموقع الأساسية (العربية)
+    includedLanguages: 'ar,en,fr', // اللغات التي تظهر للزوار (عربي، إنجليزي، فرنسي)
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script src="script.js"></script>
+    <script>
+        (() => {
+            let hallsData = [];
+            let selectedHalls = [];
+            let compareList = [];
+            let userLocation = null;
+            let mapInstance = null;
+            let markerCluster = null;
+            let allMarkers = [];
+            let currentView = 'map';
+            let favorites = JSON.parse(localStorage.getItem('hallFavorites') || '[]');
+            let isLoading = true;
+
+            function getDistance(lat1, lng1, lat2, lng2) {
+                const R = 6371;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLng = (lng2 - lng1) * Math.PI / 180;
+                const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+                return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            }
+            function formatPrice(p) { return Number(p).toLocaleString('ar-EG') + ' دج'; }
+            function showToast(msg, duration = 2500) {
+                const t = document.getElementById('toast');
+                t.textContent = msg;
+                t.classList.add('show');
+                clearTimeout(t._tid);
+                t._tid = setTimeout(() => t.classList.remove('show'), duration);
+            }
+            function saveFavorites() { localStorage.setItem('hallFavorites', JSON.stringify(favorites)); }
+            function toggleFavorite(id) {
+                const idx = favorites.indexOf(id);
+                if (idx >= 0) { favorites.splice(idx, 1); showToast('💔 تمت إزالة من المفضلة'); }
+                else { favorites.push(id); showToast('❤️ تمت إضافة إلى المفضلة'); }
+                saveFavorites();
+                renderAll();
+            }
+
+            async function loadHallsFromAPI() {
+                try {
+                    const response = await fetch('/api/products?category=hall');
+                    const data = await response.json();
+                    if (data.success && data.products.length) {
+                        hallsData = data.products.filter(p => p.IsActive == 1).map((p) => {
+                            let featuresArray = [];
+                            if (p.Features) featuresArray = p.Features.split(',').map(f => f.trim()).filter(f => f.length > 0);
+                            else featuresArray = ['مجهزة بالكامل'];
+                            let parsedMedia = [];
+                            try { if (p.MediaFiles) parsedMedia = JSON.parse(p.MediaFiles).map(img => `/img}`); } catch (e) {}
+                            const finalImages = parsedMedia.length > 0 ? parsedMedia : (p.ImageUrl ? [`/p.ImageUrl}`] : ['images.reviwes/IMG_20260502_210823_508.jpg']);
+                            return {
+                                id: p.ProductId.toString(),
+                                name: p.Name,
+                                desc: p.Description || 'صالة فاخرة للمناسبات',
+                                price: p.Price,
+                                capacity: p.Capacity || 150,
+                                location: p.Location || 'غير محدد',
+                                lat: p.Latitude || 36.75,
+                                lng: p.Longitude || 5.89,
+                                images: finalImages,
+                                features: featuresArray,
+                                rating: p.Rating || 4.5,
+                                reviewCount: p.ReviewCount || 50,
+                                area: p.Location ? p.Location.split('-')[0].trim() : 'جيجل'
+                            };
+                        });
+                    } else { hallsData = []; showToast('⚠️ لا توجد صالات متاحة حالياً', 3000); }
+                } catch (err) { console.error('خطأ في تحميل الصالات:', err); hallsData = []; showToast('❌ تعذر الاتصال بقاعدة البيانات. تأكد من تشغيل السيرفر.', 5000); }
+                isLoading = false;
+                initMap();
+                renderAll();
+                updateSummary();
+                updateViewMode();
+            }
+
+            function getFilteredHalls() {
+                const search = (document.getElementById('searchHallInput')?.value || '').toLowerCase();
+                const priceMin = parseInt(document.getElementById('priceMin')?.value || 0);
+                const priceMax = parseInt(document.getElementById('priceMax')?.value || 999999);
+                const capMin = parseInt(document.getElementById('capacityMin')?.value || 0);
+                const locFilter = document.getElementById('locationFilter')?.value || 'all';
+                const sortVal = document.getElementById('sortSelect')?.value || 'default';
+                const checkedFeatures = [];
+                document.querySelectorAll('#featuresCheckGroup .check-chip.active input').forEach(cb => { checkedFeatures.push(cb.value); });
+                let filtered = hallsData.filter(h => {
+                    if (search && !h.name.toLowerCase().includes(search) && !h.location.toLowerCase().includes(search) && !h.area.toLowerCase().includes(search)) return false;
+                    if (h.price < priceMin || h.price > priceMax) return false;
+                    if (h.capacity < capMin) return false;
+                    if (locFilter !== 'all' && !h.location.includes(locFilter) && !h.area.includes(locFilter)) return false;
+                    if (checkedFeatures.length > 0) {
+                        const hasAll = checkedFeatures.every(f => h.features.some(hf => hf.includes(f) || f.includes(hf)));
+                        if (!hasAll) return false;
+                    }
+                    return true;
+                });
+                if (sortVal === 'price-asc') filtered.sort((a, b) => a.price - b.price);
+                if (sortVal === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+                if (sortVal === 'capacity-desc') filtered.sort((a, b) => b.capacity - a.capacity);
+                if (sortVal === 'capacity-asc') filtered.sort((a, b) => a.capacity - b.capacity);
+                if (sortVal === 'nearest' && userLocation) {
+                    filtered.forEach(h => h._dist = getDistance(userLocation.lat, userLocation.lng, h.lat, h.lng));
+                    filtered.sort((a, b) => (a._dist || 999) - (b._dist || 999));
+                }
+                return filtered;
+            }
+
+            function initMap() {
+                if (mapInstance) { mapInstance.invalidateSize(); return; }
+                mapInstance = L.map('map', { center: [36.785, 5.83], zoom: 13, scrollWheelZoom: true, zoomControl: false });
+                L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 19 }).addTo(mapInstance);
+                markerCluster = L.featureGroup().addTo(mapInstance);
+                updateMapMarkers();
+                setTimeout(() => { mapInstance.invalidateSize(); if (markerCluster.getBounds().isValid()) mapInstance.fitBounds(markerCluster.getBounds().pad(0.08), { maxZoom: 14, animate: true }); }, 500);
+                window.addEventListener('resize', () => setTimeout(() => mapInstance?.invalidateSize(), 200));
+            }
+
+            function updateMapMarkers() {
+                if (!markerCluster) return;
+                markerCluster.clearLayers();
+                allMarkers = [];
+                const filtered = getFilteredHalls();
+                filtered.forEach(h => {
+                    const isSel = selectedHalls.some(s => s.id === h.id);
+                    const color = isSel ? '#27ae60' : '#c9963e';
+                    const iconSize = isSel ? 42 : 38;
+                    const m = L.marker([h.lat, h.lng], {
+                        icon: L.divIcon({
+                            className: '',
+                            html: `<div style="width:${iconSize}px;height:${iconSize}px;background:${color};border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.35);border:2px solid #fff;"><i class="fa-solid ${isSel ? 'fa-check' : 'fa-building'}" style="color:${isSel ? '#fff' : '#000'};font-size:${isSel ? 15 : 12}px;transform:rotate(45deg);"></i></div>`,
+                            iconSize: [iconSize, iconSize],
+                            iconAnchor: [iconSize / 2, iconSize],
+                            popupAnchor: [0, -iconSize]
+                        })
+                    });
+                    // نافذة Popup محسنة تحتوي على صورة وسعر وأزرار أنيقة
+                    m.bindPopup(`
+                        <div style="text-align:center; font-family:'Poppins','Tajawal',sans-serif; min-width:220px; direction: rtl;">
+                            <img src="${h.images[0]}" style="width:100%; height:140px; object-fit:cover; border-radius:12px; margin-bottom:8px; border:1px solid #c9963e;">
+                            <strong style="font-size:1.1rem; display:block; color:#c9963e;">${h.name}</strong>
+                            <span style="font-weight:700; font-size:1rem; display:block; margin:5px 0;">💰 ${formatPrice(h.price)}</span>
+                            <span style="font-size:0.8rem; display:block;">👥 ${h.capacity} شخص | ⭐ ${h.rating}</span>
+                            <div style="display:flex; gap:8px; margin-top:10px;">
+                                <button onclick="window._selectFromPopup('${h.id}')" style="flex:1; padding:6px; border-radius:30px; background:#c9963e; color:#000; border:none; cursor:pointer; font-weight:600;">${isSel ? '✓ تم' : '➕ اختر'}</button>
+                                <button onclick="window._openDetailFromPopup('${h.id}')" style="flex:1; padding:6px; border-radius:30px; background:transparent; border:1px solid #c9963e; color:#c9963e; cursor:pointer; font-weight:600;">🔍 تفاصيل</button>
+                            </div>
+                        </div>
+                    `, { className: 'custom-popup' });
+                    m.on('click', () => { const chip = document.querySelector(`[data-hall-chip="${h.id}"]`); if (chip) chip.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+                    markerCluster.addLayer(m);
+                    allMarkers.push({ id: h.id, marker: m });
+                });
+            }
+
+            window._selectFromPopup = (id) => toggleHallSelection(id);
+            window._openDetailFromPopup = (id) => openDetailModal(id);
+
+            function locateUser() {
+                if (!navigator.geolocation) { showToast('⚠️ متصفحك لا يدعم GPS'); return; }
+                navigator.geolocation.getCurrentPosition(pos => {
+                    userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    if (mapInstance) {
+                        L.circle([userLocation.lat, userLocation.lng], { radius: 500, color: '#4a90d9', fillOpacity: 0.15 }).addTo(mapInstance);
+                        L.marker([userLocation.lat, userLocation.lng], { icon: L.divIcon({ className: '', html: '<div style="width:18px;height:18px;background:#4a90d9;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 4px rgba(74,144,217,0.4);"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }) }).addTo(mapInstance);
+                        mapInstance.setView([userLocation.lat, userLocation.lng], 14, { animate: true });
+                    }
+                    renderAll();
+                    showToast('📍 تم تحديد موقعك بنجاح');
+                }, () => showToast('⚠️ تعذر تحديد موقعك'), { enableHighAccuracy: true, timeout: 8000 });
+            }
+
+            function toggleHallSelection(id) {
+                const hall = hallsData.find(h => h.id === id);
+                if (!hall) return;
+                const idx = selectedHalls.findIndex(s => s.id === id);
+                if (idx >= 0) { selectedHalls.splice(idx, 1); showToast(`🗑️ تم إلغاء: ${hall.name}`); }
+                else { selectedHalls.push({ ...hall }); showToast(`✅ تمت إضافة: ${hall.name}`); }
+                renderAll();
+                updateMapMarkers();
+                updateSummary();
+            }
+
+            function toggleCompare(id) {
+                const hall = hallsData.find(h => h.id === id);
+                if (!hall) return;
+                const idx = compareList.findIndex(c => c.id === id);
+                if (idx >= 0) { compareList.splice(idx, 1); showToast(`🔻 تمت إزالة من المقارنة: ${hall.name}`); }
+                else { if (compareList.length >= 4) { showToast('⚠️ يمكن مقارنة 4 صالات كحد أقصى'); return; } compareList.push({ ...hall }); showToast(`🔹 تمت إضافة للمقارنة: ${hall.name}`); }
+                renderComparePanel();
+            }
+
+            function renderComparePanel() {
+                const panel = document.getElementById('comparePanel');
+                const itemsContainer = document.getElementById('compareItems');
+                const btnGo = document.getElementById('btnCompareGo');
+                const badge = document.getElementById('compareBadge');
+                if (compareList.length === 0) panel.classList.remove('active');
+                else panel.classList.add('active');
+                itemsContainer.innerHTML = compareList.map(c => `<div class="compare-item"><span>${c.name}</span><span class="remove-compare" data-remove="${c.id}"><i class="fa-solid fa-times-circle"></i></span></div>`).join('');
+                btnGo.disabled = compareList.length < 2;
+                if (badge) { badge.textContent = compareList.length; badge.style.display = compareList.length > 0 ? 'flex' : 'none'; }
+                itemsContainer.querySelectorAll('.remove-compare').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); toggleCompare(btn.dataset.remove); }); });
+                renderAll();
+            }
+
+            function goCompare() {
+                if (compareList.length < 2) return;
+                const details = compareList.map(c => `${c.name}: ${formatPrice(c.price)} | 👥${c.capacity} | ⭐${c.rating} | ${c.features.slice(0,4).join(', ')}`).join('\n\n');
+                alert(`🔍 مقارنة الصالات:\n\n${details}\n\nاختر الأفضل وأضفها إلى طلبك!`);
+            }
+
+            function openDetailModal(id) {
+                const hall = hallsData.find(h => h.id === id);
+                if (!hall) return;
+                const isSel = selectedHalls.some(s => s.id === id);
+                const isFav = favorites.includes(id);
+                const isComp = compareList.some(c => c.id === id);
+                const cont = document.getElementById('detailCard');
+                
+                const mediaHtml = hall.images.map(url => {
+                    const isVideo = /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(url);
+                    if (isVideo) {
+                        return `<video controls poster="${hall.images.find(img => /\.(jpg|png|jpeg|gif)$/i.test(img)) || ''}" style="height:240px; border-radius:var(--radius); object-fit:cover; box-shadow:0 8px 25px rgba(0,0,0,0.15); border:2px solid var(--border-glass); transition:0.3s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                                    <source src="${url}" type="video/mp4">
+                                    متصفحك لا يدعم تشغيل الفيديو.
+                                </video>`;
+                    } else {
+                        return `<img src="${url}" alt="صورة ${hall.name}" loading="lazy" style="height:240px; border-radius:var(--radius); object-fit:cover; cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.15); border:2px solid var(--border-glass); transition:0.3s;" onclick="window.open('${url}','_blank')" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">`;
+                    }
+                }).join('');
+                
+                cont.innerHTML = `
+                    <button class="close-detail" id="closeDetailBtn">×</button>
+                    <h1 class="detail-title">${hall.name}</h1>
+                    <div class="detail-location"><i class="fa-solid fa-location-dot"></i> ${hall.location}</div>
+                    <div class="detail-stats">
+                        <div class="detail-stat"><div class="val">${formatPrice(hall.price)}</div><div class="lbl">لليوم</div></div>
+                        <div class="detail-stat"><div class="val">👥 ${hall.capacity}</div><div class="lbl">شخص</div></div>
+                        <div class="detail-stat"><div class="val">⭐ ${hall.rating}</div><div class="lbl">(${hall.reviewCount} تقييم)</div></div>
+                    </div>
+                    <p class="detail-desc">${hall.desc}</p>
+                    <div class="gallery-slider">${mediaHtml}</div>
+                    <div class="feature-tags">${hall.features.map(f => `<span class="feature-tag"><i class="fa-solid fa-circle-check"></i> ${f}</span>`).join('')}</div>
+                    <div class="detail-action-row">
+                        <button class="btn-detail-action btn-detail-select" id="detailSelectBtn">${isSel ? '🗑️ إزالة من المختارة' : '✅ أضف إلى المختارة'}</button>
+                        <button class="btn-detail-action btn-detail-direction" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${hall.lat},${hall.lng}','_blank')">🗺️ الاتجاهات</button>
+                        <button class="btn-detail-action btn-detail-share" id="detailFavBtn">${isFav ? '❤️ المفضلة' : '🤍 أضف للمفضلة'}</button>
+                        <button class="btn-detail-action btn-detail-share" id="detailCompareBtn">${isComp ? '🔻 إزالة من المقارنة' : '🔹 أضف للمقارنة'}</button>
+                    </div>
+                `;
+                document.getElementById('detailFullscreen').classList.add('active');
+                document.body.style.overflow = 'hidden';
+                document.getElementById('closeDetailBtn').addEventListener('click', closeDetailModal);
+                document.getElementById('detailSelectBtn').addEventListener('click', () => { toggleHallSelection(id); closeDetailModal(); });
+                document.getElementById('detailFavBtn').addEventListener('click', () => { toggleFavorite(id); closeDetailModal(); });
+                document.getElementById('detailCompareBtn').addEventListener('click', () => { toggleCompare(id); });
+            }
+
+            function closeDetailModal() {
+                document.getElementById('detailFullscreen').classList.remove('active');
+                document.body.style.overflow = '';
+                renderAll();
+            }
+            document.getElementById('detailFullscreen').addEventListener('click', function(e) { if (e.target === this) closeDetailModal(); });
+
+            function renderGridView() {
+                const container = document.getElementById('hallsGridView');
+                const filtered = getFilteredHalls();
+                if (!container) return;
+                if (currentView === 'map') { container.classList.add('hidden'); return; }
+                container.classList.remove('hidden');
+                container.innerHTML = filtered.map(h => {
+                    const isSel = selectedHalls.some(s => s.id === h.id);
+                    const isFav = favorites.includes(h.id);
+                    return `<div class="hall-card-detailed ${isSel ? 'selected' : ''}" data-card-id="${h.id}">
+                        <div class="card-img-wrap"><img src="${h.images[0]}" alt="${h.name}" loading="lazy" onerror="this.src='https://placehold.co/400x300/2a1e14/c9963e?text=Hall'"><span class="card-badge">${formatPrice(h.price)}</span><button class="card-fav ${isFav ? 'favorited' : ''}" data-fav="${h.id}" title="مفضلة">${isFav ? '❤️' : '🤍'}</button></div>
+                        <div class="card-body"><h4>${h.name}</h4><div class="card-meta"><span><i class="fa-solid fa-chair"></i> ${h.capacity} شخص</span><span><i class="fa-solid fa-star"></i> ${h.rating}</span><span><i class="fa-solid fa-location-dot"></i> ${h.area}</span></div><div class="card-features">${h.features.slice(0,4).map(f => `<span class="ftag">${f}</span>`).join('')}</div><div class="card-actions"><button class="btn-card-action" data-detail="${h.id}"><i class="fa-solid fa-info-circle"></i> تفاصيل</button><button class="btn-card-action primary-action" data-select="${h.id}">${isSel ? '✓ تم' : '+ أضف'}</button><button class="btn-card-action" data-compare="${h.id}"><i class="fa-solid fa-scale-balanced"></i></button></div></div></div>`;
+                }).join('');
+                container.querySelectorAll('.card-fav').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(btn.dataset.fav); }));
+                container.querySelectorAll('[data-detail]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); openDetailModal(btn.dataset.detail); }));
+                container.querySelectorAll('[data-select]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); toggleHallSelection(btn.dataset.select); }));
+                container.querySelectorAll('[data-compare]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); toggleCompare(btn.dataset.compare); }));
+                container.querySelectorAll('.hall-card-detailed').forEach(card => card.addEventListener('click', () => openDetailModal(card.dataset.cardId)));
+                document.getElementById('visibleCount').textContent = filtered.length;
+                document.getElementById('totalCount').textContent = hallsData.length;
+            }
+
+            function renderDockSlider() {
+                const slider = document.getElementById('hallDockSlider');
+                const filtered = getFilteredHalls();
+                if (!slider) return;
+                slider.innerHTML = filtered.map(h => {
+                    const isSel = selectedHalls.some(s => s.id === h.id);
+                    return `<div class="hall-chip ${isSel ? 'selected' : ''}" data-hall-chip="${h.id}"><img src="${h.images[0]}" alt="${h.name}" loading="lazy" onerror="this.src='https://placehold.co/100x100/2a1e14/c9963e?text=Hall'"><div class="info"><div class="name">${h.name}</div><div class="capacity">👥 ${h.capacity} شخص | ⭐ ${h.rating}</div><div class="price">${formatPrice(h.price)}</div></div><button class="btn-info-chip" data-detail-chip="${h.id}" title="تفاصيل"><i class="fa-solid fa-circle-info"></i></button></div>`;
+                }).join('');
+                slider.querySelectorAll('.hall-chip').forEach(chip => { chip.addEventListener('click', (e) => { if (!e.target.closest('.btn-info-chip')) toggleHallSelection(chip.dataset.hallChip); }); });
+                slider.querySelectorAll('.btn-info-chip').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); openDetailModal(btn.dataset.detailChip); }));
+            }
+
+            function updateSummary() {
+                document.getElementById('selectedBadge').textContent = selectedHalls.length;
+                const total = selectedHalls.reduce((s, h) => s + h.price, 0);
+                document.getElementById('totalPrice').textContent = formatPrice(total);
+                const btn = document.getElementById('goToOrderBtn');
+                btn.disabled = selectedHalls.length === 0;
+                document.getElementById('visibleCount').textContent = getFilteredHalls().length;
+                document.getElementById('totalCount').textContent = hallsData.length;
+            }
+
+            function updateViewMode() {
+                const mapArena = document.getElementById('mapArena');
+                const gridView = document.getElementById('hallsGridView');
+                mapArena.classList.remove('half');
+                gridView.classList.add('hidden');
+                if (currentView === 'map') { mapArena.style.flex = '1'; gridView.classList.add('hidden'); }
+                else if (currentView === 'split') { mapArena.classList.add('half'); gridView.classList.remove('hidden'); gridView.style.maxHeight = '350px'; }
+                else if (currentView === 'grid') { mapArena.style.flex = '0 0 300px'; mapArena.style.minHeight = '300px'; gridView.classList.remove('hidden'); gridView.style.maxHeight = '500px'; }
+                if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
+                renderGridView();
+            }
+
+            function renderAll() {
+                if (isLoading) return;
+                renderDockSlider();
+                renderGridView();
+                updateSummary();
+                updateMapMarkers();
+                updateViewMode();
+            }
+
+            // ربط الأحداث
+            document.getElementById('searchHallInput')?.addEventListener('input', renderAll);
+            document.getElementById('priceMin')?.addEventListener('input', renderAll);
+            document.getElementById('priceMax')?.addEventListener('input', renderAll);
+            document.getElementById('capacityMin')?.addEventListener('input', renderAll);
+            document.getElementById('locationFilter')?.addEventListener('change', renderAll);
+            document.getElementById('sortSelect')?.addEventListener('change', renderAll);
+            document.querySelectorAll('#featuresCheckGroup .check-chip').forEach(chip => {
+                chip.addEventListener('click', function(e) { e.preventDefault(); this.classList.toggle('active'); renderAll(); });
+            });
+            document.getElementById('btnResetFilters')?.addEventListener('click', () => {
+                document.getElementById('searchHallInput').value = '';
+                document.getElementById('priceMin').value = '0';
+                document.getElementById('priceMax').value = '100000';
+                document.getElementById('capacityMin').value = '0';
+                document.getElementById('locationFilter').value = 'all';
+                document.getElementById('sortSelect').value = 'default';
+                document.querySelectorAll('#featuresCheckGroup .check-chip').forEach(c => c.classList.remove('active'));
+                renderAll();
+                showToast('🔄 تم إعادة ضبط جميع الفلاتر');
+            });
+            document.querySelectorAll('#viewToggle .view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#viewToggle .view-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentView = this.dataset.view;
+                    updateViewMode();
+                    if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 350);
+                });
+            });
+            document.getElementById('btnCollapseSidebar')?.addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebarFilter');
+                sidebar.classList.toggle('collapsed');
+                document.getElementById('mainContent').classList.toggle('expanded');
+                if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 400);
+            });
+            document.getElementById('btnToggleSidebar')?.addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebarFilter');
+                if (window.innerWidth <= 800) { sidebar.classList.toggle('mobile-open'); sidebar.classList.remove('collapsed'); }
+                else { sidebar.classList.toggle('collapsed'); document.getElementById('mainContent').classList.toggle('expanded'); }
+                if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 400);
+            });
+            document.getElementById('locateBtn')?.addEventListener('click', locateUser);
+            document.getElementById('goToOrderBtn')?.addEventListener('click', () => {
+                if (selectedHalls.length === 0) return;
+                localStorage.setItem('selectedHallsFromMap', JSON.stringify(selectedHalls));
+                window.location.href = 'order.html?from=map';
+            });
+            document.getElementById('btnCompareToggle')?.addEventListener('click', () => {
+                if (compareList.length === 0) showToast('🔹 أضف صالات للمقارنة أولاً');
+                else { renderComparePanel(); document.getElementById('comparePanel').classList.toggle('active'); }
+            });
+            document.getElementById('btnCompareGo')?.addEventListener('click', goCompare);
+            document.getElementById('btnCompareClose')?.addEventListener('click', () => document.getElementById('comparePanel').classList.remove('active'));
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+                document.getElementById('scrollProgress').style.width = progress + '%';
+            });
+            try {
+                const stored = localStorage.getItem('selectedHallsFromMap');
+                if (stored) { const parsed = JSON.parse(stored); selectedHalls = parsed.filter(sh => hallsData.some(h => h.id === sh.id)); }
+            } catch (e) {}
+            loadHallsFromAPI();
+            window.addEventListener('load', () => {
+                if (mapInstance) { setTimeout(() => { mapInstance.invalidateSize(); if (markerCluster && markerCluster.getBounds().isValid()) mapInstance.fitBounds(markerCluster.getBounds().pad(0.08), { maxZoom: 14, animate: true, duration: 0.8 }); }, 600); }
+            });
+        })();
+    </script>
+</body>
+</html>
