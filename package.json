@@ -1,0 +1,26 @@
+{
+  "name": "projet-seewt-event-dz",
+  "version": "1.0.0",
+  "description": "Sweet Event DZ Project",
+  "main": "script.js",
+  "type": "commonjs",
+  "scripts": {
+"start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@libsql/client": "^0.17.3",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^1.41.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mssql": "^12.5.2",
+    "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "sqlite3": "^6.0.1"
+  }
+}
