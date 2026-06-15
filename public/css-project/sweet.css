@@ -3959,3 +3959,50 @@ footer .socials a:hover,
     margin-top: 10px !important;    /* مسافة فوق الزر لدفعه للأسفل */
     display: inline-block !important;
 }
+/* ===================================================== */
+/* حل مشكلة تداخل النصوص وزر السلة عند الترجمة أو النصوص الطويلة */
+/* ===================================================== */
+
+/* 1. إعادة ضبط حاوية العناصر داخل السلايدر لتوزيع المساحة عمودياً */
+#productSlider .item {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important; /* يضمن توزيع العناصر من الأعلى للأسفل بالتساوي */
+    align-items: center !important;
+    padding-top: 30px !important; /* زيادة الحشو العلوي لإعطاء مساحة للصورة المرفوعة */
+    padding-bottom: 20px !important;
+    min-height: 480px; /* يمكنك تعديل الحد الأدنى للارتفاع ليتناسب مع التصميم العام */
+    box-sizing: border-box !important;
+}
+
+/* 2. رفع الصورة الدائرية إلى الأعلى أكثر وتقليص الفراغ غير المستغل */
+#productSlider .item img,
+#productSlider .item .img-container img {
+    margin-top: -25px !important; /* سحب الصورة الدائرية باتجاه الحافة العلوية */
+    margin-bottom: 10px !important; /* مسافة خفيفة ومحكومة تحت الصورة */
+}
+
+/* 3. التحكم في حاوية العنوان والشرح وجعلها مرنة */
+#productSlider .item h3,
+#productSlider .item p,
+#productSlider .item .description-text {
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 5px !important;
+    margin-bottom: auto !important; /* ميزة سحرية: تدفع السعر والزر ليتمركزا دائماً في قاع الكارت */
+}
+
+/* 4. إجبار السعر والزر على أخذ مسافة أمان علوية مريحة ومنع التداخل */
+#productSlider .item .price,
+#productSlider .item .price-wrapper {
+    margin-top: 15px !important; /* يضمن وجود مسافة تفصل السعر عن نهاية الشرح */
+    margin-bottom: 8px !important;
+}
+
+#productSlider .item .btn-add-to-cart,
+#productSlider .item .btn-submit-order,
+#productSlider .item button {
+    margin-top: 5px !important;
+    width: 90% !important; /* الحفاظ على أبعاد الزر */
+    white-space: nowrap !important; /* يمنع انقسام كلمة "Ajouter au panier" إلى سطرين إن أمكن */
+}
