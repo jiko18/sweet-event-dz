@@ -28,6 +28,7 @@
             background: linear-gradient(135deg, var(--bg-light) 0%, #f7f0e6 100%);
             background-attachment: fixed;
             margin: 0;
+            padding-top: 0px; /* هذا السطر يمنع تداخل الصور مع الهيدر */
             font-family: 'Poppins', sans-serif;
             transition: background 0.4s;
         }
@@ -271,7 +272,7 @@
         <i class="fa-solid fa-cake-candles gold-text"></i>
         <span>Sweet<br>Event DZ</span>
     </div>
-    <nav dir="ltr">
+    <nav>
         <ul>
             <li><a href="/cakes" class="nav-link" data-lang="cakes">Cakes</a></li>
             <li><a href="/decor" class="nav-link" data-lang="decor">Decor</a></li>
@@ -288,10 +289,11 @@
         <div class="toggle-switch" id="themeToggle">
             <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
         </div>
-            <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
-        </div>
+        
         <button class="btn-icon" id="accountBtn"><i class="fa-regular fa-user"></i></button>
+        
         <span id="userGreetingContainer"></span>
+        
         <button class="btn-primary" id="mainRegisterBtn" data-lang="nav_register">Create Account</button>
     </div>
 </header>
