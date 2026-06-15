@@ -30,6 +30,30 @@ app.use(express.static(path.join(__dirname, 'public'), {
 const SECRET_KEY = process.env.JWT_SECRET || 'sweet_event_dz_2026_SECRET';
 
 // =====================================================
+// إعدادات بوت تيليجرام
+// =====================================================
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8757309614:AAGzfQ69Itfu9WNMCaKsPTT97AuL5qe-HpU';
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '6283553550';
+
+async function sendTelegramNotification(message) {
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    try {
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+        console.log('✅ تم إرسال إشعار تيليجرام بنجاح');
+    } catch (err) {
+        console.error('❌ حدث خطأ أثناء إرسال إشعار تيليجرام:', err.message);
+    }
+}
+
+// =====================================================
 // الاتصال بقاعدة البيانات السحابية Turso
 // =====================================================
 const db = createClient({
@@ -421,6 +445,19 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             );
         }
         
+        // --- إضافة: إرسال إشعار للتيليجرام ---
+        const notificationMessage = `
+🔔 *طلب جديد تم تسجيله!* 🔔
+رقم الطلب: #${orderId}
+الزبون: ${customerName}
+الهاتف: ${customerPhone}
+المبلغ الإجمالي: ${totalAmount} د.ج
+العنوان: ${deliveryAddress || 'غير محدد'}
+التاريخ المحدد: ${finalDate}
+        `;
+        sendTelegramNotification(notificationMessage);
+        // -------------------------------------
+
         res.json({ success: true, message: 'تم حفظ طلبك بنجاح', orderId });
     } catch (err) {
         console.error("Order Error:", err.message);
@@ -482,6 +519,20 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
             `INSERT INTO OrderItems (OrderId, ProductId, Quantity, UnitPrice) VALUES (?, ?, 1, ?)`,
             [orderId, productId, unitPrice]
         );
+
+        // --- إضافة: إرسال إشعار للتيليجرام ---
+        const customNotification = `
+🎂 *طلب كعكة مخصصة جديد!* 🎂
+رقم الطلب: #${orderId}
+الزبون: ${customerName}
+الهاتف: ${user.Phone || 'غير متوفر'}
+المناسبة: ${eventType || 'غير محدد'}
+الحجم: ${cakeSize || 'غير محدد'}
+ملاحظات: ${notes || 'لا يوجد'}
+        `;
+        sendTelegramNotification(customNotification);
+        // -------------------------------------
+
         res.json({ success: true, orderId, message: 'تم استلام طلبك المخصص بنجاح' });
     } catch (err) {
         console.error("Custom Order Error:", err.message);
