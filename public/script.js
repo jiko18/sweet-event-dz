@@ -2019,3 +2019,166 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+// =====================================================
+// ترقية معرض الصور (Gallery) لدعم السحب باللمس (Swipe)
+// =====================================================
+window.openProductGallery = function(images) {
+    if (!images || images.length === 0) return;
+
+    // إزالة أي نافذة سابقة إن وجدت
+    let existingModal = document.getElementById('globalGalleryModal');
+    if (existingModal) existingModal.remove();
+
+    let currentIndex = 0;
+    
+    // إيقاف التمرير في خلفية الموقع أثناء فتح الصور
+    document.body.style.overflow = 'hidden'; 
+
+    // إنشاء خلفية النافذة الزجاجية (Overlay)
+    const modal = document.createElement('div');
+    modal.id = 'globalGalleryModal';
+    modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(10, 7, 5, 0.95); z-index: 100000;
+        display: flex; align-items: center; justify-content: center;
+        flex-direction: column; backdrop-filter: blur(15px);
+    `;
+
+    // إنشاء عنصر الصورة مع تأثيرات الانتقال
+    const img = document.createElement('img');
+    img.style.cssText = `
+        max-width: 95%; max-height: 80vh; object-fit: contain;
+        border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        transition: transform 0.3s ease, opacity 0.3s ease; user-select: none;
+    `;
+    img.src = images[currentIndex];
+
+    // زر الإغلاق
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    closeBtn.style.cssText = `
+        position: absolute; top: 25px; right: 25px;
+        background: rgba(201, 150, 62, 0.1); border: 1px solid #c9963e;
+        color: #c9963e; font-size: 20px; cursor: pointer; z-index: 100001;
+        width: 45px; height: 45px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    `;
+    closeBtn.onmouseover = () => { closeBtn.style.background = '#c9963e'; closeBtn.style.color = '#000'; };
+    closeBtn.onmouseout = () => { closeBtn.style.background = 'rgba(201, 150, 62, 0.1)'; closeBtn.style.color = '#c9963e'; };
+
+    // حاوية أزرار التنقل 
+    const controls = document.createElement('div');
+    controls.style.cssText = `
+        position: absolute; width: 100%; display: flex;
+        justify-content: space-between; top: 50%; transform: translateY(-50%);
+        padding: 0 20px; box-sizing: border-box; pointer-events: none;
+    `;
+
+    const btnStyle = `
+        background: rgba(20, 15, 12, 0.8); color: #c9963e;
+        border: 1px solid #c9963e; border-radius: 50%; width: 50px; height: 50px;
+        font-size: 18px; cursor: pointer; pointer-events: auto;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.3s;
+    `;
+
+    const prevBtn = document.createElement('button');
+    prevBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>'; 
+    prevBtn.style.cssText = btnStyle;
+    
+    const nextBtn = document.createElement('button');
+    nextBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>'; 
+    nextBtn.style.cssText = btnStyle;
+
+    [prevBtn, nextBtn].forEach(btn => {
+        btn.onmouseover = () => { btn.style.background = '#c9963e'; btn.style.color = '#000'; };
+        btn.onmouseout = () => { btn.style.background = 'rgba(20, 15, 12, 0.8)'; btn.style.color = '#c9963e'; };
+    });
+
+    // العداد (رقم الصورة)
+    const counter = document.createElement('div');
+    counter.style.cssText = `
+        position: absolute; bottom: 30px; color: #c9963e;
+        font-family: 'Cairo', sans-serif; font-size: 1rem; font-weight: 700;
+        background: rgba(20, 15, 12, 0.8); padding: 6px 20px; 
+        border-radius: 30px; border: 1px solid #c9963e;
+    `;
+
+    // دالة تحديث الصورة مع تأثير الحركة
+    function updateGallery(direction) {
+        img.style.opacity = '0.3';
+        img.style.transform = direction === 'next' ? 'scale(0.95) translateX(-40px)' : 'scale(0.95) translateX(40px)';
+        
+        setTimeout(() => {
+            img.src = images[currentIndex];
+            img.style.opacity = '1';
+            img.style.transform = 'scale(1) translateX(0)';
+            counter.textContent = `${currentIndex + 1} / ${images.length}`;
+        }, 200);
+    }
+
+    prevBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex - 1 + images.length) % images.length; updateGallery('prev'); };
+    nextBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex + 1) % images.length; updateGallery('next'); };
+
+    // ==========================================
+    // 📱 إضافة دعم السحب (Touch Swipe) للهواتف
+    // ==========================================
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    modal.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    modal.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        const swipeThreshold = 50; // الحد الأدنى للمسافة لاحتساب السحبة
+        if (touchEndX < touchStartX - swipeThreshold) {
+            // سحب لليسار -> الصورة التالية
+            nextBtn.click();
+        }
+        if (touchEndX > touchStartX + swipeThreshold) {
+            // سحب لليمين -> الصورة السابقة
+            prevBtn.click();
+        }
+    }
+
+    // ==========================================
+    // ⌨️ دعم لوحة المفاتيح (للحاسوب)
+    // ==========================================
+    const keyHandler = (e) => {
+        if (e.key === 'ArrowLeft') nextBtn.click();
+        if (e.key === 'ArrowRight') prevBtn.click();
+        if (e.key === 'Escape') cleanUp();
+    };
+    document.addEventListener('keydown', keyHandler);
+
+    // دالة التنظيف عند الإغلاق
+    const cleanUp = () => {
+        modal.remove();
+        document.body.style.overflow = ''; // إعادة تفعيل التمرير
+        document.removeEventListener('keydown', keyHandler);
+    };
+
+    closeBtn.onclick = cleanUp;
+    modal.onclick = (e) => { if (e.target === modal) cleanUp(); };
+
+    // تجميع العناصر
+    controls.appendChild(prevBtn);
+    controls.appendChild(nextBtn);
+    modal.appendChild(closeBtn);
+    modal.appendChild(img);
+    
+    if (images.length > 1) {
+        modal.appendChild(controls);
+        modal.appendChild(counter);
+        counter.textContent = `1 / ${images.length}`;
+    }
+    
+    document.body.appendChild(modal);
+};

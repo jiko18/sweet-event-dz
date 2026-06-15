@@ -388,7 +388,7 @@ function googleTranslateElementInit() {
                 const buyNowText = getTranslation('order_now') || "اطلب الآن";
                 const videoText = getTranslation('video_available') || "فيديو";
                 const downloadText = getTranslation('download_video') || "تحميل الفيديو";
-                const defaultDesc = getTranslation('photo_default_desc') || "خدمة احترافية مميزة تغطي جميع لحظاتكم الثمينة بأعلى دقة.";
+                const defaultDesc = getTranslation('') || "خدمة احترافية مميزة تغطي جميع لحظاتكم الثمينة بأعلى دقة.";
 
                 grid.innerHTML = services.map(service => {
                     const isVideo = isVideoFile(service.ImageUrl);
