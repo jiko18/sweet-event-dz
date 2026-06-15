@@ -3870,3 +3870,92 @@ nav ul li a,
 body {
     top: 0 !important;
 }
+/* ===================================================== */
+/* ضغط الهيدر وتوفير المساحة للغات الأجنبية فقط (إنجليزي/فرنسي) */
+/* ===================================================== */
+@media screen and (max-width: 768px) {
+    /* تطبيق التعديلات فقط عندما تعمل ترجمة جوجل (translated-ltr) */
+    html.translated-ltr header nav ul {
+        gap: 2px !important; 
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    html.translated-ltr header nav ul li {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    html.translated-ltr header nav ul li a.nav-link,
+    html.translated-ltr nav ul li a {
+        font-size: 11px !important; 
+        padding: 4px 3px !important; 
+        white-space: nowrap !important;
+        letter-spacing: -0.3px !important; 
+    }
+}
+/* إخفاء الأيقونة أو الرسمة بجانب اسم الموقع في الهواتف لتوفير مساحة */
+@media screen and (max-width: 768px) {
+    header .logo i, 
+    header .logo img, 
+    header img, 
+    .logo i, 
+    .logo img { 
+        display: none !important;
+    }
+}
+/* ===================================================== */
+/* التلوين الإجباري لأيقونات السوشيال ميديا في كل الصفحات */
+/* ===================================================== */
+
+/* 1. إعطاء لون الفيسبوك الأزرق الرسمي الإجباري */
+footer .socials .fa-facebook,
+.socials .fa-facebook,
+.socials a.fa-facebook {
+    color: #1877F2 !important;
+    -webkit-text-fill-color: #1877F2 !important; /* إلغاء أي تأثيرات سابقة */
+    background: none !important;
+}
+
+/* 2. إعطاء تدرج ألوان الإنستقرام الرسمي الإجباري */
+footer .socials .fa-instagram,
+.socials .fa-instagram,
+.socials a.fa-instagram {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+}
+
+/* 3. توحيد الحجم والمسافات وإضافة تأثير التكبير عند لمسها بالماوس */
+footer .socials a,
+.socials a {
+    font-size: 1.6rem !important; /* تكبير الأيقونات قليلاً لتصبح أوضح */
+    margin: 0 8px !important;
+    display: inline-block !important; /* ضروري لكي يعمل تأثير التكبير */
+    text-decoration: none !important;
+    transition: transform 0.3s ease !important;
+}
+
+footer .socials a:hover,
+.socials a:hover {
+    transform: scale(1.2) translateY(-3px) !important;
+}
+/* ===================================================== */
+/* فصل السعر عن زر "أضف للسلة" لضمان عدم التداخل */
+/* ===================================================== */
+
+/* التحكم في حاوية السعر داخل السلايدر */
+#productSlider .item .price, 
+#productSlider .item .product-price {
+    margin-bottom: 15px !important; /* مسافة تحت السعر */
+    display: block !important;
+}
+
+/* التحكم في زر "أضف للسلة" داخل السلايدر */
+#productSlider .item button, 
+#productSlider .item .add-to-cart-btn {
+    margin-top: 10px !important;    /* مسافة فوق الزر لدفعه للأسفل */
+    display: inline-block !important;
+}
