@@ -3960,49 +3960,38 @@ footer .socials a:hover,
     display: inline-block !important;
 }
 /* ===================================================== */
-/* حل مشكلة تداخل النصوص وزر السلة عند الترجمة أو النصوص الطويلة */
+/* إصلاح تداخل زر السلة مع النصوص في السلايدر (جميع الصفحات) */
 /* ===================================================== */
 
-/* 1. إعادة ضبط حاوية العناصر داخل السلايدر لتوزيع المساحة عمودياً */
-#productSlider .item {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important; /* يضمن توزيع العناصر من الأعلى للأسفل بالتساوي */
-    align-items: center !important;
-    padding-top: 30px !important; /* زيادة الحشو العلوي لإعطاء مساحة للصورة المرفوعة */
-    padding-bottom: 20px !important;
-    min-height: 480px; /* يمكنك تعديل الحد الأدنى للارتفاع ليتناسب مع التصميم العام */
-    box-sizing: border-box !important;
+/* 1. رفع الصورة الدائرية للأعلى وتصغيرها قليلاً لكسب مساحة */
+.slide .item .glass-featured-image {
+    margin-top: -35px !important;  /* 💡 للرفع أكثر: اجعل الرقم -45px مثلاً */
+    margin-bottom: 10px !important; 
+    width: 140px !important; 
+    height: 140px !important;
 }
 
-/* 2. رفع الصورة الدائرية إلى الأعلى أكثر وتقليص الفراغ غير المستغل */
-#productSlider .item img,
-#productSlider .item .img-container img {
-    margin-top: -25px !important; /* سحب الصورة الدائرية باتجاه الحافة العلوية */
-    margin-bottom: 10px !important; /* مسافة خفيفة ومحكومة تحت الصورة */
+/* 2. تضييق المسافات بين العنوان والسعر ليتنفس الشرح */
+.slide .item .content-img .name {
+    margin-bottom: 5px !important;
 }
-
-/* 3. التحكم في حاوية العنوان والشرح وجعلها مرنة */
-#productSlider .item h3,
-#productSlider .item p,
-#productSlider .item .description-text {
-    width: 100% !important;
-    text-align: center !important;
+.slide .item .content-img .price {
     margin-top: 5px !important;
-    margin-bottom: auto !important; /* ميزة سحرية: تدفع السعر والزر ليتمركزا دائماً في قاع الكارت */
-}
-
-/* 4. إجبار السعر والزر على أخذ مسافة أمان علوية مريحة ومنع التداخل */
-#productSlider .item .price,
-#productSlider .item .price-wrapper {
-    margin-top: 15px !important; /* يضمن وجود مسافة تفصل السعر عن نهاية الشرح */
     margin-bottom: 8px !important;
 }
+.slide .item .content-img .dec {
+    line-height: 1.4 !important;
+    margin-bottom: 0 !important;
+}
 
-#productSlider .item .btn-add-to-cart,
-#productSlider .item .btn-submit-order,
-#productSlider .item button {
-    margin-top: 5px !important;
-    width: 90% !important; /* الحفاظ على أبعاد الزر */
-    white-space: nowrap !important; /* يمنع انقسام كلمة "Ajouter au panier" إلى سطرين إن أمكن */
+/* 3. الحل الجذري: إنشاء مسافة أمان (حاجز) أسفل الشرح لمنع التداخل مع الزر */
+.slide .item .content-img {
+    padding-top: 1.5rem !important;
+    padding-bottom: 85px !important; /* 💡 هذا الحاجز السحري يمنع النص من النزول لمكان الزر */
+}
+
+/* 4. التحكم في زر الإضافة للسلة */
+.slide .item .elegant-cart-btn {
+    bottom: 20px !important; /* 💡 للخفض أكثر: اجعل الرقم 15px أو 10px */
+    white-space: nowrap !important; /* 💡 يمنع انكسار الكلمة الفرنسية لسطرين */
 }
