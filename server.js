@@ -27,7 +27,31 @@ app.use(express.static(path.join(__dirname, 'public'), {
     extensions: ['html']
 }));
 // الأسرار
-const SECRET_KEY = process.env.JWT_SECRET || 'sweet_event_dz_2026_SECRET';
+// الأسرار
+const SECRET_KEY = process.env.JWT_SECRET;
+
+// =====================================================
+// إعدادات بوت تيليجرام
+// =====================================================
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+async function sendTelegramNotification(message) {
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    try {
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+        console.log('✅ تم إرسال إشعار تيليجرام بنجاح');
+    } catch (err) {
+        console.error('❌ حدث خطأ أثناء إرسال إشعار تيليجرام:', err.message);
+    }
+}
 
 // =====================================================
 // الاتصال بقاعدة البيانات السحابية Turso
@@ -69,6 +93,7 @@ async function logAdminAction(adminId, adminName, actionType, details) {
 }
 
 // إنشاء الجداول تلقائياً عند بدء التشغيل (مع إضافة DeliveryAddress)
+// إنشاء الجداول تلقائياً عند بدء التشغيل (مع إضافة DeliveryAddress والأحجام Sizes)
 (async function createTables() {
     try {
         await db.execute(`
@@ -86,6 +111,97 @@ async function logAdminAction(adminId, adminName, actionType, details) {
                 Role TEXT DEFAULT 'customer'
             )
         `);
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS Products (
+                ProductId INTEGER PRIMARY KEY AUTOINCREMENT,
+                Category TEXT,
+                Name TEXT,
+                Description TEXT,
+                Price REAL,
+                ImageUrl TEXT,
+                IsActive INTEGER DEFAULT 1,
+                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+                MediaFiles TEXT,
+                Location TEXT,
+                Capacity INTEGER,
+                Latitude REAL,
+                Longitude REAL,
+                Features TEXT,
+                UnitType TEXT DEFAULT 'none',
+                Sizes TEXT DEFAULT '[]', -- ✅ تم إضافة عمود الأحجام هنا
+                IsDeleted INTEGER DEFAULT 0
+            )
+        `);
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS Orders (
+                OrderId INTEGER PRIMARY KEY AUTOINCREMENT,
+                UserId INTEGER,
+                CustomerName TEXT,
+                CustomerPhone TEXT,
+                CustomerEmail TEXT,
+                EventDate TEXT,
+                DeliveryDate TEXT,
+                DeliveryAddress TEXT,
+                Notes TEXT,
+                TotalAmount REAL,
+                Status TEXT DEFAULT 'Pending',
+                OrderDate TEXT DEFAULT CURRENT_TIMESTAMP,
+                IsDeleted INTEGER DEFAULT 0,
+                IsArchived INTEGER DEFAULT 0,
+                IsDeletedByAdmin INTEGER DEFAULT 0,
+                FOREIGN KEY (UserId) REFERENCES Users(UserID)
+            )
+        `);
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS OrderItems (
+                ItemId INTEGER PRIMARY KEY AUTOINCREMENT,
+                OrderId INTEGER,
+                ProductId INTEGER,
+                Quantity INTEGER,
+                UnitPrice REAL,
+                FOREIGN KEY (OrderId) REFERENCES Orders(OrderId) ON DELETE CASCADE,
+                FOREIGN KEY (ProductId) REFERENCES Products(ProductId)
+            )
+        `);
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS Reviews (
+                ReviewId INTEGER PRIMARY KEY AUTOINCREMENT,
+                UserId INTEGER,
+                ReviewerName TEXT,
+                Rating INTEGER CHECK(Rating BETWEEN 1 AND 5),
+                Comment TEXT,
+                IsApproved INTEGER DEFAULT 0,
+                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (UserId) REFERENCES Users(UserID)
+            )
+        `);
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS Gallery (
+                GalleryId INTEGER PRIMARY KEY AUTOINCREMENT,
+                Title TEXT,
+                ImageUrl TEXT,
+                Category TEXT DEFAULT 'general',
+                DisplayOrder INTEGER DEFAULT 0,
+                IsActive INTEGER DEFAULT 1,
+                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS ActivityLogs (
+                LogId INTEGER PRIMARY KEY AUTOINCREMENT,
+                AdminId INTEGER,
+                AdminName TEXT,
+                ActionType TEXT,
+                Details TEXT,
+                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        console.log('✅ جميع الجداول جاهزة على Turso');
+    } catch (err) {
+        console.error('❌ فشل إنشاء الجداول:', err.message);
+        process.exit(1);
+    }
+})();
         await db.execute(`
             CREATE TABLE IF NOT EXISTS Products (
                 ProductId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -421,6 +537,19 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             );
         }
         
+        // --- إضافة: إرسال إشعار للتيليجرام ---
+        const notificationMessage = `
+🔔 *طلب جديد تم تسجيله!* 🔔
+رقم الطلب: #${orderId}
+الزبون: ${customerName}
+الهاتف: ${customerPhone}
+المبلغ الإجمالي: ${totalAmount} د.ج
+العنوان: ${deliveryAddress || 'غير محدد'}
+التاريخ المحدد: ${finalDate}
+        `;
+        sendTelegramNotification(notificationMessage);
+        // -------------------------------------
+
         res.json({ success: true, message: 'تم حفظ طلبك بنجاح', orderId });
     } catch (err) {
         console.error("Order Error:", err.message);
@@ -482,6 +611,20 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
             `INSERT INTO OrderItems (OrderId, ProductId, Quantity, UnitPrice) VALUES (?, ?, 1, ?)`,
             [orderId, productId, unitPrice]
         );
+
+        // --- إضافة: إرسال إشعار للتيليجرام ---
+        const customNotification = `
+🎂 *طلب كعكة مخصصة جديد!* 🎂
+رقم الطلب: #${orderId}
+الزبون: ${customerName}
+الهاتف: ${user.Phone || 'غير متوفر'}
+المناسبة: ${eventType || 'غير محدد'}
+الحجم: ${cakeSize || 'غير محدد'}
+ملاحظات: ${notes || 'لا يوجد'}
+        `;
+        sendTelegramNotification(customNotification);
+        // -------------------------------------
+
         res.json({ success: true, orderId, message: 'تم استلام طلبك المخصص بنجاح' });
     } catch (err) {
         console.error("Custom Order Error:", err.message);

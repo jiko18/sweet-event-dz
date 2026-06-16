@@ -3959,3 +3959,39 @@ footer .socials a:hover,
     margin-top: 10px !important;    /* مسافة فوق الزر لدفعه للأسفل */
     display: inline-block !important;
 }
+/* ===================================================== */
+/* إصلاح تداخل زر السلة مع النصوص في السلايدر (جميع الصفحات) */
+/* ===================================================== */
+
+/* 1. رفع الصورة الدائرية للأعلى وتصغيرها قليلاً لكسب مساحة */
+.slide .item .glass-featured-image {
+    margin-top: -35px !important;  /* 💡 للرفع أكثر: اجعل الرقم -45px مثلاً */
+    margin-bottom: 10px !important; 
+    width: 140px !important; 
+    height: 140px !important;
+}
+
+/* 2. تضييق المسافات بين العنوان والسعر ليتنفس الشرح */
+.slide .item .content-img .name {
+    margin-bottom: 5px !important;
+}
+.slide .item .content-img .price {
+    margin-top: 5px !important;
+    margin-bottom: 8px !important;
+}
+.slide .item .content-img .dec {
+    line-height: 1.4 !important;
+    margin-bottom: 0 !important;
+}
+
+/* 3. الحل الجذري: إنشاء مسافة أمان (حاجز) أسفل الشرح لمنع التداخل مع الزر */
+.slide .item .content-img {
+    padding-top: 1.5rem !important;
+    padding-bottom: 85px !important; /* 💡 هذا الحاجز السحري يمنع النص من النزول لمكان الزر */
+}
+
+/* 4. التحكم في زر الإضافة للسلة */
+.slide .item .elegant-cart-btn {
+    bottom: 20px !important; /* 💡 للخفض أكثر: اجعل الرقم 15px أو 10px */
+    white-space: nowrap !important; /* 💡 يمنع انكسار الكلمة الفرنسية لسطرين */
+}
