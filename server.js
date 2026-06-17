@@ -91,8 +91,6 @@ async function logAdminAction(adminId, adminName, actionType, details) {
         console.error("فشل تسجيل النشاط:", err.message);
     }
 }
-
-// إنشاء الجداول تلقائياً عند بدء التشغيل (مع إضافة DeliveryAddress)
 // إنشاء الجداول تلقائياً عند بدء التشغيل (مع إضافة DeliveryAddress والأحجام Sizes)
 (async function createTables() {
     try {
@@ -202,97 +200,6 @@ async function logAdminAction(adminId, adminName, actionType, details) {
         process.exit(1);
     }
 })();
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS Products (
-                ProductId INTEGER PRIMARY KEY AUTOINCREMENT,
-                Category TEXT,
-                Name TEXT,
-                Description TEXT,
-                Price REAL,
-                ImageUrl TEXT,
-                IsActive INTEGER DEFAULT 1,
-                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-                MediaFiles TEXT,
-                Location TEXT,
-                Capacity INTEGER,
-                Latitude REAL,
-                Longitude REAL,
-                Features TEXT,
-                UnitType TEXT DEFAULT 'none',
-                IsDeleted INTEGER DEFAULT 0
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS Orders (
-                OrderId INTEGER PRIMARY KEY AUTOINCREMENT,
-                UserId INTEGER,
-                CustomerName TEXT,
-                CustomerPhone TEXT,
-                CustomerEmail TEXT,
-                EventDate TEXT,
-                DeliveryDate TEXT,
-                DeliveryAddress TEXT,
-                Notes TEXT,
-                TotalAmount REAL,
-                Status TEXT DEFAULT 'Pending',
-                OrderDate TEXT DEFAULT CURRENT_TIMESTAMP,
-                IsDeleted INTEGER DEFAULT 0,
-                IsArchived INTEGER DEFAULT 0,
-                IsDeletedByAdmin INTEGER DEFAULT 0,
-                FOREIGN KEY (UserId) REFERENCES Users(UserID)
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS OrderItems (
-                ItemId INTEGER PRIMARY KEY AUTOINCREMENT,
-                OrderId INTEGER,
-                ProductId INTEGER,
-                Quantity INTEGER,
-                UnitPrice REAL,
-                FOREIGN KEY (OrderId) REFERENCES Orders(OrderId) ON DELETE CASCADE,
-                FOREIGN KEY (ProductId) REFERENCES Products(ProductId)
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS Reviews (
-                ReviewId INTEGER PRIMARY KEY AUTOINCREMENT,
-                UserId INTEGER,
-                ReviewerName TEXT,
-                Rating INTEGER CHECK(Rating BETWEEN 1 AND 5),
-                Comment TEXT,
-                IsApproved INTEGER DEFAULT 0,
-                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (UserId) REFERENCES Users(UserID)
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS Gallery (
-                GalleryId INTEGER PRIMARY KEY AUTOINCREMENT,
-                Title TEXT,
-                ImageUrl TEXT,
-                Category TEXT DEFAULT 'general',
-                DisplayOrder INTEGER DEFAULT 0,
-                IsActive INTEGER DEFAULT 1,
-                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS ActivityLogs (
-                LogId INTEGER PRIMARY KEY AUTOINCREMENT,
-                AdminId INTEGER,
-                AdminName TEXT,
-                ActionType TEXT,
-                Details TEXT,
-                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        console.log('✅ جميع الجداول جاهزة على Turso');
-    } catch (err) {
-        console.error('❌ فشل إنشاء الجداول:', err.message);
-        process.exit(1);
-    }
-})();
-
 // =====================================================
 // Middleware
 // =====================================================
