@@ -33,8 +33,8 @@ const SECRET_KEY = process.env.JWTS_SECRET;
 // =====================================================
 // إعدادات بوت تيليجرام
 // =====================================================
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+const TELEGRAM_BOT_TOKEN = "8978529375:AAHag3t27bogUnuEthHSwB3foURQwkDEfqI";
+const TELEGRAM_CHAT_ID = "7545626508";
 async function sendTelegramNotification(message) {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
     try {
