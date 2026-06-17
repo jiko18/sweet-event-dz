@@ -38,21 +38,28 @@ const TELEGRAM_CHAT_ID = "7545626508";
 async function sendTelegramNotification(message) {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
     try {
-        await fetch(url, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'Markdown'
+                text: message
+                // 🚨 قمنا بإلغاء parse_mode لتجنب توقف البوت بسبب الرموز
             })
         });
-        console.log('✅ تم إرسال إشعار تيليجرام بنجاح');
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            // الآن إذا رفض تيليجرام الرسالة، سيظهر لك السبب الحقيقي في اللوجز
+            console.error('❌ تيليجرام رفض الرسالة! السبب:', data.description);
+        } else {
+            console.log('✅ تم إرسال إشعار تيليجرام بنجاح');
+        }
     } catch (err) {
-        console.error('❌ حدث خطأ أثناء إرسال إشعار تيليجرام:', err.message);
+        console.error('❌ حدث خطأ في الاتصال بالشبكة:', err.message);
     }
 }
-
 // =====================================================
 // الاتصال بقاعدة البيانات السحابية Turso
 // =====================================================
