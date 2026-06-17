@@ -308,6 +308,27 @@
             border-style: solid;
         }
 
+        /* أزرار الفلترة */
+        .filter-tabs .filter-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-soft);
+            padding: 8px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .filter-tabs .filter-btn:hover, 
+        .filter-tabs .filter-btn.active {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            box-shadow: 0 4px 15px rgba(201, 150, 62, 0.3);
+        }
+
         /* نموذج الطلب المخصص */
         .custom-order-section {
             margin-top: 4rem;
@@ -509,6 +530,16 @@
     <!-- شبكة الكعكات -->
     <div class="cakes-section">
         <div class="section-title">🎂 تشكيلتنا المتميزة</div>
+        
+   <div class="filter-tabs" id="cakeFilterTabs" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 2rem; flex-wrap: wrap;">
+        <button class="filter-btn active" data-filter="all">الكل</button>
+    <button class="filter-btn" data-filter="wedding">زفاف</button>
+    <button class="filter-btn" data-filter="engagement">خطوبة</button>
+    <button class="filter-btn" data-filter="birthday">أعياد ميلاد</button>
+    <button class="filter-btn" data-filter="graduation">تخرج</button>
+    <button class="filter-btn" data-filter="circumcision">ختان</button>
+</div>
+
         <div id="cakesGridContainer" class="cakes-grid">
             <!-- سيتم تعبئتها بواسطة JS -->
         </div>
@@ -584,7 +615,15 @@
     <div class="footer-cols"><div class="col brand"><div class="logo"><i class="fa-solid fa-cake-candles gold-text"></i><span>Sweet<br>Event DZ</span></div><div class="socials"><a href="#" class="fa-brands fa-facebook"></a><a href="https://www.instagram.com/gateaux_hassen_taher_/" class="fa-brands fa-instagram"></a></div></div><div class="col"><h4>روابط سريعة</h4><ul><li><a href="/">الرئيسية</a></li><li><a href="/cakes">كيك</a></li><li><a href="/menu">حلويات</a></li><li><a href="/decor">ديكور</a></li><li><a href="/photography">تصوير</a></li></ul></div><div class="col"><h4>الدعم</h4><ul><li><a href="/order">طلب شامل</a></li><li><a href="/reviews">تقييمات</a></li><li><a href="/about">من نحن</a></li><li><a href="contact.html">اتصل بنا</a></li></ul></div><div class="col contact"><h4>نحن نقدم خدمة مرموقة</h4><p>نصنع أحلاماً ونحولها إلى واقع ملموس في كل مناسبة.</p><p><i class="fa-solid fa-phone"></i> +213 794 48 98 33</p><p><i class="fa-solid fa-envelope"></i> hassenboukhemkhem@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> الجزائر - جيجل - الطاهير</p></div></div>
     <div class="footer-bottom"><p>© 2026 Sweet Event DZ. جميع الحقوق محفوظة.</p></div>
 </footer>
-
+<div class="modal-overlay" id="cakeSizesModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:10002; align-items:center; justify-content:center; backdrop-filter: blur(8px);">
+    <div style="background:#140f0c; border:2px solid var(--gold); padding:2rem; border-radius:24px; max-width:550px; width:90%; color:#fff; position:relative; box-shadow: var(--shadow-hover);">
+        <button id="closeSizesModal" style="position:absolute; left:20px; top:20px; background:none; border:none; color:var(--gold); font-size:1.8rem; cursor:pointer;">&times;</button>
+        <h3 id="modalCakeTitle" style="color:var(--gold); text-align:center; margin-bottom:1.5rem; font-family:'El Messiri', sans-serif; font-size:1.6rem;"></h3>
+        
+        <div id="sizesContainer" style="display:flex; flex-direction:column; gap:1.2rem;">
+            </div>
+    </div>
+</div>
 
 <script type="text/javascript">
 function googleTranslateElementInit() {
@@ -617,10 +656,34 @@ function googleTranslateElementInit() {
             renderSlider(dynamicCakes);
             renderCakesGrid(dynamicCakes);
             startAutoSlide();
+            setupCakeFilters(); // تفعيل أزرار الفلترة بعد تحميل الكعكات
         } catch(e) {
             console.error(e);
             document.getElementById('cakesGridContainer').innerHTML = '<div class="no-data-message">⚠️ تعذر تحميل الكعكات، تأكد من تشغيل السيرفر.</div>';
         }
+    }
+
+    // دالة تفعيل الفلترة
+    function setupCakeFilters() {
+        const tabs = document.querySelectorAll('#cakeFilterTabs .filter-btn');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // تحديث الزر النشط
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const filterValue = this.dataset.filter;
+
+                // فلترة المصفوفة
+                if (filterValue === 'all') {
+                    renderCakesGrid(dynamicCakes);
+                } else {
+                    // نعتمد على عمود Features الذي حفظنا فيه نوع المناسبة
+                    const filteredCakes = dynamicCakes.filter(cake => cake.Features === filterValue);
+                    renderCakesGrid(filteredCakes);
+                }
+            });
+        });
     }
 
     function renderSlider(cakes) {
@@ -657,104 +720,115 @@ function googleTranslateElementInit() {
         });
     }
 function renderCakesGrid(cakes) {
-        const container = document.getElementById('cakesGridContainer');
-        if(!container) return;
-        if(!cakes.length) { container.innerHTML = '<div class="no-data-message">😕 لا توجد كعكات متاحة حالياً. أضف كعكات من لوحة الإدارة أولاً.</div>'; return; }
+    const container = document.getElementById('cakesGridContainer');
+    if(!container) return;
+    if(!cakes.length) { container.innerHTML = '<div class="no-data-message">😕 لا توجد كعكات متاحة حالياً. أضف كعكات من لوحة الإدارة أولاً.</div>'; return; }
+    
+    container.innerHTML = cakes.map(p=>{
+        const imgUrl = `${p.ImageUrl||'default.jpg'}`;            
         
-        container.innerHTML = cakes.map(p=>{
-            const imgUrl = `${p.ImageUrl||'default.jpg'}`;            
-            
-            // تحضير مصفوفة الصور للنافذة المنبثقة والتقليب
-            let mediaJson = `[&quot;${imgUrl}&quot;]`;
-            if (p.MediaFiles && p.MediaFiles !== '[]') {
-                mediaJson = escapeHtml(p.MediaFiles);
-            }
-
-            return `
-                <div class="cake-card">
-                    <div class="cake-img popup-media-trigger" style="cursor: pointer;" title="انقر لرؤية الصور">
-                        <img src="${imgUrl}" class="dynamic-product-img" data-media="${mediaJson}" alt="${escapeHtml(p.Name)}" loading="lazy" onerror="this.src='https://placehold.co/300x240'">
-                        <div class="cake-badge">${parseFloat(p.Price).toLocaleString()} دج</div>
-                    </div>
-            
-                    <div class="cake-info">
-                        <h3 class="cake-title">${escapeHtml(p.Name)}</h3>
-                        <p class="cake-desc">${escapeHtml(p.Description||'كعكة فاخرة')}</p>
-                        <div class="cake-price">${parseFloat(p.Price).toLocaleString()} دج</div>
-                        <div class="cake-actions">
-                            <button class="btn-cart" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-cart-plus"></i> إضافة للسلة</button>
-                            <button class="btn-order-direct" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-bolt"></i> اطلب الآن</button>
-                            <button class="btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}"><i class="fa-regular fa-pen-to-square"></i> تخصيص</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // إضافة أحداث النقر لفتح النافذة المنبثقة الأنيقة
-        document.querySelectorAll('#cakesGridContainer .popup-media-trigger').forEach(trigger => {
-            trigger.addEventListener('click', () => {
-                const img = trigger.querySelector('.dynamic-product-img');
-                const mediaData = img.getAttribute('data-media');
-                if (mediaData) {
-                    try {
-                        const mediaArray = JSON.parse(mediaData.replace(/&quot;/g, '"'));
-                        if (mediaArray && mediaArray.length > 0) {
-                            window.openProductGallery(mediaArray);
-                        }
-                    } catch(err) {
-                        window.openProductGallery([img.src]); // في حالة حدوث خطأ، نفتح الصورة الأساسية
-                    }
-                }
-            });
-        });
-
-        // تشغيل تأثير تغيير الصور التلقائي لو كان المنتج يحتوي عدة صور
-        if (typeof window.startProductCarousels === 'function') {
-            window.startProductCarousels();
+        let mediaJson = `[&quot;${imgUrl}&quot;]`;
+        if (p.MediaFiles && p.MediaFiles !== '[]') {
+            mediaJson = escapeHtml(p.MediaFiles);
         }
 
-        document.querySelectorAll('.btn-cart').forEach(btn=>{
-            btn.addEventListener('click',()=>{
-                window.CartManager.addItem({
-                    productId: parseInt(btn.dataset.id), 
-                    name: btn.dataset.name, 
-                    price: parseFloat(btn.dataset.price), 
-                    image: btn.dataset.img 
-                }, 'cakes');
-                
-                if (window.CartManager) window.CartManager.updateUI(); // تحديث فوري
-                
-                btn.innerHTML='<i class="fa-solid fa-check"></i> تم';
-                setTimeout(()=>btn.innerHTML='<i class="fa-solid fa-cart-plus"></i> إضافة للسلة',1000);
-            });
-        });
+        // 🌟 الشرط الخاص بك هنا:
+        // الكعكة سيكون لها أحجام إذا كتبنا في وصفها كلمة "أحجام"، أو إذا كان رقم معرفها 1 أو 3 أو 5 (يمكنك تغيير الأرقام والكلمة كما تحب)
+        const hasSizes = (p.Description && p.Description.includes("أحجام")) || [1, 3, 5].includes(p.ProductId);
 
-        document.querySelectorAll('.btn-order-direct').forEach(btn=>{
-            btn.addEventListener('click',()=>{
-                window.CartManager.addItem({
-                    productId: parseInt(btn.dataset.id), 
-                    name: btn.dataset.name, 
-                    price: parseFloat(btn.dataset.price), 
-                    image: btn.dataset.img
-                }, 'cakes');
-                window.location.href='order.html';
-            });
-        });
+        let actionsHtml = '';
 
-        document.querySelectorAll('.btn-customize').forEach(btn=>{
-            btn.addEventListener('click',()=>{
-                document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
-                document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
-                document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
-                document.getElementById('previewCakeName').innerText = btn.dataset.name;
-                document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString()+' دج';
-                document.getElementById('previewCakeImg').src = btn.dataset.img;
-                document.getElementById('selectedCakePreviewArea').style.display = 'flex';
-                document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
-                showToast(`تم تحديد الكعكة "${btn.dataset.name}"، أضف التفاصيل المخصصة`);
-            });
+        if (hasSizes) {
+            // إذا كانت الكعكة تحتوي على أحجام، نظهر زر واحد فقط يفتح النافذة المنبثقة
+            actionsHtml = `
+                <button class="btn-order-direct open-sizes-btn" 
+                        data-id="${p.ProductId}" 
+                        data-name="${escapeHtml(p.Name)}" 
+                        data-price="${p.Price}" 
+                        data-img="${imgUrl}" 
+                        style="width: 100%;">
+                    <i class="fa-solid fa-layer-group"></i> اختر الحجم والخيارات
+                </button>
+            `;
+        } else {
+            // إذا كانت كعكة عادية، تظهر أزرارك القديمة الثلاثة كما هي تماماً
+            actionsHtml = `
+                <button class="btn-cart" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-cart-plus"></i> إضافة للسلة</button>
+                <button class="btn-order-direct" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-bolt"></i> اطلب الآن</button>
+                <button class="btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}"><i class="fa-regular fa-pen-to-square"></i> تخصيص</button>
+            `;
+        }
+
+        return `
+            <div class="cake-card">
+                <div class="cake-img popup-media-trigger" style="cursor: pointer;" title="انقر لرؤية الصور">
+                    <img src="${imgUrl}" class="dynamic-product-img" data-media="${mediaJson}" alt="${escapeHtml(p.Name)}" loading="lazy" onerror="this.src='https://placehold.co/300x240'">
+                    <div class="cake-badge">${parseFloat(p.Price).toLocaleString()} دج</div>
+                </div>
+        
+                <div class="cake-info">
+                    <h3 class="cake-title">${escapeHtml(p.Name)}</h3>
+                    <p class="cake-desc">${escapeHtml(p.Description||'كعكة فاخرة')}</p>
+                    <div class="cake-price">${parseFloat(p.Price).toLocaleString()} دج</div>
+                    <div class="cake-actions">
+                        ${actionsHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // [باقي الأكواد القديمة لربط الأحداث تتركها بالأسفل كما هي تماماً داخل الدالة]
+    document.querySelectorAll('#cakesGridContainer .popup-media-trigger').forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const img = trigger.querySelector('.dynamic-product-img');
+            const mediaData = img.getAttribute('data-media');
+            if (mediaData) {
+                try {
+                    const mediaArray = JSON.parse(mediaData.replace(/&quot;/g, '"'));
+                    if (mediaArray && mediaArray.length > 0) {
+                        window.openProductGallery(mediaArray);
+                    }
+                } catch(err) {
+                    window.openProductGallery([img.src]);
+                }
+            }
         });
+    });
+
+    if (typeof window.startProductCarousels === 'function') {
+        window.startProductCarousels();
+    }
+
+    document.querySelectorAll('.btn-cart').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            window.CartManager.addItem({ productId: parseInt(btn.dataset.id), name: btn.dataset.name, price: parseFloat(btn.dataset.price), image: btn.dataset.img }, 'cakes');
+            if (window.CartManager) window.CartManager.updateUI();
+            btn.innerHTML='<i class="fa-solid fa-check"></i> تم';
+            setTimeout(()=>btn.innerHTML='<i class="fa-solid fa-cart-plus"></i> إضافة للسلة',1000);
+        });
+    });
+
+    document.querySelectorAll('.btn-order-direct').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            window.CartManager.addItem({ productId: parseInt(btn.dataset.id), name: btn.dataset.name, price: parseFloat(btn.dataset.price), image: btn.dataset.img }, 'cakes');
+            window.location.href='order.html';
+        });
+    });
+
+    document.querySelectorAll('.btn-customize').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
+            document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
+            document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
+            document.getElementById('previewCakeName').innerText = btn.dataset.name;
+            document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString()+' دج';
+            document.getElementById('previewCakeImg').src = btn.dataset.img;
+            document.getElementById('selectedCakePreviewArea').style.display = 'flex';
+            document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
+            showToast(`تم تحديد الكعكة "${btn.dataset.name}"، أضف التفاصيل المخصصة`);
+        });
+    });
     }
     function showSlide(index) { const items=document.querySelectorAll('#productSlider .item'); if(!items.length) return; if(index<0) index=items.length-1; if(index>=items.length) index=0; items.forEach((item,i)=>item.classList.toggle('active',i===index)); currentSlideIndex=index; }
     function nextSlide(){ showSlide(currentSlideIndex+1); }
@@ -809,6 +883,105 @@ function renderCakesGrid(cakes) {
         await loadCakes(); 
         if(window.CartManager) window.CartManager.updateUI(); 
     });
+    // 1. الاستماع للضغط على زر "اختر الحجم والخيارات" لفتح النافذة
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.open-sizes-btn');
+    if (btn) {
+        const basePrice = parseFloat(btn.dataset.price);
+        const cakeName = btn.dataset.name;
+        const cakeId = btn.dataset.id;
+        const cakeImg = btn.dataset.img;
+
+        document.getElementById('modalCakeTitle').innerText = `خيارات كعكة: ${cakeName}`;
+        
+        // حساب الأسعار الثلاثة بناءً على السعر الأساسي المستلم من الإدارة
+        const sizes = [
+            { name: 'صغيرة (10 - 15 شخص)', price: basePrice * 0.75 },  // أرخص بـ 25%
+            { name: 'متوسطة (20 - 30 شخص)', price: basePrice },        // السعر الأساسي
+            { name: 'كبيرة (40 - 50 شخص)', price: basePrice * 1.4 }    // أغلى بـ 40%
+        ];
+
+        const container = document.getElementById('sizesContainer');
+        container.innerHTML = sizes.map(size => `
+            <div style="background:rgba(255,255,255,0.03); padding:1.2rem; border-radius:16px; border:1px solid rgba(201,150,62,0.2); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h4 style="margin:0 0 5px 0; color:#fff; font-size:1rem;">${size.name}</h4>
+                    <span style="color:var(--gold); font-weight:bold; font-size:1.1rem;">${Math.round(size.price).toLocaleString()} دج</span>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn-cart size-action-cart" data-id="${cakeId}" data-name="${cakeName} (${size.name})" data-price="${size.price}" data-img="${cakeImg}" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-solid fa-cart-plus"></i> سلة</button>
+                    <button class="btn-order-direct size-action-direct" data-id="${cakeId}" data-name="${cakeName} (${size.name})" data-price="${size.price}" data-img="${cakeImg}" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-solid fa-bolt"></i> طلب</button>
+                    <button class="btn-customize size-action-custom" data-id="${cakeId}" data-name="${cakeName}" data-size="${size.name}" data-price="${size.price}" data-img="${cakeImg}" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-regular fa-pen-to-square"></i> تخصيص</button>
+                </div>
+            </div>
+        `).join('');
+
+        // إظهار النافذة المنبثقة للأحجام
+        document.getElementById('cakeSizesModal').style.display = 'flex';
+        
+        // تشغيل أحداث الأزرار الثلاثة داخل نافذة الحجم
+        setupSizeModalButtons();
+    }
+});
+
+// 2. إغلاق نافذة الأحجام عند الضغط على الزر (X)
+document.getElementById('closeSizesModal')?.addEventListener('click', () => {
+    document.getElementById('cakeSizesModal').style.display = 'none';
+});
+
+// 3. دالة التحكم بالأزرار الجديدة الخاصة بكل حجم
+function setupSizeModalButtons() {
+    // أ. زر الإضافة للسلة للحجم المحدد
+    document.querySelectorAll('.size-action-cart').forEach(btn => {
+        btn.addEventListener('click', () => {
+            window.CartManager.addItem({
+                productId: parseInt(btn.dataset.id),
+                name: btn.dataset.name,
+                price: parseFloat(btn.dataset.price),
+                image: btn.dataset.img
+            }, 'cakes');
+            window.CartManager.updateUI();
+            showToast('تمت إضافة الحجم المحدد إلى السلة');
+        });
+    });
+
+    // ب. زر الطلب المباشر الفوري للحجم المحدد
+    document.querySelectorAll('.size-action-direct').forEach(btn => {
+        btn.addEventListener('click', () => {
+            window.CartManager.addItem({
+                productId: parseInt(btn.dataset.id),
+                name: btn.dataset.name,
+                price: parseFloat(btn.dataset.price),
+                image: btn.dataset.img
+            }, 'cakes');
+            window.location.href = 'order.html';
+        });
+    });
+
+    // ج. زر التخصيص (ينقل العميل للأسفل ليرفع صورته ويكتب ملاحظاته مع تثبيت الحجم المختار)
+    document.querySelectorAll('.size-action-custom').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('cakeSizesModal').style.display = 'none'; // إغلاق النافذة
+            
+            // تعبئة بيانات المعاينة السفلية بنوع الكعكة وحجمها وسعرها الجديد
+            document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
+            document.getElementById('selectedCatalogCakeName').value = `${btn.dataset.name} (${btn.dataset.size})`;
+            document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
+            
+            document.getElementById('previewCakeName').innerText = `${btn.dataset.name} (${btn.dataset.size})`;
+            document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString() + ' دج';
+            document.getElementById('previewCakeImg').src = btn.dataset.img;
+            document.getElementById('selectedCakePreviewArea').style.display = 'flex';
+            
+            // كتابة اسم الحجم تلقائياً في حقل الحجم بالنموذج
+            document.getElementById('cakeSizeInput').value = btn.dataset.size;
+            
+            // نزول تلقائي سلس لنموذج التصميم ورفع الصور بالأسفل
+            document.getElementById('customOrderSection').scrollIntoView({ behavior: 'smooth' });
+            showToast(`تم تحديد الحجم! يمكنك الآن كتابة إضافاتك أو رفع صورة مخصصة بالأسفل`);
+        });
+    });
+}
 </script>
 </body>
 </html>
