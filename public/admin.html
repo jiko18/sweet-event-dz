@@ -1499,8 +1499,7 @@
         </main>
     </div>
 
-    <!-- ==================== MODALS ==================== -->
-    <div id="productModal" class="modal-overlay">
+   <div id="productModal" class="modal-overlay">
         <div class="modal-container">
             <button class="close-modal" id="closeProductModal">&times;</button>
             <h3 id="productModalTitle">إضافة منتج جديد</h3>
@@ -1511,6 +1510,7 @@
                 <div class="form-group"><label>السعر (دج)</label><input type="number" id="productPrice" step="0.01"></div>
                 <div class="form-group"><label>الفئة</label><select id="productCategory"><option value="cake">كعكات</option><option value="sweet">حلويات</option><option value="decor">ديكور</option><option value="photo">تصوير</option><option value="hall">صالات</option></select></div>
                 <div class="form-group"><label>نوع كمية المنتج:</label><select id="productUnitType"><option value="none">بدون تحديد</option><option value="kg">بالكيلوغرام (كلغ)</option><option value="piece">بالوحدة (قطعة / حبة)</option></select></div>
+                
                 <div id="hallSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
                     <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-building"></i> إعدادات الصالة (للخرائط)</h4>
                     <div class="form-group"><label>موقع الصالة (العنوان)</label><input type="text" id="hallLocation" placeholder="مثال: الطاهير - جيجل"></div>
@@ -1519,6 +1519,22 @@
                     <div class="form-group"><label><i class="fa-solid fa-users"></i> سعة الصالة (عدد الأشخاص)</label><input type="number" id="hallCapacity" placeholder="مثال: 500"></div>
                     <div class="form-group"><label><i class="fa-solid fa-wand-magic-sparkles"></i> التجهيزات (افصل بفاصلة)</label><textarea id="hallFeatures" rows="2" placeholder="إضاءة LED, نظام صوتي, تكييف..."></textarea></div>
                 </div>
+
+                <div id="cakeSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
+                    <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-cake-candles"></i> تصنيف الكعكة (للفلترة)</h4>
+                    <div class="form-group">
+                        <label>نوع المناسبة:</label>
+                        <select id="cakeOccasion" style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
+                            <option value="general">عامة (بدون تحديد)</option>
+                            <option value="wedding">زفاف</option>
+                            <option value="engagement">خطوبة</option>
+                            <option value="birthday">عيد ميلاد</option>
+                            <option value="graduation">تخرج</option>
+                            <option value="circumcision">ختان</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="form-group"><label><i class="fa-solid fa-cloud-arrow-up"></i> صور وفيديوهات المنتج:</label><input type="file" id="productMediaInput" accept="image/*,video/*" multiple style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);"></div>
                 <div id="dynamicMediaPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
                 <div class="form-group"><label>حالة المنتج</label><select id="productActive"><option value="true">نشط</option><option value="false">غير نشط</option></select></div>
@@ -1529,7 +1545,6 @@
             </form>
         </div>
     </div>
-
     <div id="imagePreviewModal" class="image-preview-modal" onclick="window.closeImagePreview()">
         <img id="previewImage" class="preview-img" src="" alt="معاينة">
     </div>
@@ -2245,8 +2260,7 @@
                 document.querySelectorAll('#productsTableBody .delete').forEach(b => b.addEventListener('click', () =>
                     deleteProduct(b.dataset.id, b.dataset.name)));
             }
-
-            function openProductModal(data = {}) {
+function openProductModal(data = {}) {
                 const modal = document.getElementById('productModal');
                 if (!modal) return;
                 document.getElementById('productModalTitle').innerText = data.id ? 'تعديل المنتج' : 'إضافة منتج جديد';
@@ -2260,13 +2274,24 @@
                 document.getElementById('productUnitType').value = data.unittype || 'none';
                 document.getElementById('productActive').value = (data.active === 'false' || data.active === false) ?
                     'false' : 'true';
+                
                 const hallFieldsDiv = document.getElementById('hallSpecificFields');
+                const cakeFieldsDiv = document.getElementById('cakeSpecificFields');
+                
                 if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
+                if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
+                
+                if (catValue === 'cake') {
+                    const occasionSelect = document.getElementById('cakeOccasion');
+                    if (occasionSelect) occasionSelect.value = data.features || 'general';
+                }
+
                 document.getElementById('hallLocation').value = data.location || '';
                 document.getElementById('hallCapacity').value = data.capacity || '';
                 document.getElementById('hallLat').value = data.lat || '';
                 document.getElementById('hallLng').value = data.lng || '';
                 document.getElementById('hallFeatures').value = data.features || '';
+                
                 selectedFilesArray = [];
                 let mediaArray = [];
                 try { if (data.media && data.media !== '[]') mediaArray = JSON.parse(data.media); else if (data.img &&
@@ -2300,17 +2325,27 @@
                 fd.append('isActive', document.getElementById('productActive')?.value || 'true');
                 fd.append('unitType', document.getElementById('productUnitType')?.value || 'none');
                 const category = document.getElementById('productCategory')?.value || 'cake';
+                
                 if (category === 'hall') {
                     fd.append('location', document.getElementById('hallLocation')?.value || '');
                     fd.append('capacity', document.getElementById('hallCapacity')?.value || '');
                     fd.append('lat', document.getElementById('hallLat')?.value || '');
                     fd.append('lng', document.getElementById('hallLng')?.value || '');
                     fd.append('features', document.getElementById('hallFeatures')?.value || '');
-                } else { fd.append('location', '');
+                } else if (category === 'cake') {
+                    fd.append('location', '');
                     fd.append('capacity', '');
                     fd.append('lat', '');
                     fd.append('lng', '');
-                    fd.append('features', ''); }
+                    fd.append('features', document.getElementById('cakeOccasion')?.value || 'general');
+                } else { 
+                    fd.append('location', '');
+                    fd.append('capacity', '');
+                    fd.append('lat', '');
+                    fd.append('lng', '');
+                    fd.append('features', ''); 
+                }
+                
                 const keptMedia = selectedFilesArray.filter(file => typeof file === 'string');
                 const newMediaFiles = selectedFilesArray.filter(file => typeof file !== 'string');
                 fd.append('keptMedia', JSON.stringify(keptMedia));
@@ -2332,7 +2367,6 @@
                 } catch (err) { console.error(err);
                     alert("❌ فشل الاتصال بالسيرفر."); }
             }
-
             async function deleteProduct(id, name) {
                 if (!id || id === 'undefined') return alert('خطأ: معرّف المنتج مفقود!');
                 if (!confirm(`هل تريد بالتأكيد حذف المنتج "${name}"؟`)) return;
@@ -3311,12 +3345,15 @@ window.fetchActivityLogs = fetchActivityLogs;
                 });
                 document.getElementById('productSearch')?.addEventListener('input', renderProductsTable);
                 document.getElementById('productCategoryFilter')?.addEventListener('change', renderProductsTable);
-                document.getElementById('productCategory')?.addEventListener('change', function() {
-                    const hallFields = document.getElementById('hallSpecificFields');
-                    if (hallFields) hallFields.style.display = this.value === 'hall' ? 'block' : 'none';
-                    if (this.value === 'hall') setTimeout(initAdminMap, 200);
-                    localStorage.setItem('admin_last_cat', this.value);
-                });
+              // ابحث عن هذا السطر وحدثه ليظهر ويخفي الحقول تلقائياً
+document.getElementById('productCategory')?.addEventListener('change', function() {
+    const hallFields = document.getElementById('hallSpecificFields');
+    const cakeFields = document.getElementById('cakeSpecificFields');
+    if (hallFields) hallFields.style.display = this.value === 'hall' ? 'block' : 'none';
+    if (cakeFields) cakeFields.style.display = this.value === 'cake' ? 'block' : 'none';
+    if (this.value === 'hall') setTimeout(initAdminMap, 200);
+    localStorage.setItem('admin_last_cat', this.value);
+});
                 document.getElementById('orderSearch')?.addEventListener('input', renderOrdersTable);
                 document.getElementById('orderStatusFilter')?.addEventListener('change', renderOrdersTable);
                 document.getElementById('userSearch')?.addEventListener('input', renderUsersTable);
@@ -3404,3 +3441,5 @@ setInterval(() => {
     </script>
 </body>
 </html>
+
+        
