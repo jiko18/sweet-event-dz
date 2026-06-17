@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 // الأسرار
 // الأسرار
-const SECRET_KEY = process.env.JWT_SECRET;
+const SECRET_KEY = process.env.JWTS_SECRET;
 
 // =====================================================
 // إعدادات بوت تيليجرام
