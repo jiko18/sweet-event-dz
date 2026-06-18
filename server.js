@@ -28,35 +28,38 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 // الأسرار
 // الأسرار
-const SECRET_KEY = process.env.JWTS_SECRET;
+// الأسرار
+// قمنا بإضافة مفتاح احتياطي لكي يعمل النظام بدون ملف .env ولا يطردك
+const SECRET_KEY = process.env.JWTS_SECRET || "Test_Secret_Key_12345";
+
 // =====================================================
 // إعدادات بوت تيليجرام
 // =====================================================
 const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
-const TELEGRAM_CHAT_ID = "7545626508";
+const TELEGRAM_CHAT_ID = "7545626508"; // معرف علي
+
 async function sendTelegramNotification(message) {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
     try {
+        console.log("⏳ جاري إرسال الإشعار إلى علي...");
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 chat_id: TELEGRAM_CHAT_ID,
-                text: message
-                // 🚨 قمنا بإلغاء parse_mode لتجنب توقف البوت بسبب الرموز
+                text: message,
+                parse_mode: 'HTML' // تفعيل تنسيق HTML للرسائل
             })
         });
-        
+
         const data = await response.json();
-        
-        if (!response.ok) {
-            // الآن إذا رفض تيليجرام الرسالة، سيظهر لك السبب الحقيقي في اللوجز
-            console.error('❌ تيليجرام رفض الرسالة! السبب:', data.description);
+        if (response.ok) {
+            console.log("✅ تم إرسال إشعار الطلبية إلى علي بنجاح!");
         } else {
-            console.log('✅ تم إرسال إشعار تيليجرام بنجاح');
+            console.error("❌ فشل إرسال الإشعار من طرف تيليجرام:", data);
         }
     } catch (err) {
-        console.error('❌ حدث خطأ في الاتصال بالشبكة:', err.message);
+        console.error("❌ خطأ أثناء الاتصال بخوادم تيليجرام:", err.message);
     }
 }
 // =====================================================
