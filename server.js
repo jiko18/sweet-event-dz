@@ -30,33 +30,42 @@ app.use(express.static(path.join(__dirname, 'public'), {
 // الأسرار
 const SECRET_KEY = process.env.JWTS_SECRET;
 // =====================================================
-// إعدادات بوت تيليجرام
+// إعدادات بوت تيليجرام المشتركة
 // =====================================================
 const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
-const TELEGRAM_CHAT_ID = "7545626508";
+
+// مصفوفة تحتوي على المعرف الخاص بك والمعرف الخاص بحسن
+const TELEGRAM_CHAT_IDS = [
+    "7545626508", // معرف حسن
+    "6283553550"  // معرفك الشخصي
+];
+
 async function sendTelegramNotification(message) {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message
-                // 🚨 قمنا بإلغاء parse_mode لتجنب توقف البوت بسبب الرموز
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            // الآن إذا رفض تيليجرام الرسالة، سيظهر لك السبب الحقيقي في اللوجز
-            console.error('❌ تيليجرام رفض الرسالة! السبب:', data.description);
-        } else {
-            console.log('✅ تم إرسال إشعار تيليجرام بنجاح');
+    
+    // حلقة تكرار لإرسال الإشعار لكل معرف موجود في المصفوفة تلقائياً
+    for (const chatId of TELEGRAM_CHAT_IDS) {
+        try {
+            console.log(`⏳ جاري إرسال الإشعار إلى المعرف: ${chatId} ...`);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: 'HTML' // تفعيل تنسيق الـ HTML للرسائل
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                console.log(`✅ تم إرسال الإشعار بنجاح إلى المعرف: ${chatId}`);
+            } else {
+                console.error(`❌ فشل إرسال الإشعار إلى المعرف ${chatId}:`, data);
+            }
+        } catch (err) {
+            console.error(`❌ خطأ اتصال أثناء الإرسال للمعرف ${chatId}:`, err.message);
         }
-    } catch (err) {
-        console.error('❌ حدث خطأ في الاتصال بالشبكة:', err.message);
     }
 }
 // =====================================================
