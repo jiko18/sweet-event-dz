@@ -29,11 +29,10 @@ app.use(express.static(path.join(__dirname, 'public'), {
 // الأسرار
 // الأسرار
 const SECRET_KEY = process.env.JWTS_SECRET;
-
 // =====================================================
 // إعدادات بوت تيليجرام
 // =====================================================
-const TELEGRAM_BOT_TOKEN = "8978529375:AAHag3t27bogUnuEthHSwB3foURQwkDEfqI";
+const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
 const TELEGRAM_CHAT_ID = "7545626508";
 async function sendTelegramNotification(message) {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
