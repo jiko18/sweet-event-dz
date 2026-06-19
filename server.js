@@ -36,8 +36,9 @@ const SECRET_KEY = process.env.JWTS_SECRET || "Test_Secret_Key_12345";
 const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
 
 const ROLES_CHAT_IDS = {
-    superAdmin: "7545626508", // حساب علي (السوبر أدمن)
-    decor: "8498133481"       // حساب مسؤول الديكور (للتجربة الحالية)
+    superAdmin: "7545626508", // حسابك أنت (السوبر أدمن)
+    decor: "ضع_هنا_معرف_موظف_الديكور", // أضف الأيدي الخاص بموظف الديكور
+    photo: "8498133481" // المعرف الخاص بموظف التصوير
 };
 
 // دالة الإرسال تدعم الآن استقبال نصوص الأزرار (replyMarkup) اختياريًا
@@ -460,7 +461,9 @@ app.post('/api/orders', verifyToken, async (req, res) => {
         // --- الفرز البرمجي وإرسال إشعارات تيليجرام التفاعلية ---
         let superAdminProductsText = ""; 
         let decorProductsText = ""; 
+        let photoProductsText = ""; // متغير لجمع طلبات التصوير
         let hasDecor = false;
+        let hasPhoto = false; // متغير لمعرفة إذا كان الطلب يحتوي على تصوير
 
         // المرور على عناصر السلة وفرزها
         for (const item of items) {
@@ -483,11 +486,15 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             // السوبر أدمن تصله كافة التفاصيل
             superAdminProductsText += itemLine;
 
-            // فرز الديكور (دعم التسمية بالإنجليزية والعربية)
+            // فرز الديكور والتصوير
             const categoryLower = (productCategory || '').toLowerCase().trim();
+            
             if (categoryLower === 'decor' || categoryLower === 'ديكور') {
                 decorProductsText += itemLine;
                 hasDecor = true;
+            } else if (categoryLower === 'photo' || categoryLower === 'photography' || categoryLower === 'تصوير') {
+                photoProductsText += itemLine;
+                hasPhoto = true;
             }
         }
 
@@ -525,6 +532,31 @@ ${decorProductsText}
 
             // إرسال الرسالة التفاعلية لمسؤول الديكور
             await sendTelegramNotification(ROLES_CHAT_IDS.decor, decorMessage, inlineKeyboard);
+        }
+
+        // صياغة وإرسال رسالة مسؤول التصوير
+        if (hasPhoto) {
+            const photoMessage = `
+<b>📸 طلب تصوير جديد رقم: #${orderId}</b>
+👤 <b>اسم الزبون:</b> ${customerName}
+📞 <b>رقم الهاتف:</b> ${customerPhone}
+
+🎬 <b>الخدمات المطلوبة:</b>
+${photoProductsText}
+            `;
+
+            // بناء الأزرار التفاعلية المدمجة لتيليجرام لموظف التصوير
+            const inlineKeyboardPhoto = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ موافق (جاهز)", callback_data: `photo_approve_${orderId}` },
+                        { text: "❌ إلغاء (غير جاهز)", callback_data: `photo_reject_${orderId}` }
+                    ]
+                ]
+            };
+
+            // إرسال الرسالة التفاعلية لمسؤول التصوير
+            await sendTelegramNotification(ROLES_CHAT_IDS.photo, photoMessage, inlineKeyboardPhoto);
         }
 
         res.json({ success: true, message: 'تم حفظ طلبك بنجاح', orderId });
@@ -1171,28 +1203,31 @@ app.post('/api/telegram-webhook', async (req, res) => {
     res.sendStatus(200); 
 
     const update = req.body;
-    // التأكد من أن الحدث القادم هو نقرة زر (callback_query)
     if (!update.callback_query) return;
 
     const callbackQuery = update.callback_query;
-    const callbackData = callbackQuery.data; // يحمل بيانات مثل: decor_approve_123
+    const callbackData = callbackQuery.data; 
     const chatId = callbackQuery.message.chat.id;
     const messageId = callbackQuery.message.message_id;
     const originalText = callbackQuery.message.text;
 
-    // معالجة نقرات أقسام الديكور
-    if (callbackData.startsWith('decor_approve_') || callbackData.startsWith('decor_reject_')) {
-        const isApprove = callbackData.includes('decor_approve_');
-        const orderId = callbackData.split('_').pop(); // استخراج رقم الطلب من الكود
+    // معالجة نقرات أقسام الديكور والتصوير معاً
+    if (callbackData.startsWith('decor_approve_') || callbackData.startsWith('decor_reject_') ||
+        callbackData.startsWith('photo_approve_') || callbackData.startsWith('photo_reject_')) {
         
-        const statusText = isApprove ? "✅ تم القبول والموافقة" : "❌ تم الاعتذار (غير متوفر)";
+        const isDecor = callbackData.includes('decor_');
+        const isApprove = callbackData.includes('_approve_');
+        const orderId = callbackData.split('_').pop(); 
+        
+        const statusText = isApprove ? "✅ تم القبول والموافقة" : "❌ تم الاعتذار والرفض";
+        const departmentName = isDecor ? "الديكور" : "التصوير الفوتوغرافي";
         
         // صياغة الرسالة التي ستصل إليك كسوبر أدمن لإعلامك بما حدث
         const bossNotifyText = isApprove 
-            ? `<b>📢 تحديث من قسم الديكور:</b>\nقام مسؤول الديكور بـ <b>الموافقة</b> وتوفير الطلب رقم <b>#${orderId}</b>.`
-            : `<b>🚨 تنبيه من قسم الديكور:</b>\nقام مسؤول الديكور بـ <b>إلغاء/رفض</b> طلب الديكور رقم <b>#${orderId}</b> لعدم توفره في المخزن.`;
+            ? `<b>📢 تحديث من قسم ${departmentName}:</b>\nقام مسؤول القسم بـ <b>الموافقة</b> وتأكيد الطلب رقم <b>#${orderId}</b>.`
+            : `<b>🚨 تنبيه من قسم ${departmentName}:</b>\nقام مسؤول القسم بـ <b>إلغاء/رفض</b> المهمة للطلب رقم <b>#${orderId}</b>.`;
 
-        // 1. تحديث الرسالة الأصلية عند الموظف (لتختفي الأزرار ويظهر النص الجديد منعاً للنقر المزدوج)
+        // 1. تحديث الرسالة الأصلية عند الموظف (لتختفي الأزرار ويظهر النص الجديد)
         try {
             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText`, {
                 method: 'POST',
@@ -1200,16 +1235,16 @@ app.post('/api/telegram-webhook', async (req, res) => {
                 body: JSON.stringify({
                     chat_id: chatId,
                     message_id: messageId,
-                    text: `${originalText}\n\n⚠️ <b>تحديث حالة القسم:</b> ${statusText}`,
+                    text: `${originalText}\n\n⚠️ <b>إجرائك الحالي:</b> ${statusText}`,
                     parse_mode: 'HTML'
                 })
             });
         } catch (e) { console.error("خطأ أثناء تحديث رسالة الموظف:", e.message); }
 
-        // 2. إرسال الإشعار الفوري لك (السوبر أدمن) لتعرف النتيجة دون الحاجة لدخول الموقع
+        // 2. إرسال الإشعار الفوري لك (السوبر أدمن) لتعرف النتيجة
         await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, bossNotifyText);
 
-        // 3. إنهاء حالة التحميل (الإضاءة الوامضة) للزر في تطبيق تيليجرام لإشعار الموظف بإتمام العملية
+        // 3. إنهاء حالة التحميل للزر في تطبيق تيليجرام
         try {
             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
                 method: 'POST',
