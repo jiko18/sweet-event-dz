@@ -26,42 +26,48 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public'), {
     extensions: ['html']
 }));
+
 // الأسرار
-// الأسرار
-// الأسرار
-// قمنا بإضافة مفتاح احتياطي لكي يعمل النظام بدون ملف .env ولا يطردك
 const SECRET_KEY = process.env.JWTS_SECRET || "Test_Secret_Key_12345";
 
 // =====================================================
-// إعدادات بوت تيليجرام
+// إعدادات بوت تيليجرام المطور وفريق العمل
 // =====================================================
 const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
-const TELEGRAM_CHAT_ID = "7545626508"; // معرف علي
 
-async function sendTelegramNotification(message) {
+const ROLES_CHAT_IDS = {
+    superAdmin: "7545626508", // حساب علي (السوبر أدمن)
+    decor: "8498133481"       // حساب مسؤول الديكور (للتجربة الحالية)
+};
+
+// دالة الإرسال تدعم الآن استقبال نصوص الأزرار (replyMarkup) اختياريًا
+async function sendTelegramNotification(chatId, message, replyMarkup = null) {
+    if (!chatId) return;
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    
+    const bodyData = {
+        chat_id: chatId,
+        text: message,
+        parse_mode: 'HTML'
+    };
+    
+    // إذا وُجدت أزرار تفاعلية نقوم بإرفاقها بالرسالة
+    if (replyMarkup) {
+        bodyData.reply_markup = replyMarkup;
+    }
+
     try {
-        console.log("⏳ جاري إرسال الإشعار إلى علي...");
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'HTML' // تفعيل تنسيق HTML للرسائل
-            })
+            body: JSON.stringify(bodyData)
         });
-
-        const data = await response.json();
-        if (response.ok) {
-            console.log("✅ تم إرسال إشعار الطلبية إلى علي بنجاح!");
-        } else {
-            console.error("❌ فشل إرسال الإشعار من طرف تيليجرام:", data);
-        }
+        return await response.json();
     } catch (err) {
-        console.error("❌ خطأ أثناء الاتصال بخوادم تيليجرام:", err.message);
+        console.error(`❌ خطأ أثناء الإرسال للمعرّف ${chatId}:`, err.message);
     }
 }
+
 // =====================================================
 // الاتصال بقاعدة البيانات السحابية Turso
 // =====================================================
@@ -135,7 +141,7 @@ async function logAdminAction(adminId, adminName, actionType, details) {
                 Longitude REAL,
                 Features TEXT,
                 UnitType TEXT DEFAULT 'none',
-                Sizes TEXT DEFAULT '[]', -- ✅ تم إضافة عمود الأحجام هنا
+                Sizes TEXT DEFAULT '[]',
                 IsDeleted INTEGER DEFAULT 0
             )
         `);
@@ -430,8 +436,6 @@ app.post('/api/orders', verifyToken, async (req, res) => {
         if (!items || !items.length) return res.status(400).json({ success: false, error: 'الطلب فارغ' });
         const finalDate = eventDate || deliveryDate;
         if (!finalDate) return res.status(400).json({ success: false, error: 'يرجى تحديد تاريخ التسليم' });
-        // تم إزالة الشرط الذي كان يمنع الإرسال إذا كان deliveryAddress فارغاً
-        // if (!deliveryAddress) return res.status(400).json({ success: false, error: 'يرجى إدخال عنوان التسليم' });
 
         // إدخال الطلب الرئيسي مع عنوان التسليم (يمكن أن يكون فارغاً)
         const result = await runAsync(
@@ -453,18 +457,75 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             );
         }
         
-        // --- إضافة: إرسال إشعار للتيليجرام ---
-        const notificationMessage = `
-🔔 *طلب جديد تم تسجيله!* 🔔
-رقم الطلب: #${orderId}
-الزبون: ${customerName}
-الهاتف: ${customerPhone}
-المبلغ الإجمالي: ${totalAmount} د.ج
-العنوان: ${deliveryAddress || 'غير محدد'}
-التاريخ المحدد: ${finalDate}
+        // --- الفرز البرمجي وإرسال إشعارات تيليجرام التفاعلية ---
+        let superAdminProductsText = ""; 
+        let decorProductsText = ""; 
+        let hasDecor = false;
+
+        // المرور على عناصر السلة وفرزها
+        for (const item of items) {
+            const productId = item.productId || item.ProductId || item.id || item.Id || null;
+            let productName = item.Name || item.name || `منتج ${productId}`;
+            let productCategory = item.Category || item.category || '';
+
+            // محاولة جلب التفاصيل من قاعدة البيانات إذا لم تكن متوفرة في الطلب
+            if (productId && (!productCategory || !productName || productName.startsWith('منتج'))) {
+                const product = await getAsync(`SELECT Name, Category FROM Products WHERE ProductId = ?`, [productId]);
+                if (product) {
+                    productName = product.Name || productName;
+                    productCategory = product.Category || productCategory;
+                }
+            }
+
+            const quantity = item.quantity || item.Quantity || 1;
+            const itemLine = `• ${productName} (الكمية: ${quantity})\n`;
+            
+            // السوبر أدمن تصله كافة التفاصيل
+            superAdminProductsText += itemLine;
+
+            // فرز الديكور (دعم التسمية بالإنجليزية والعربية)
+            const categoryLower = (productCategory || '').toLowerCase().trim();
+            if (categoryLower === 'decor' || categoryLower === 'ديكور') {
+                decorProductsText += itemLine;
+                hasDecor = true;
+            }
+        }
+
+        // صياغة وإرسال رسالة السوبر أدمن (علي) الشاملة
+        const superAdminMessage = `
+<b>🔔 طلب كامل جديد رقم: #${orderId}</b>
+👤 <b>اسم الزبون:</b> ${customerName}
+📞 <b>رقم الهاتف:</b> ${customerPhone}
+
+📦 <b>تفاصيل الطلب الشاملة:</b>
+${superAdminProductsText}
         `;
-        sendTelegramNotification(notificationMessage);
-        // -------------------------------------
+        await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, superAdminMessage);
+
+        // صياغة وإرسال رسالة مسؤول الديكور (مع إرفاق أزرار الموافقة والإلغاء)
+        if (hasDecor) {
+            const decorMessage = `
+<b>✨ طلب ديكور جديد رقم: #${orderId}</b>
+👤 <b>اسم الزبون:</b> ${customerName}
+📞 <b>رقم الهاتف:</b> ${customerPhone}
+
+🎬 <b>الأقسام المطلوبة للديكور:</b>
+${decorProductsText}
+            `;
+
+            // بناء الأزرار التفاعلية المدمجة لتيليجرام
+            const inlineKeyboard = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ موافق (متوفر)", callback_data: `decor_approve_${orderId}` },
+                        { text: "❌ إلغاء (غير متوفر)", callback_data: `decor_reject_${orderId}` }
+                    ]
+                ]
+            };
+
+            // إرسال الرسالة التفاعلية لمسؤول الديكور
+            await sendTelegramNotification(ROLES_CHAT_IDS.decor, decorMessage, inlineKeyboard);
+        }
 
         res.json({ success: true, message: 'تم حفظ طلبك بنجاح', orderId });
     } catch (err) {
@@ -528,9 +589,9 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
             [orderId, productId, unitPrice]
         );
 
-        // --- إضافة: إرسال إشعار للتيليجرام ---
+        // --- إرسال إشعار للسوبر أدمن ---
         const customNotification = `
-🎂 *طلب كعكة مخصصة جديد!* 🎂
+🎂 <b>طلب كعكة مخصصة جديد!</b> 🎂
 رقم الطلب: #${orderId}
 الزبون: ${customerName}
 الهاتف: ${user.Phone || 'غير متوفر'}
@@ -538,8 +599,7 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
 الحجم: ${cakeSize || 'غير محدد'}
 ملاحظات: ${notes || 'لا يوجد'}
         `;
-        sendTelegramNotification(customNotification);
-        // -------------------------------------
+        await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, customNotification);
 
         res.json({ success: true, orderId, message: 'تم استلام طلبك المخصص بنجاح' });
     } catch (err) {
@@ -1104,6 +1164,66 @@ app.get('/api/admin/logs', verifyAdmin, async (req, res) => {
 });
 
 // =====================================================
+// مسار استقبال نقرات الأزرار من تيليجرام (Webhook)
+// =====================================================
+app.post('/api/telegram-webhook', async (req, res) => {
+    // الرد الفوري على خادم تيليجرام لإعلامه باستلام الإشارة بنجاح
+    res.sendStatus(200); 
+
+    const update = req.body;
+    // التأكد من أن الحدث القادم هو نقرة زر (callback_query)
+    if (!update.callback_query) return;
+
+    const callbackQuery = update.callback_query;
+    const callbackData = callbackQuery.data; // يحمل بيانات مثل: decor_approve_123
+    const chatId = callbackQuery.message.chat.id;
+    const messageId = callbackQuery.message.message_id;
+    const originalText = callbackQuery.message.text;
+
+    // معالجة نقرات أقسام الديكور
+    if (callbackData.startsWith('decor_approve_') || callbackData.startsWith('decor_reject_')) {
+        const isApprove = callbackData.includes('decor_approve_');
+        const orderId = callbackData.split('_').pop(); // استخراج رقم الطلب من الكود
+        
+        const statusText = isApprove ? "✅ تم القبول والموافقة" : "❌ تم الاعتذار (غير متوفر)";
+        
+        // صياغة الرسالة التي ستصل إليك كسوبر أدمن لإعلامك بما حدث
+        const bossNotifyText = isApprove 
+            ? `<b>📢 تحديث من قسم الديكور:</b>\nقام مسؤول الديكور بـ <b>الموافقة</b> وتوفير الطلب رقم <b>#${orderId}</b>.`
+            : `<b>🚨 تنبيه من قسم الديكور:</b>\nقام مسؤول الديكور بـ <b>إلغاء/رفض</b> طلب الديكور رقم <b>#${orderId}</b> لعدم توفره في المخزن.`;
+
+        // 1. تحديث الرسالة الأصلية عند الموظف (لتختفي الأزرار ويظهر النص الجديد منعاً للنقر المزدوج)
+        try {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    message_id: messageId,
+                    text: `${originalText}\n\n⚠️ <b>تحديث حالة القسم:</b> ${statusText}`,
+                    parse_mode: 'HTML'
+                })
+            });
+        } catch (e) { console.error("خطأ أثناء تحديث رسالة الموظف:", e.message); }
+
+        // 2. إرسال الإشعار الفوري لك (السوبر أدمن) لتعرف النتيجة دون الحاجة لدخول الموقع
+        await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, bossNotifyText);
+
+        // 3. إنهاء حالة التحميل (الإضاءة الوامضة) للزر في تطبيق تيليجرام لإشعار الموظف بإتمام العملية
+        try {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    callback_query_id: callbackQuery.id, 
+                    text: isApprove ? "تم إرسال موافقتك للمدير" : "تم إرسال اعتذارك للمدير" 
+                })
+            });
+        } catch (e) { console.error("خطأ في قفل حدث النقر:", e.message); }
+    }
+});
+
+// =====================================================
 // معالج الأخطاء العام والمسارات غير الموجودة (يجب أن يكون في النهاية تماماً)
 // =====================================================
 app.use((req, res) => {
@@ -1121,4 +1241,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 السيرفر يعمل على المنفذ ${PORT}`);
+    console.log(`⚠️  تذكير: لتفعيل استقبال ضغطات الأزرار، يجب تعيين Webhook للبوت عبر: https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook?url=https://your-domain.com/api/telegram-webhook`);
 });
