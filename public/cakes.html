@@ -753,13 +753,13 @@ function renderCakesGrid(cakes) {
             }
         } catch(e) {}
 
-        const hasSizes = sizesObj !== null;
+       // استخدم let في المرة الأولى ليقبل التعديل لاحقاً
+        let hasSizes = sizesObj !== null; 
         const sizesJsonStr = sizesObj ? escapeHtml(JSON.stringify(sizesObj)) : '';
+        
         // -------------------------------------------------------------
-        // 🌟 الشرط الخاص بك هنا:
-        // الكعكة سيكون لها أحجام إذا كتبنا في وصفها كلمة "أحجام"، أو إذا كان رقم معرفها 1 أو 3 أو 5 (يمكنك تغيير الأرقام والكلمة كما تحب)
-        const hasSizes = (p.Description && p.Description.includes("أحجام")) || [1, 3, 5].includes(p.ProductId);
-
+        // دمج الشرط المخصص مع الشرط السابق بدون إعادة استخدام const
+        hasSizes = hasSizes || (p.Description && p.Description.includes("أحجام")) || [1, 3, 5].includes(p.ProductId);
         let actionsHtml = '';
 
         if (hasSizes) {
@@ -876,21 +876,10 @@ function setupCustomizationForm(id, name, basePrice, imgUrl, sizesJsonStr, preSe
 
     } else {
         // إذا كانت كعكة عادية بدون أحجام
+     } else {
+        // إذا كانت كعكة عادية بدون أحجام
         sizeSelect.innerHTML = `<option value="حجم أساسي" data-price="${basePrice}" selected>حجم أساسي - ${parseFloat(basePrice).toLocaleString()} دج</option>`;
-    document.querySelectorAll('.btn-customize').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-            document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
-            document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
-            document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
-            document.getElementById('previewCakeName').innerText = btn.dataset.name;
-            document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString()+' دج';
-            document.getElementById('previewCakeImg').src = btn.dataset.img;
-            document.getElementById('selectedCakePreviewArea').style.display = 'flex';
-            document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
-            showToast(`تم تحديد الكعكة "${btn.dataset.name}"، أضف التفاصيل المخصصة`);
-        });
-    });
-    }
+    } // <-- تم إغلاق قوس الـ else هنا بشكل صحيح لمنع تداخل الأكواد
 
     // تحديث السعر الظاهر وفي الحقل المخفي
     document.getElementById('selectedCatalogCakePrice').value = initialPrice;
@@ -899,6 +888,26 @@ function setupCustomizationForm(id, name, basePrice, imgUrl, sizesJsonStr, preSe
     document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
     showToast(`تم تحديد الكعكة! أكمل خياراتك.`);
 }
+
+// =================================================================
+// نقل مستمع النقر لأزرار التخصيص خارج الدالة ليعمل بشكل مستقل وسليم
+// =================================================================
+document.querySelectorAll('.btn-customize').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (document.getElementById('selectedCatalogCakeId')) document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
+        if (document.getElementById('selectedCatalogCakeName')) document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
+        if (document.getElementById('selectedCatalogCakePrice')) document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
+        if (document.getElementById('previewCakeName')) document.getElementById('previewCakeName').innerText = btn.dataset.name;
+        if (document.getElementById('previewCakePrice')) document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString() + ' دج';
+        if (document.getElementById('previewCakeImg') && btn.dataset.img) document.getElementById('previewCakeImg').src = btn.dataset.img;
+        if (document.getElementById('selectedCakePreviewArea')) document.getElementById('selectedCakePreviewArea').style.display = 'flex';
+        
+        if (document.getElementById('customOrderSection')) {
+            document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
+        }
+        showToast(`تم تحديد الكعكة "${btn.dataset.name}"، أضف التفاصيل المخصصة`);
+    });
+});
 
 // الاستماع لتغيير الحجم من القائمة المنسدلة لتحديث السعر فوراً
 document.getElementById('cakeSizeSelect')?.addEventListener('change', function() {
@@ -910,8 +919,10 @@ document.getElementById('cakeSizeSelect')?.addEventListener('change', function()
         
         // تأثير وميض خفيف للسعر ليلفت انتباه الزبون لتغيره
         const priceEl = document.getElementById('previewCakePrice');
-        priceEl.style.opacity = '0';
-        setTimeout(() => priceEl.style.opacity = '1', 200);
+        if (priceEl) {
+            priceEl.style.opacity = '0';
+            setTimeout(() => priceEl.style.opacity = '1', 200);
+        }
     }
 });
 
