@@ -42,30 +42,34 @@ const ROLES_CHAT_IDS = {
 };
 
 // دالة الإرسال تدعم الآن استقبال نصوص الأزرار (replyMarkup) اختياريًا
-async function sendTelegramNotification(chatId, message, replyMarkup = null) {
-    if (!chatId) return;
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    
-    const bodyData = {
-        chat_id: chatId,
-        text: message,
-        parse_mode: 'HTML'
-    };
-    
-    // إذا وُجدت أزرار تفاعلية نقوم بإرفاقها بالرسالة
-    if (replyMarkup) {
-        bodyData.reply_markup = replyMarkup;
-    }
+// ====== دالة إرسال الإشعارات إلى تيليجرام (معدلة لتدعم الشركاء) ======
+async function sendTelegramNotification(chatIdOrArray, text, reply_markup = null) {
+    if (!chatIdOrArray) return;
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bodyData)
-        });
-        return await response.json();
-    } catch (err) {
-        console.error(`❌ خطأ أثناء الإرسال للمعرّف ${chatId}:`, err.message);
+    // حيلة برمجية: إذا كان الهدف شخصاً واحداً أو عدة أشخاص، نضعه في قائمة لكي نمر عليهم واحداً تلو الآخر
+    const chatIds = Array.isArray(chatIdOrArray) ? chatIdOrArray : [chatIdOrArray];
+
+    for (const chatId of chatIds) {
+        try {
+            const payload = {
+                chat_id: chatId,
+                text: text,
+                parse_mode: 'HTML'
+            };
+            
+            // إضافة الأزرار الشفافة إذا كانت موجودة (مثل أزرار موافقة الموظفين)
+            if (reply_markup) {
+                payload.reply_markup = reply_markup;
+            }
+
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } catch (error) {
+            console.error(`❌ خطأ في إرسال الإشعار لـ ${chatId}:`, error.message);
+        }
     }
 }
 
