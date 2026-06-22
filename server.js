@@ -36,7 +36,7 @@ const SECRET_KEY = process.env.JWTS_SECRET || "Test_Secret_Key_12345";
 const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
 
 const ROLES_CHAT_IDS = {
-    superAdmin: "7545626508", // حسابك أنت (السوبر أدمن)
+    superAdmin: ["7545626508", "6283553550"],// حسابك أنت (السوبر أدمن)
     decor: "8446426225", // أضف الأيدي الخاص بموظف الديكور
     photo: "8498133481" // المعرف الخاص بموظف التصوير
 };
