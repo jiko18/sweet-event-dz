@@ -1297,7 +1297,7 @@
                         <input type="text" id="productSearch" placeholder="🔍 بحث باسم المنتج..." style="padding:0.6rem 1rem;border-radius:25px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);flex:1;">
                         <select id="productCategoryFilter" style="padding:0.6rem 1rem;border-radius:25px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
                             <option value="all">📂 جميع الفئات</option>
-                            <option value="cakes">كعكات</option>
+                            <option value="cake">كعكات</option>
                             <option value="sweet">🍬 حلويات</option>
                             <option value="decor">🎈 ديكور</option>
                             <option value="photo">📸 تصوير</option>
@@ -1499,74 +1499,114 @@
         </main>
     </div>
 
-   <div id="productModal" class="modal-overlay">
-        <div class="modal-container">
-            <button class="close-modal" id="closeProductModal">&times;</button>
-            <h3 id="productModalTitle">إضافة منتج جديد</h3>
-            <form id="productForm" enctype="multipart/form-data">
-                <input type="hidden" id="productId">
-                <div class="form-group"><label>اسم المنتج</label><input type="text" id="productName" required></div>
-                <div class="form-group"><label>الوصف</label><textarea id="productDesc" rows="2"></textarea></div>
-                <div class="form-group"><label>السعر (دج)</label><input type="number" id="productPrice" step="0.01"></div>
-                <div class="form-group"><label>الفئة</label><select id="productCategory"><option value="cake">كعكات</option><option value="sweet">حلويات</option><option value="decor">ديكور</option><option value="photo">تصوير</option><option value="hall">صالات</option></select></div>
-                <div class="form-group"><label>نوع كمية المنتج:</label><select id="productUnitType"><option value="none">بدون تحديد</option><option value="kg">بالكيلوغرام (كلغ)</option><option value="piece">بالوحدة (قطعة / حبة)</option></select></div>
-                
-                <div id="hallSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
-                    <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-building"></i> إعدادات الصالة (للخرائط)</h4>
-                    <div class="form-group"><label>موقع الصالة (العنوان)</label><input type="text" id="hallLocation" placeholder="مثال: الطاهير - جيجل"></div>
-                    <div class="form-group"><label>إحداثيات الموقع:</label><div style="display:flex;gap:10px;"><input type="text" id="hallLat" placeholder="خط العرض" readonly><input type="text" id="hallLng" placeholder="خط الطول" readonly></div></div>
-                    <div class="form-group"><label>اضغط على الخريطة لتحديد الموقع:</label><div id="adminMap" style="height:280px;width:100%;border-radius:8px;border:1px solid var(--admin-border);margin-top:5px;"></div></div>
-                    <div class="form-group"><label><i class="fa-solid fa-users"></i> سعة الصالة (عدد الأشخاص)</label><input type="number" id="hallCapacity" placeholder="مثال: 500"></div>
-                    <div class="form-group"><label><i class="fa-solid fa-wand-magic-sparkles"></i> التجهيزات (افصل بفاصلة)</label><textarea id="hallFeatures" rows="2" placeholder="إضاءة LED, نظام صوتي, تكييف..."></textarea></div>
+  <div id="productModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 700px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 25px; border-radius: 15px; background: var(--surface); box-shadow: 0 5px 25px rgba(0,0,0,0.2); margin: auto;">
+        <button class="close-modal" id="closeProductModal">&times;</button>
+        <h3 id="productModalTitle" style="margin-bottom: 20px; color: var(--gold); border-bottom: 1px solid var(--admin-border); padding-bottom: 10px;"><i class="fa-solid fa-box-open"></i> إضافة منتج جديد</h3>
+        
+        <form id="productForm" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 16px;">
+            <input type="hidden" id="productId">
+            
+            <div class="form-group">
+                <label>اسم المنتج</label>
+                <input type="text" id="productName" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+            </div>
+            
+            <div class="form-group">
+                <label>الوصف</label>
+                <textarea id="productDesc" rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text); resize: vertical;"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>السعر (دج)</label>
+                <input type="number" id="productPrice" step="0.01" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+            </div>
+            
+            <div class="form-group">
+                <label>الفئة</label>
+                <select id="productCategory" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+                    <option value="cake">كعكات</option>
+                    <option value="sweet">حلويات</option>
+                    <option value="decor">ديكور</option>
+                    <option value="photo">تصوير</option>
+                    <option value="hall">صالات</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>نوع كمية المنتج:</label>
+                <select id="productUnitType" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+                    <option value="none">بدون تحديد</option>
+                    <option value="kg">بالكيلوغرام (كلغ)</option>
+                    <option value="piece">بالوحدة (قطعة / حبة)</option>
+                </select>
+            </div>
+            
+            <div id="hallSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
+                <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-building"></i> إعدادات الصالة (للخرائط)</h4>
+                <div class="form-group"><label>موقع الصالة (العنوان)</label><input type="text" id="hallLocation" placeholder="مثال: الطاهير - جيجل" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"></div>
+                <div class="form-group"><label>إحداثيات الموقع:</label><div style="display:flex;gap:10px;"><input type="text" id="hallLat" placeholder="خط العرض" readonly style="width:50%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"><input type="text" id="hallLng" placeholder="خط الطول" readonly style="width:50%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"></div></div>
+                <div class="form-group"><label>اضغط على الخريطة لتحديد الموقع:</label><div id="adminMap" style="height:280px;width:100%;border-radius:8px;border:1px solid var(--admin-border);margin-top:5px;"></div></div>
+                <div class="form-group"><label><i class="fa-solid fa-users"></i> سعة الصالة (عدد الأشخاص)</label><input type="number" id="hallCapacity" placeholder="مثال: 500" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"></div>
+                <div class="form-group"><label><i class="fa-solid fa-wand-magic-sparkles"></i> التجهيزات (افصل بفاصلة)</label><textarea id="hallFeatures" rows="2" placeholder="إضاءة LED, نظام صوتي, تكييف..." style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border); resize: vertical;"></textarea></div>
+            </div>
+
+            <div id="cakeSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
+                <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-cake-candles"></i> تصنيف الكعكة (للفلترة)</h4>
+                <div class="form-group">
+                    <label>نوع المناسبة:</label>
+                    <select id="cakeOccasion" style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
+                        <option value="general">عامة (بدون تحديد)</option>
+                        <option value="wedding">زفاف</option>
+                        <option value="engagement">خطوبة</option>
+                        <option value="birthday">عيد ميلاد</option>
+                        <option value="graduation">تخرج</option>
+                        <option value="circumcision">ختان</option>
+                    </select>
                 </div>
 
-<<<<<<< HEAD
-                <!-- ====== القسم الجديد للكعكة مع أسعار الأحجام ====== -->
-                <div id="cakeSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
-                    <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-cake-candles"></i> إعدادات الكعكة وأسعار الأحجام</h4>
-                    
-                    <div class="form-group">
-                        <label>نوع المناسبة (للفلترة):</label>
-=======
-                <div id="cakeSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
-                    <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-cake-candles"></i> تصنيف الكعكة (للفلترة)</h4>
-                    <div class="form-group">
-                        <label>نوع المناسبة:</label>
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
-                        <select id="cakeOccasion" style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
-                            <option value="general">عامة (بدون تحديد)</option>
-                            <option value="wedding">زفاف</option>
-                            <option value="engagement">خطوبة</option>
-                            <option value="birthday">عيد ميلاد</option>
-                            <option value="graduation">تخرج</option>
-                            <option value="circumcision">ختان</option>
-                        </select>
-                    </div>
-<<<<<<< HEAD
-
-                    <div class="form-group" style="margin-top: 15px; border-top: 1px dashed var(--gold); padding-top: 15px;">
-                        <label><i class="fa-solid fa-layer-group"></i> أسعار أحجام الكعكة (دج):</label>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <div style="flex: 1; min-width: 100px;">
-                                <label style="font-size: 0.75rem; color: var(--text-muted);">حجم صغير</label>
-                                <input type="number" id="cakePriceSmall" placeholder="مثال: 2500">
-                            </div>
-                            <div style="flex: 1; min-width: 100px;">
-                                <label style="font-size: 0.75rem; color: var(--text-muted);">حجم متوسط (أساسي)</label>
-                                <input type="number" id="cakePriceMedium" placeholder="مثال: 4000" oninput="document.getElementById('productPrice').value = this.value">
-                            </div>
-                            <div style="flex: 1; min-width: 100px;">
-                                <label style="font-size: 0.75rem; color: var(--text-muted);">حجم كبير</label>
-                                <input type="number" id="cakePriceLarge" placeholder="مثال: 6500">
-                            </div>
+                <div class="form-group" style="margin-top: 15px; border-top: 1px dashed var(--gold); padding-top: 15px;">
+                    <label><i class="fa-solid fa-layer-group"></i> أسعار أحجام الكعكة (دج):</label>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                        <div style="flex: 1; min-width: 100px;">
+                            <label style="font-size: 0.75rem; color: var(--text-muted);">حجم صغير</label>
+                            <input type="number" id="cakePriceSmall" placeholder="مثال: 2500" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);">
                         </div>
-                        <small style="color: var(--text-muted); display: block; margin-top: 5px;">* اترك الحقول فارغة إذا كنت تريد أن يقوم النظام بحسابها تلقائياً كالسابق.</small>
+                        <div style="flex: 1; min-width: 100px;">
+                            <label style="font-size: 0.75rem; color: var(--text-muted);">حجم متوسط (أساسي)</label>
+                            <input type="number" id="cakePriceMedium" placeholder="مثال: 4000" oninput="document.getElementById('productPrice').value = this.value" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);">
+                        </div>
+                        <div style="flex: 1; min-width: 100px;">
+                            <label style="font-size: 0.75rem; color: var(--text-muted);">حجم كبير</label>
+                            <input type="number" id="cakePriceLarge" placeholder="مثال: 6500" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);">
+                        </div>
                     </div>
+                    <small style="color: var(--text-muted); display: block; margin-top: 5px;">* اترك الحقول فارغة إذا كنت تريد أن يقوم النظام بحسابها تلقائياً كالسابق.</small>
                 </div>
-                <!-- =================================================== -->
-=======
+            </div>
+
+            <div class="form-group">
+                <label>صورة أو فيديو المنتج:</label>
+                <input type="file" id="productFile" accept="image/*,video/*" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+                <small style="color: var(--text-muted); display:block; margin-top:4px;">يمكنك رفع صورة أو مقطع فيديو قصير للمنتج.</small>
+            </div>
+
+            <div class="form-group">
+                <label>حالة المنتج:</label>
+                <select id="productStatus" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+                    <option value="available">متوفر</option>
+                    <option value="unavailable">غير متوفر مؤقتاً</option>
+                </select>
+            </div>
+
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; border-top: 1px solid var(--admin-border); padding-top: 15px;">
+                <button type="button" class="btn btn-secondary" onclick="closeProductModal()" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--admin-border); background: transparent; color: var(--text); cursor: pointer;">إلغاء</button>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px; border-radius: 8px; border: none; background: var(--gold); color: white; cursor: pointer;"><i class="fa-solid fa-floppy-disk"></i> حفظ المنتج</button>
+            </div>
+        </form>
+    </div>
+</div>
                 </div>
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
 
                 <div class="form-group"><label><i class="fa-solid fa-cloud-arrow-up"></i> صور وفيديوهات المنتج:</label><input type="file" id="productMediaInput" accept="image/*,video/*" multiple style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);"></div>
                 <div id="dynamicMediaPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
@@ -1588,7 +1628,7 @@
             <h3>تحديث حالة الطلب</h3>
             <form id="orderStatusForm">
                 <input type="hidden" id="orderIdInput">
-                <div class="form-group"><label>الحالة الجديدة</label><select id="orderNewStatus"><option value="Pending">قيد الانتظار</option><option value="Studying">قيد الدراسة</option><option value="Approved">الموافقة على الدراسة</option><option value="InProgress">قيد الإنجاز</option><option value="Delivered">تم التسليم</option><option value="Cancelled">ملغي</option></select></div>
+                <div class="form-group"><label>الحالة الجديدة</label><select id="orderNewStatus"><option value="Pending">قيد الانتظار</option><option value="Studying">قيد التواصل</option><option value="Approved">الموافقة والانجاز</option><option value="InProgress">تم التجهيز</option><option value="Delivered">تم التسليم</option><option value="Cancelled">ملغي</option></select></div>
                 <div class="modal-buttons">
                     <button type="button" class="btn-secondary" id="cancelOrderStatusBtn">إلغاء</button>
                     <button type="submit" class="btn-primary">حفظ الحالة</button>
@@ -2293,13 +2333,9 @@
                 document.querySelectorAll('#productsTableBody .delete').forEach(b => b.addEventListener('click', () =>
                     deleteProduct(b.dataset.id, b.dataset.name)));
             }
-<<<<<<< HEAD
             
             // ====== دالة فتح نموذج المنتج (معدلة للكعكة) ======
-            function openProductModal(data = {}) {
-=======
 function openProductModal(data = {}) {
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
                 const modal = document.getElementById('productModal');
                 if (!modal) return;
                 document.getElementById('productModalTitle').innerText = data.id ? 'تعديل المنتج' : 'إضافة منتج جديد';
@@ -2320,7 +2356,6 @@ function openProductModal(data = {}) {
                 if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
                 if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
                 
-<<<<<<< HEAD
                 // ====== جزء الكعكة المعدل ======
                 if (catValue === 'cake') {
                     const occasionSelect = document.getElementById('cakeOccasion');
@@ -2340,12 +2375,11 @@ function openProductModal(data = {}) {
                     }
                 }
                 // ==============================================
-=======
+
                 if (catValue === 'cake') {
                     const occasionSelect = document.getElementById('cakeOccasion');
                     if (occasionSelect) occasionSelect.value = data.features || 'general';
                 }
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
 
                 document.getElementById('hallLocation').value = data.location || '';
                 document.getElementById('hallCapacity').value = data.capacity || '';
@@ -2399,7 +2433,6 @@ function openProductModal(data = {}) {
                     fd.append('capacity', '');
                     fd.append('lat', '');
                     fd.append('lng', '');
-<<<<<<< HEAD
                     
                     // الكود الجديد لتجميع الأحجام
                     let smallPrice = document.getElementById('cakePriceSmall')?.value || '';
@@ -2416,9 +2449,7 @@ function openProductModal(data = {}) {
                         }
                     });
                     fd.append('features', cakeData);
-=======
                     fd.append('features', document.getElementById('cakeOccasion')?.value || 'general');
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
                 } else { 
                     fd.append('location', '');
                     fd.append('capacity', '');
@@ -3521,10 +3552,8 @@ setInterval(() => {
         })();
     </script>
 </body>
-<<<<<<< HEAD
 </html>
-=======
+
 </html>
 
         
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301

@@ -557,9 +557,15 @@
                 <label>صورة ملهمة للديكور (اختياري)</label>
                 <input type="file" id="inspirationImageFile" accept="image/*" class="custom-input" style="background: transparent; border: 1px dashed var(--gold);">
             </div>
-            <button type="submit" class="btn-submit-custom" id="sendCustomOrderBtn" style="width: 100%; margin-top: 2rem; padding: 1rem; border-radius: 60px; background: linear-gradient(135deg, var(--gold), #b08235); border: none; font-weight: bold; cursor: pointer;">
-                <i class="fa-regular fa-paper-plane"></i> إرسال طلب الديكور المخصص
-            </button>
+            <!-- تم استبدال الأزرار بالكود النظيف مع الكلاسات المخصصة -->
+            <div style="display: flex; gap: 15px; margin-top: 2rem; flex-wrap: wrap;">
+                <button type="button" class="btn-submit-custom btn-secondary-custom" id="addToCartCustomBtn">
+                    <i class="fa-solid fa-cart-plus"></i> إضافة إلى السلة
+                </button>
+                <button type="submit" class="btn-submit-custom btn-primary-custom" id="sendCustomOrderBtn">
+                    <i class="fa-solid fa-bolt"></i> إرسال الطلب مباشرة
+                </button>
+            </div>
         </form>
     </div>
 </main>
@@ -846,7 +852,36 @@ function googleTranslateElementInit() {
         document.getElementById('selectedCatalogCakeId').value=''; 
     });
 
-    // مستمع إرسال نموذج الديكور المخصص
+    // ---------- إضافة كود زر "إضافة إلى السلة" الجديد ----------
+    document.getElementById('addToCartCustomBtn')?.addEventListener('click', function() {
+        const eventDate = document.getElementById('eventDateInput').value;
+        const venue = document.getElementById('venueTypeSelect').value;
+        const colors = document.getElementById('themeColors').value;
+        const notes = document.getElementById('designNotes').value;
+        
+        const decorId = document.getElementById('selectedCatalogCakeId').value;
+        const decorName = document.getElementById('selectedCatalogCakeName').value || 'ديكور مخصص';
+        const decorPrice = parseFloat(document.getElementById('selectedCatalogCakePrice').value || 0);
+
+        if(!eventDate) return showToast('⚠️ يرجى تحديد تاريخ المناسبة أولاً.');
+
+        const customDetails = `المساحة: ${venue} | الألوان: ${colors} | التاريخ: ${eventDate} | الملاحظات: ${notes}`;
+
+        window.CartManager.addItem({ 
+            productId: decorId ? parseInt(decorId) : Date.now(),
+            name: `[مخصص] ${decorName}`, 
+            price: decorPrice, 
+            image: document.getElementById('previewCakeImg').src || 'https://placehold.co/100x100?text=Custom',
+            notes: customDetails 
+        }, 'decor'); 
+
+        window.CartManager.updateUI();
+        document.getElementById('customDecorForm').reset();
+        document.getElementById('selectedCakePreviewArea').style.display = 'none';
+        showToast('🛒 تم إضافة ديكور المناسبة إلى السلة بنجاح!');
+    });
+
+    // مستمع إرسال نموذج الديكور المخصص (الإرسال المباشر)
     document.getElementById('customDecorForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('sweet_event_token');

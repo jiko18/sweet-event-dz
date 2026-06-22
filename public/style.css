@@ -1352,3 +1352,171 @@ body.dark-mode .cart-popup-panel input {
 body {
     top: 0px !important;
 }
+/* إصلاح خلفية القوائم المنسدلة */
+.custom-select option {
+    background-color: #140f0c; /* لون داكن يتناسب مع الثيم */
+    color: #f5efe7;
+}
+
+/* عكس ألوان أيقونة التقويم لتصبح بيضاء/مضيئة */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+/* ===================================================== */
+/* إصلاح جذري لحقول التخصيص في جميع الصفحات (الديكور، الكعك، الخ) */
+/* ===================================================== */
+.custom-input, 
+.custom-select, 
+.custom-textarea {
+    background-color: #1a1310 !important; /* خلفية داكنة جداً */
+    color: #f5efe7 !important; /* نص فاتح */
+    border: 1px solid #c9963e !important; /* إطار ذهبي */
+    outline: none !important;
+}
+
+/* نصوص التلميح Placeholder */
+.custom-input::placeholder, 
+.custom-textarea::placeholder {
+    color: rgba(245, 239, 231, 0.5) !important;
+}
+
+/* القوائم المنسدلة Options */
+.custom-select option {
+    background-color: #1a1310 !important;
+    color: #f5efe7 !important;
+}
+
+/* أيقونة التقويم Date Picker */
+input[type="date"].custom-input::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(2) !important; /* تحويل الأيقونة للون الأبيض/الفاتح */
+    cursor: pointer !important;
+}
+
+/* إصلاح زر "رفع الملف/الصورة الملهمة" الذي يظهر باللون الأبيض الافتراضي */
+input[type="file"].custom-input::file-selector-button {
+    background-color: #c9963e !important; /* زر ذهبي */
+    color: #1a1310 !important; /* نص أسود */
+    border: none !important;
+    padding: 8px 15px !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    margin-left: 10px !important;
+    font-family: inherit !important;
+    transition: 0.3s !important;
+}
+
+input[type="file"].custom-input::file-selector-button:hover {
+    background-color: #b08235 !important;
+}
+/* ===================================================== */
+/* إصلاح جذري لحقول التخصيص في جميع الصفحات (الديكور، الكعك، الخ) */
+/* ===================================================== */
+
+.custom-input, 
+.custom-select, 
+.custom-textarea {
+    background-color: #1a1310 !important; /* خلفية داكنة جداً */
+    color: #f5efe7 !important; /* نص فاتح */
+    border: 1px solid #c9963e !important; /* إطار ذهبي */
+    border-radius: 8px !important;
+    padding: 12px 15px !important;
+    font-family: inherit;
+    outline: none !important;
+    width: 100%;
+    
+    /* الأهم: إخفاء مستطيل المتصفح الأبيض الافتراضي */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* نصوص التلميح Placeholder */
+.custom-input::placeholder, 
+.custom-textarea::placeholder {
+    color: rgba(245, 239, 231, 0.5) !important;
+}
+
+/* القوائم المنسدلة وسهم التحديد الذهبي */
+.custom-select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9963e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: left 15px center !important; /* السهم على اليسار */
+    background-size: 16px !important;
+    cursor: pointer;
+}
+
+.custom-select option {
+    background-color: #1a1310 !important;
+    color: #f5efe7 !important;
+    padding: 10px;
+}
+
+/* أيقونة التقويم Date Picker */
+input[type="date"].custom-input::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(2) !important;
+    cursor: pointer !important;
+}
+
+/* زر "رفع الملف/الصورة الملهمة" */
+input[type="file"].custom-input::file-selector-button {
+    background-color: #c9963e !important;
+    color: #1a1310 !important;
+    border: none !important;
+    padding: 8px 15px !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    margin-left: 10px !important;
+    font-family: inherit !important;
+    transition: 0.3s !important;
+}
+
+input[type="file"].custom-input::file-selector-button:hover {
+    background-color: #b08235 !important;
+}
+
+/* ===================================================== */
+/* تنسيق أزرار الطلب في صفحة الديكور */
+/* ===================================================== */
+
+.btn-submit-custom {
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1; /* يجعل الأزرار بنفس العرض تماماً */
+}
+
+/* الزر الأساسي (إرسال الطلب) */
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--gold, #c9963e), #a87a2e) !important;
+    color: #1a1310 !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(201, 150, 62, 0.2);
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(201, 150, 62, 0.4);
+}
+
+/* الزر الثانوي (إضافة للسلة) */
+.btn-secondary-custom {
+    background-color: transparent !important;
+    color: var(--gold, #c9963e) !important;
+    border: 2px solid var(--gold, #c9963e) !important;
+}
+
+.btn-secondary-custom:hover {
+    background-color: rgba(201, 150, 62, 0.1) !important;
+    transform: translateY(-2px);
+}

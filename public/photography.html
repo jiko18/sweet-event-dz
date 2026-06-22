@@ -399,9 +399,16 @@
                 <label>تفاصيل إضافية</label>
                 <textarea id="designNotes" rows="4" class="custom-textarea" placeholder="هل ترغب بإضافة ألبوم مطبوع؟ تصوير درون؟ أو تحديد أماكن معينة للتصوير؟..."></textarea>
             </div>
-            <button type="submit" class="btn-submit-custom" id="sendCustomOrderBtn" style="width: 100%; margin-top: 2rem; padding: 1rem; border-radius: 60px; background: linear-gradient(135deg, var(--photography-gold), #b08235); color: #000; border: none; font-weight: bold; cursor: pointer; transition: 0.3s;">
-                <i class="fa-regular fa-paper-plane"></i> إرسال طلب التصوير المخصص
-            </button>
+
+            <!-- تم استبدال الزر الواحد بزرين (إضافة للسلة + إرسال الطلب) -->
+            <div style="display: flex; gap: 15px; margin-top: 2rem; flex-wrap: wrap;">
+                <button type="button" class="btn-submit-custom" id="addToCartCustomBtn" style="flex: 1; background: transparent; border: 1px solid var(--photography-gold); color: var(--photography-gold); margin-top: 0;">
+                    <i class="fa-solid fa-cart-plus"></i> إضافة إلى السلة
+                </button>
+                <button type="submit" class="btn-submit-custom" id="sendCustomOrderBtn" style="flex: 1; margin-top: 0; background: linear-gradient(135deg, var(--photography-gold), #b08235); color: #000; border: none;">
+                    <i class="fa-solid fa-bolt"></i> إرسال الطلب مباشرة
+                </button>
+            </div>
         </form>
     </div>
     <!-- ============================================ -->
@@ -603,7 +610,38 @@ function googleTranslateElementInit() {
             document.getElementById('selectedCatalogCakeId').value = '';
         });
 
-        // إرسال نموذج التصوير المخصص
+        // ---------- إضافة زر "إضافة إلى السلة" الجديد ----------
+        document.getElementById('addToCartCustomBtn')?.addEventListener('click', function() {
+            const eventDate = document.getElementById('eventDateInput').value;
+            const eventType = document.getElementById('eventTypeSelect').value;
+            const duration = document.getElementById('coverageDuration').value;
+            const notes = document.getElementById('designNotes').value;
+            
+            const photoId = document.getElementById('selectedCatalogCakeId').value;
+            const photoName = document.getElementById('selectedCatalogCakeName').value || 'جلسة تصوير مخصصة';
+            const photoPrice = parseFloat(document.getElementById('selectedCatalogCakePrice').value || 0);
+
+            if(!eventDate) return showToast('⚠️ يرجى تحديد تاريخ المناسبة أولاً.');
+
+            // تجميع التفاصيل ليقرأها السيرفر
+            const customDetails = `المناسبة: ${eventType} | المدة: ${duration} | التاريخ: ${eventDate} | الملاحظات: ${notes}`;
+
+            // الحقن داخل السلة
+            window.CartManager.addItem({ 
+                productId: photoId ? parseInt(photoId) : Date.now(),
+                name: `[مخصص] ${photoName}`, 
+                price: photoPrice, 
+                image: document.getElementById('previewCakeImg').src || 'https://placehold.co/100x100?text=Photography',
+                notes: customDetails 
+            }, 'photo'); 
+
+            window.CartManager.updateUI();
+            document.getElementById('customPhotoForm').reset();
+            document.getElementById('selectedCakePreviewArea').style.display = 'none';
+            showToast('🛒 تم إضافة طلب التصوير إلى السلة بنجاح!');
+        });
+
+        // إرسال نموذج التصوير المخصص (الإرسال المباشر)
         document.getElementById('customPhotoForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('sweet_event_token');

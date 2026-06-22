@@ -36,40 +36,40 @@ const SECRET_KEY = process.env.JWTS_SECRET || "Test_Secret_Key_12345";
 const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
 
 const ROLES_CHAT_IDS = {
-    superAdmin: "7545626508", // حسابك أنت (السوبر أدمن)
-<<<<<<< HEAD
+    superAdmin: ["7545626508", "6283553550"],// حسابك أنت (السوبر أدمن)
     decor: "8446426225", // أضف الأيدي الخاص بموظف الديكور
-=======
-    decor: "ضع_هنا_معرف_موظف_الديكور", // أضف الأيدي الخاص بموظف الديكور
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
     photo: "8498133481" // المعرف الخاص بموظف التصوير
 };
 
 // دالة الإرسال تدعم الآن استقبال نصوص الأزرار (replyMarkup) اختياريًا
-async function sendTelegramNotification(chatId, message, replyMarkup = null) {
-    if (!chatId) return;
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    
-    const bodyData = {
-        chat_id: chatId,
-        text: message,
-        parse_mode: 'HTML'
-    };
-    
-    // إذا وُجدت أزرار تفاعلية نقوم بإرفاقها بالرسالة
-    if (replyMarkup) {
-        bodyData.reply_markup = replyMarkup;
-    }
+// ====== دالة إرسال الإشعارات إلى تيليجرام (معدلة لتدعم الشركاء) ======
+async function sendTelegramNotification(chatIdOrArray, text, reply_markup = null) {
+    if (!chatIdOrArray) return;
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bodyData)
-        });
-        return await response.json();
-    } catch (err) {
-        console.error(`❌ خطأ أثناء الإرسال للمعرّف ${chatId}:`, err.message);
+    // حيلة برمجية: إذا كان الهدف شخصاً واحداً أو عدة أشخاص، نضعه في قائمة لكي نمر عليهم واحداً تلو الآخر
+    const chatIds = Array.isArray(chatIdOrArray) ? chatIdOrArray : [chatIdOrArray];
+
+    for (const chatId of chatIds) {
+        try {
+            const payload = {
+                chat_id: chatId,
+                text: text,
+                parse_mode: 'HTML'
+            };
+            
+            // إضافة الأزرار الشفافة إذا كانت موجودة (مثل أزرار موافقة الموظفين)
+            if (reply_markup) {
+                payload.reply_markup = reply_markup;
+            }
+
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } catch (error) {
+            console.error(`❌ خطأ في إرسال الإشعار لـ ${chatId}:`, error.message);
+        }
     }
 }
 
@@ -111,6 +111,7 @@ async function logAdminAction(adminId, adminName, actionType, details) {
         console.error("فشل تسجيل النشاط:", err.message);
     }
 }
+
 // إنشاء الجداول تلقائياً عند بدء التشغيل (مع إضافة DeliveryAddress والأحجام Sizes)
 (async function createTables() {
     try {
@@ -220,6 +221,7 @@ async function logAdminAction(adminId, adminName, actionType, details) {
         process.exit(1);
     }
 })();
+
 // =====================================================
 // Middleware
 // =====================================================
@@ -450,7 +452,7 @@ app.post('/api/orders', verifyToken, async (req, res) => {
         );
         const orderId = result.lastID;
 
-        // إدخال عناصر الطلب
+        // إدخال عناصر الطلب في قاعدة البيانات
         for (const item of items) {
             const productId = item.productId || item.ProductId || item.id || item.Id || null;
             const quantity = item.quantity || item.Quantity || 1;
@@ -462,27 +464,20 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             );
         }
         
-        // --- الفرز البرمجي وإرسال إشعارات تيليجرام التفاعلية ---
+        // --- الفرز البرمجي وإرسال إشعارات تيليجرام التفاعلية الموحدة ---
         let superAdminProductsText = ""; 
         let decorProductsText = ""; 
-        let photoProductsText = ""; // متغير لجمع طلبات التصوير
+        let photoProductsText = ""; 
         let hasDecor = false;
-<<<<<<< HEAD
         let hasPhoto = false;
 
-        // مصفوفة لتجميع عناصر الديكور بتفاصيلها لاستخدامها في الرسالة المخصصة
-        let decorItems = [];
-=======
-        let hasPhoto = false; // متغير لمعرفة إذا كان الطلب يحتوي على تصوير
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
-
-        // المرور على عناصر السلة وفرزها
+        // المرور على عناصر السلة وفرزها حسب التخصص
         for (const item of items) {
             const productId = item.productId || item.ProductId || item.id || item.Id || null;
             let productName = item.Name || item.name || `منتج ${productId}`;
             let productCategory = item.Category || item.category || '';
 
-            // محاولة جلب التفاصيل من قاعدة البيانات إذا لم تكن متوفرة في الطلب
+            // جلب التفاصيل من قاعدة البيانات إذا لم تكن متوفرة
             if (productId && (!productCategory || !productName || productName.startsWith('منتج'))) {
                 const product = await getAsync(`SELECT Name, Category FROM Products WHERE ProductId = ?`, [productId]);
                 if (product) {
@@ -492,140 +487,109 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             }
 
             const quantity = item.quantity || item.Quantity || 1;
-<<<<<<< HEAD
-            const unitPrice = item.unitPrice || item.UnitPrice || item.price || item.Price || 0;
-=======
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
-            const itemLine = `• ${productName} (الكمية: ${quantity})\n`;
+            
+            // صياغة السطر البرمجي للعنصر مع ملاحظته الفردية إن وجدت
+            let itemLine = `• <b>${productName}</b> (الكمية: ${quantity})\n`;
+            if (item.notes) {
+                itemLine += `   ✍️ <i>ملاحظة التخصيص: ${item.notes}</i>\n`;
+            }
             
             // السوبر أدمن تصله كافة التفاصيل
             superAdminProductsText += itemLine;
 
-            // فرز الديكور والتصوير
+            // فرز التصنيف بدقة لضمان وصول كل منتج لقسمه
             const categoryLower = (productCategory || '').toLowerCase().trim();
             
             if (categoryLower === 'decor' || categoryLower === 'ديكور') {
                 decorProductsText += itemLine;
                 hasDecor = true;
-<<<<<<< HEAD
-                // حفظ بيانات العنصر لاستخدامها في رسالة الديكور المفصلة
-                decorItems.push({
-                    name: productName,
-                    quantity: quantity,
-                    unitPrice: unitPrice,
-                    notes: item.notes || ''
-                });
-=======
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
             } else if (categoryLower === 'photo' || categoryLower === 'photography' || categoryLower === 'تصوير') {
                 photoProductsText += itemLine;
                 hasPhoto = true;
             }
         }
 
-        // صياغة وإرسال رسالة السوبر أدمن (علي) الشاملة
+        // 1️⃣ صياغة وإرسال رسالة السوبر أدمن (أنت) الشاملة مع السعر الكلي
         const superAdminMessage = `
-<b>🔔 طلب كامل جديد رقم: #${orderId}</b>
+👑 <b>لوحة التحكم | طلب كامل جديد رقم: #${orderId}</b>
+----------------------------------------
 👤 <b>اسم الزبون:</b> ${customerName}
 📞 <b>رقم الهاتف:</b> ${customerPhone}
-
+📅 <b>تاريخ التسليم:</b> ${finalDate}
+📍 <b>العنوان:</b> ${deliveryAddress || 'غير محدد'}
+📝 <b>ملاحظات الزبون:</b> ${notes || 'لا يوجد'}
+----------------------------------------
 📦 <b>تفاصيل الطلب الشاملة:</b>
 ${superAdminProductsText}
+----------------------------------------
+💰 <b>إجمالي المبلغ الكلي:</b> ${totalAmount} دج
         `;
         await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, superAdminMessage);
 
-<<<<<<< HEAD
-        // --- رسالة مسؤول الديكور المخصصة (مطوّرة حسب الطلب) ---
-        if (hasDecor) {
-            // حساب إجمالي الديكور من العناصر المجمعة
-            const decorTotal = decorItems.reduce((sum, it) => sum + (it.unitPrice * it.quantity), 0);
 
-            let decorMessage = `🔔 <b>طلب تنسيق ديكور جديد!</b> 🔔\n\n`;
+        // 2️⃣ إرسال رسالة مسؤول الديكور (بشكل هيكلي موحد وبدون أسعار)
+        if (hasDecor) {
+            let decorMessage = `🔔 <b>إشعار قسم الديكور والتنظيم</b> 🔔\n`;
+            decorMessage += `----------------------------------------\n`;
             decorMessage += `📦 <b>رقم الطلبية:</b> #${orderId}\n`;
             decorMessage += `👤 <b>اسم الزبون:</b> ${customerName}\n`;
             decorMessage += `📞 <b>رقم الهاتف:</b> ${customerPhone}\n`;
-            decorMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate || 'غير محدد'}\n`;
-            decorMessage += `📍 <b>الموقع/العنوان:</b> ${deliveryAddress || 'غير محدد'}\n\n`;
-            decorMessage += `📋 <b>العناصر المطلوبة للديكور:</b> \n`;
-            
-            decorItems.forEach((item, index) => {
-                decorMessage += `${index + 1}. 🔹 <b>${item.name}</b> (الكمية: ${item.quantity})\n`;
-                if (item.notes) decorMessage += `   ✍️ ملاحظة: ${item.notes}\n`;
-            });
+            decorMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate}\n`;
+            decorMessage += `📍 <b>الموقع والعنوان:</b> ${deliveryAddress || 'غير محدد'}\n`;
+            decorMessage += `----------------------------------------\n`;
+            decorMessage += `📋 <b>العناصر المطلوبة التابعة لقسمك:</b>\n`;
+            decorMessage += decorProductsText;
 
             if (notes) {
-                decorMessage += `\n📝 <b>تفاصيل إضافية وتخصيص:</b> \n${notes}\n`;
+                decorMessage += `\n📝 <b>تفاصيل إضافية وتخصيص عام:</b>\n${notes}\n`;
             }
+            decorMessage += `----------------------------------------\n`;
+            decorMessage += `👉 <i>يرجى مراجعة جدول أعمالك ثم الضغط على القرار المناسب:</i>`;
 
-            decorMessage += `\n💰 <b>الإجمالي الخاص بالديكور:</b> ${decorTotal || 'موضح في الفاتورة'} دج\n`;
-            decorMessage += `\nاضغط على الأزرار أدناه لتحديث حالة التجهيز.`;
-
-            // بناء الأزرار التفاعلية المدمجة
-            const inlineKeyboard = {
+            const inlineKeyboardDecor = {
                 inline_keyboard: [
                     [
-                        { text: "✅ قبول وتأكيد التجهيز", callback_data: `decor_approve_${orderId}` },
-                        { text: "❌ تعذر العمل / إلغاء", callback_data: `decor_reject_${orderId}` }
-=======
-        // صياغة وإرسال رسالة مسؤول الديكور (مع إرفاق أزرار الموافقة والإلغاء)
-        if (hasDecor) {
-            const decorMessage = `
-<b>✨ طلب ديكور جديد رقم: #${orderId}</b>
-👤 <b>اسم الزبون:</b> ${customerName}
-📞 <b>رقم الهاتف:</b> ${customerPhone}
-
-🎬 <b>الأقسام المطلوبة للديكور:</b>
-${decorProductsText}
-            `;
-
-            // بناء الأزرار التفاعلية المدمجة لتيليجرام
-            const inlineKeyboard = {
-                inline_keyboard: [
-                    [
-                        { text: "✅ موافق (متوفر)", callback_data: `decor_approve_${orderId}` },
-                        { text: "❌ إلغاء (غير متوفر)", callback_data: `decor_reject_${orderId}` }
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
+                        { text: "✅ الموافقة على إجراءات الطلبية", callback_data: `decor_approve_${orderId}` },
+                        { text: "❌ الاعتذار والرفض", callback_data: `decor_reject_${orderId}` }
                     ]
                 ]
             };
 
-            // إرسال الرسالة التفاعلية لمسؤول الديكور
-            await sendTelegramNotification(ROLES_CHAT_IDS.decor, decorMessage, inlineKeyboard);
-<<<<<<< HEAD
-            console.log("🚀 تم إرسال إشعار الديكور المفصل بنجاح إلى مسؤول الديكور.");
-=======
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
+            await sendTelegramNotification(ROLES_CHAT_IDS.decor, decorMessage, inlineKeyboardDecor);
+            console.log(`🚀 تم إرسال إشعار الديكور الموحد للطلب #${orderId}`);
         }
 
-        // صياغة وإرسال رسالة مسؤول التصوير
+
+        // 3️⃣ إرسال رسالة مسؤول التصوير (بنفس الهيكل المتطابق تماماً وبدون أسعار)
         if (hasPhoto) {
-            const photoMessage = `
-<b>📸 طلب تصوير جديد رقم: #${orderId}</b>
-👤 <b>اسم الزبون:</b> ${customerName}
-📞 <b>رقم الهاتف:</b> ${customerPhone}
+            let photoMessage = `🔔 <b>إشعار قسم التصوير والتوثيق</b> 🔔\n`;
+            photoMessage += `----------------------------------------\n`;
+            photoMessage += `📦 <b>رقم الطلبية:</b> #${orderId}\n`;
+            photoMessage += `👤 <b>اسم الزبون:</b> ${customerName}\n`;
+            photoMessage += `📞 <b>رقم الهاتف:</b> ${customerPhone}\n`;
+            photoMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate}\n`;
+            photoMessage += `📍 <b>الموقع والعنوان:</b> ${deliveryAddress || 'غير محدد'}\n`;
+            photoMessage += `----------------------------------------\n`;
+            photoMessage += `📋 <b>العناصر المطلوبة التابعة لقسمك:</b>\n`;
+            photoMessage += photoProductsText;
 
-🎬 <b>الخدمات المطلوبة:</b>
-${photoProductsText}
-            `;
+            if (notes) {
+                photoMessage += `\n📝 <b>تفاصيل إضافية وتخصيص عام:</b>\n${notes}\n`;
+            }
+            photoMessage += `----------------------------------------\n`;
+            photoMessage += `👉 <i>يرجى مراجعة جدول أعمالك ثم الضغط على القرار المناسب:</i>`;
 
-<<<<<<< HEAD
-=======
-            // بناء الأزرار التفاعلية المدمجة لتيليجرام لموظف التصوير
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
             const inlineKeyboardPhoto = {
                 inline_keyboard: [
                     [
-                        { text: "✅ موافق (جاهز)", callback_data: `photo_approve_${orderId}` },
-                        { text: "❌ إلغاء (غير جاهز)", callback_data: `photo_reject_${orderId}` }
+                        { text: "✅ الموافقة على إجراءات الطلبية", callback_data: `photo_approve_${orderId}` },
+                        { text: "❌ الاعتذار والرفض", callback_data: `photo_reject_${orderId}` }
                     ]
                 ]
             };
 
-<<<<<<< HEAD
-=======
-            // إرسال الرسالة التفاعلية لمسؤول التصوير
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
             await sendTelegramNotification(ROLES_CHAT_IDS.photo, photoMessage, inlineKeyboardPhoto);
+            console.log(`🚀 تم إرسال إشعار التصوير الموحد للطلب #${orderId}`);
         }
 
         res.json({ success: true, message: 'تم حفظ طلبك بنجاح', orderId });
@@ -688,15 +652,9 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
             [orderId, productId, unitPrice]
         );
 
-<<<<<<< HEAD
         // إشعار السوبر أدمن الموحد
         const customNotification = `
 🌟 <b>طلب ${category || 'مخصص'} جديد!</b> 🌟
-=======
-        // --- إرسال إشعار للسوبر أدمن ---
-        const customNotification = `
-🎂 <b>طلب كعكة مخصصة جديد!</b> 🎂
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
 رقم الطلب: #${orderId}
 الزبون: ${customerName}
 الهاتف: ${user.Phone || 'غير متوفر'}
@@ -1351,8 +1309,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 السيرفر يعمل على المنفذ ${PORT}`);
     console.log(`⚠️  تذكير: لتفعيل استقبال ضغطات الأزرار، يجب تعيين Webhook للبوت عبر: https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook?url=https://your-domain.com/api/telegram-webhook`);
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301

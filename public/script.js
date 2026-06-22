@@ -2182,3 +2182,8 @@ window.openProductGallery = function(images) {
     
     document.body.appendChild(modal);
 };
+
+// تشغيل النظام الموحد تلقائياً بمجرد تحميل أي صفحة في الموقع
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(window.initializeGlobalCustomization, 200); // مهلة قصيرة لضمان تحميل عناصر الـ DOM كاملة
+});

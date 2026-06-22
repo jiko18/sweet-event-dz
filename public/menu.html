@@ -597,9 +597,15 @@
                 <label>صورة ملهمة (اختياري)</label>
                 <input type="file" id="inspirationImageFile" accept="image/*" class="custom-input file-upload">
             </div>
-            <button type="submit" class="btn-submit-custom" id="sendCustomOrderBtn" style="width: 100%; margin-top: 2rem; padding: 1rem; border-radius: 60px; background: linear-gradient(135deg, var(--gold), #b08235); border: none; font-weight: bold; cursor: pointer;">
-                <i class="fa-regular fa-paper-plane"></i> إرسال طلب الحلويات المخصص
-            </button>
+            <!-- تم استبدال الزر الواحد بزرين (إضافة للسلة + إرسال الطلب) -->
+            <div style="display: flex; gap: 15px; margin-top: 2rem; flex-wrap: wrap;">
+                <button type="button" class="btn-submit-custom" id="addToCartCustomBtn" style="flex: 1; background: transparent; border: 1px solid var(--gold); color: var(--gold); margin-top: 0;">
+                    <i class="fa-solid fa-cart-plus"></i> إضافة إلى السلة
+                </button>
+                <button type="submit" class="btn-submit-custom" id="sendCustomOrderBtn" style="flex: 1; margin-top: 0;">
+                    <i class="fa-solid fa-bolt"></i> إرسال الطلب مباشرة
+                </button>
+            </div>
         </form>
     </div>
 </main>
@@ -906,6 +912,35 @@ function renderSweetsGrid(sweets) {
             btn.innerHTML = originalHTML;
             btn.disabled = false;
         }
+    });
+
+    // ---- إضافة زر "إضافة إلى السلة" الجديد ----
+    document.getElementById('addToCartCustomBtn')?.addEventListener('click', function() {
+        const eventDate = document.getElementById('eventDateInput').value;
+        const packaging = document.getElementById('packagingTypeSelect').value;
+        const quantity = document.getElementById('approximateQuantity').value;
+        const notes = document.getElementById('designNotes').value;
+        
+        const sweetId = document.getElementById('selectedCatalogCakeId').value;
+        const sweetName = document.getElementById('selectedCatalogCakeName').value || 'طلبية حلويات مخصصة';
+        const sweetPrice = parseFloat(document.getElementById('selectedCatalogCakePrice').value || 0);
+
+        if(!eventDate) return showToast('⚠️ يرجى تحديد تاريخ المناسبة أولاً.');
+
+        const customDetails = `التعبئة: ${packaging} | الكمية: ${quantity} | التاريخ: ${eventDate} | الملاحظات: ${notes}`;
+
+        window.CartManager.addItem({ 
+            productId: sweetId ? parseInt(sweetId) : Date.now(),
+            name: `[مخصص] ${sweetName}`, 
+            price: sweetPrice, 
+            image: document.getElementById('previewCakeImg').src || 'https://placehold.co/100x100?text=Custom',
+            notes: customDetails 
+        }, 'sweet'); 
+
+        window.CartManager.updateUI();
+        document.getElementById('customSweetsForm').reset();
+        document.getElementById('selectedCakePreviewArea').style.display = 'none';
+        showToast('🛒 تم إضافة طلبية الحلويات إلى السلة بنجاح!');
     });
     
     window.addEventListener('DOMContentLoaded', async()=>{ 
