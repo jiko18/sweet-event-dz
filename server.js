@@ -452,7 +452,7 @@ app.post('/api/orders', verifyToken, async (req, res) => {
         );
         const orderId = result.lastID;
 
-        // إدخال عناصر الطلب
+        // إدخال عناصر الطلب في قاعدة البيانات
         for (const item of items) {
             const productId = item.productId || item.ProductId || item.id || item.Id || null;
             const quantity = item.quantity || item.Quantity || 1;
@@ -464,23 +464,20 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             );
         }
         
-        // --- الفرز البرمجي وإرسال إشعارات تيليجرام التفاعلية ---
+        // --- الفرز البرمجي وإرسال إشعارات تيليجرام التفاعلية الموحدة ---
         let superAdminProductsText = ""; 
         let decorProductsText = ""; 
-        let photoProductsText = ""; // متغير لجمع طلبات التصوير
+        let photoProductsText = ""; 
         let hasDecor = false;
         let hasPhoto = false;
 
-        // مصفوفة لتجميع عناصر الديكور بتفاصيلها لاستخدامها في الرسالة المخصصة
-        let decorItems = [];
-
-        // المرور على عناصر السلة وفرزها
+        // المرور على عناصر السلة وفرزها حسب التخصص
         for (const item of items) {
             const productId = item.productId || item.ProductId || item.id || item.Id || null;
             let productName = item.Name || item.name || `منتج ${productId}`;
             let productCategory = item.Category || item.category || '';
 
-            // محاولة جلب التفاصيل من قاعدة البيانات إذا لم تكن متوفرة في الطلب
+            // جلب التفاصيل من قاعدة البيانات إذا لم تكن متوفرة
             if (productId && (!productCategory || !productName || productName.startsWith('منتج'))) {
                 const product = await getAsync(`SELECT Name, Category FROM Products WHERE ProductId = ?`, [productId]);
                 if (product) {
@@ -490,105 +487,109 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             }
 
             const quantity = item.quantity || item.Quantity || 1;
-            const unitPrice = item.unitPrice || item.UnitPrice || item.price || item.Price || 0;
-            const itemLine = `• ${productName} (الكمية: ${quantity})\n`;
+            
+            // صياغة السطر البرمجي للعنصر مع ملاحظته الفردية إن وجدت
+            let itemLine = `• <b>${productName}</b> (الكمية: ${quantity})\n`;
+            if (item.notes) {
+                itemLine += `   ✍️ <i>ملاحظة التخصيص: ${item.notes}</i>\n`;
+            }
             
             // السوبر أدمن تصله كافة التفاصيل
             superAdminProductsText += itemLine;
 
-            // فرز الديكور والتصوير
+            // فرز التصنيف بدقة لضمان وصول كل منتج لقسمه
             const categoryLower = (productCategory || '').toLowerCase().trim();
             
             if (categoryLower === 'decor' || categoryLower === 'ديكور') {
                 decorProductsText += itemLine;
                 hasDecor = true;
-                // حفظ بيانات العنصر لاستخدامها في رسالة الديكور المفصلة
-                decorItems.push({
-                    name: productName,
-                    quantity: quantity,
-                    unitPrice: unitPrice,
-                    notes: item.notes || ''
-                });
             } else if (categoryLower === 'photo' || categoryLower === 'photography' || categoryLower === 'تصوير') {
                 photoProductsText += itemLine;
                 hasPhoto = true;
             }
         }
 
-        // صياغة وإرسال رسالة السوبر أدمن (علي) الشاملة
+        // 1️⃣ صياغة وإرسال رسالة السوبر أدمن (أنت) الشاملة مع السعر الكلي
         const superAdminMessage = `
-<b>🔔 طلب كامل جديد رقم: #${orderId}</b>
+👑 <b>لوحة التحكم | طلب كامل جديد رقم: #${orderId}</b>
+----------------------------------------
 👤 <b>اسم الزبون:</b> ${customerName}
 📞 <b>رقم الهاتف:</b> ${customerPhone}
-
+📅 <b>تاريخ التسليم:</b> ${finalDate}
+📍 <b>العنوان:</b> ${deliveryAddress || 'غير محدد'}
+📝 <b>ملاحظات الزبون:</b> ${notes || 'لا يوجد'}
+----------------------------------------
 📦 <b>تفاصيل الطلب الشاملة:</b>
 ${superAdminProductsText}
+----------------------------------------
+💰 <b>إجمالي المبلغ الكلي:</b> ${totalAmount} دج
         `;
         await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, superAdminMessage);
 
-        // --- رسالة مسؤول الديكور المخصصة (مطوّرة حسب الطلب) ---
-        if (hasDecor) {
-            // حساب إجمالي الديكور من العناصر المجمعة
-            const decorTotal = decorItems.reduce((sum, it) => sum + (it.unitPrice * it.quantity), 0);
 
-            let decorMessage = `🔔 <b>طلب تنسيق ديكور جديد!</b> 🔔\n\n`;
+        // 2️⃣ إرسال رسالة مسؤول الديكور (بشكل هيكلي موحد وبدون أسعار)
+        if (hasDecor) {
+            let decorMessage = `🔔 <b>إشعار قسم الديكور والتنظيم</b> 🔔\n`;
+            decorMessage += `----------------------------------------\n`;
             decorMessage += `📦 <b>رقم الطلبية:</b> #${orderId}\n`;
             decorMessage += `👤 <b>اسم الزبون:</b> ${customerName}\n`;
             decorMessage += `📞 <b>رقم الهاتف:</b> ${customerPhone}\n`;
-            decorMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate || 'غير محدد'}\n`;
-            decorMessage += `📍 <b>الموقع/العنوان:</b> ${deliveryAddress || 'غير محدد'}\n\n`;
-            decorMessage += `📋 <b>العناصر المطلوبة للديكور:</b> \n`;
-            
-            decorItems.forEach((item, index) => {
-                decorMessage += `${index + 1}. 🔹 <b>${item.name}</b> (الكمية: ${item.quantity})\n`;
-                if (item.notes) decorMessage += `   ✍️ ملاحظة: ${item.notes}\n`;
-            });
+            decorMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate}\n`;
+            decorMessage += `📍 <b>الموقع والعنوان:</b> ${deliveryAddress || 'غير محدد'}\n`;
+            decorMessage += `----------------------------------------\n`;
+            decorMessage += `📋 <b>العناصر المطلوبة التابعة لقسمك:</b>\n`;
+            decorMessage += decorProductsText;
 
             if (notes) {
-                decorMessage += `\n📝 <b>تفاصيل إضافية وتخصيص:</b> \n${notes}\n`;
+                decorMessage += `\n📝 <b>تفاصيل إضافية وتخصيص عام:</b>\n${notes}\n`;
             }
+            decorMessage += `----------------------------------------\n`;
+            decorMessage += `👉 <i>يرجى مراجعة جدول أعمالك ثم الضغط على القرار المناسب:</i>`;
 
-            decorMessage += `\n💰 <b>الإجمالي الخاص بالديكور:</b> ${decorTotal || 'موضح في الفاتورة'} دج\n`;
-            decorMessage += `\nاضغط على الأزرار أدناه لتحديث حالة التجهيز.`;
-
-            // بناء الأزرار التفاعلية المدمجة
-            const inlineKeyboard = {
+            const inlineKeyboardDecor = {
                 inline_keyboard: [
                     [
-                        { text: "✅ قبول وتأكيد التجهيز", callback_data: `decor_approve_${orderId}` },
-                        { text: "❌ تعذر العمل / إلغاء", callback_data: `decor_reject_${orderId}` }
+                        { text: "✅ الموافقة على إجراءات الطلبية", callback_data: `decor_approve_${orderId}` },
+                        { text: "❌ الاعتذار والرفض", callback_data: `decor_reject_${orderId}` }
                     ]
                 ]
             };
 
-            // إرسال الرسالة التفاعلية لمسؤول الديكور
-            await sendTelegramNotification(ROLES_CHAT_IDS.decor, decorMessage, inlineKeyboard);
-            console.log("🚀 تم إرسال إشعار الديكور المفصل بنجاح إلى مسؤول الديكور.");
+            await sendTelegramNotification(ROLES_CHAT_IDS.decor, decorMessage, inlineKeyboardDecor);
+            console.log(`🚀 تم إرسال إشعار الديكور الموحد للطلب #${orderId}`);
         }
 
-        // صياغة وإرسال رسالة مسؤول التصوير
+
+        // 3️⃣ إرسال رسالة مسؤول التصوير (بنفس الهيكل المتطابق تماماً وبدون أسعار)
         if (hasPhoto) {
-            const photoMessage = `
-<b>📸 طلب تصوير جديد رقم: #${orderId}</b>
-👤 <b>اسم الزبون:</b> ${customerName}
-📞 <b>رقم الهاتف:</b> ${customerPhone}
+            let photoMessage = `🔔 <b>إشعار قسم التصوير والتوثيق</b> 🔔\n`;
+            photoMessage += `----------------------------------------\n`;
+            photoMessage += `📦 <b>رقم الطلبية:</b> #${orderId}\n`;
+            photoMessage += `👤 <b>اسم الزبون:</b> ${customerName}\n`;
+            photoMessage += `📞 <b>رقم الهاتف:</b> ${customerPhone}\n`;
+            photoMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate}\n`;
+            photoMessage += `📍 <b>الموقع والعنوان:</b> ${deliveryAddress || 'غير محدد'}\n`;
+            photoMessage += `----------------------------------------\n`;
+            photoMessage += `📋 <b>العناصر المطلوبة التابعة لقسمك:</b>\n`;
+            photoMessage += photoProductsText;
 
-🎬 <b>الخدمات المطلوبة:</b>
-${photoProductsText}
-            `;
+            if (notes) {
+                photoMessage += `\n📝 <b>تفاصيل إضافية وتخصيص عام:</b>\n${notes}\n`;
+            }
+            photoMessage += `----------------------------------------\n`;
+            photoMessage += `👉 <i>يرجى مراجعة جدول أعمالك ثم الضغط على القرار المناسب:</i>`;
 
-            // بناء الأزرار التفاعلية المدمجة لتيليجرام لموظف التصوير
             const inlineKeyboardPhoto = {
                 inline_keyboard: [
                     [
-                        { text: "✅ موافق (جاهز)", callback_data: `photo_approve_${orderId}` },
-                        { text: "❌ إلغاء (غير جاهز)", callback_data: `photo_reject_${orderId}` }
+                        { text: "✅ الموافقة على إجراءات الطلبية", callback_data: `photo_approve_${orderId}` },
+                        { text: "❌ الاعتذار والرفض", callback_data: `photo_reject_${orderId}` }
                     ]
                 ]
             };
 
-            // إرسال الرسالة التفاعلية لمسؤول التصوير
             await sendTelegramNotification(ROLES_CHAT_IDS.photo, photoMessage, inlineKeyboardPhoto);
+            console.log(`🚀 تم إرسال إشعار التصوير الموحد للطلب #${orderId}`);
         }
 
         res.json({ success: true, message: 'تم حفظ طلبك بنجاح', orderId });
