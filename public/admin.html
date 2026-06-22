@@ -1520,19 +1520,18 @@
                     <div class="form-group"><label><i class="fa-solid fa-wand-magic-sparkles"></i> التجهيزات (افصل بفاصلة)</label><textarea id="hallFeatures" rows="2" placeholder="إضاءة LED, نظام صوتي, تكييف..."></textarea></div>
                 </div>
 
-<<<<<<< HEAD
+
                 <!-- ====== القسم الجديد للكعكة مع أسعار الأحجام ====== -->
                 <div id="cakeSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
                     <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-cake-candles"></i> إعدادات الكعكة وأسعار الأحجام</h4>
                     
                     <div class="form-group">
                         <label>نوع المناسبة (للفلترة):</label>
-=======
+
                 <div id="cakeSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
                     <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-cake-candles"></i> تصنيف الكعكة (للفلترة)</h4>
                     <div class="form-group">
                         <label>نوع المناسبة:</label>
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
                         <select id="cakeOccasion" style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
                             <option value="general">عامة (بدون تحديد)</option>
                             <option value="wedding">زفاف</option>
@@ -1542,7 +1541,6 @@
                             <option value="circumcision">ختان</option>
                         </select>
                     </div>
-<<<<<<< HEAD
 
                     <div class="form-group" style="margin-top: 15px; border-top: 1px dashed var(--gold); padding-top: 15px;">
                         <label><i class="fa-solid fa-layer-group"></i> أسعار أحجام الكعكة (دج):</label>
@@ -1564,9 +1562,8 @@
                     </div>
                 </div>
                 <!-- =================================================== -->
-=======
+
                 </div>
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
 
                 <div class="form-group"><label><i class="fa-solid fa-cloud-arrow-up"></i> صور وفيديوهات المنتج:</label><input type="file" id="productMediaInput" accept="image/*,video/*" multiple style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);"></div>
                 <div id="dynamicMediaPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
@@ -2293,13 +2290,10 @@
                 document.querySelectorAll('#productsTableBody .delete').forEach(b => b.addEventListener('click', () =>
                     deleteProduct(b.dataset.id, b.dataset.name)));
             }
-<<<<<<< HEAD
             
             // ====== دالة فتح نموذج المنتج (معدلة للكعكة) ======
             function openProductModal(data = {}) {
-=======
 function openProductModal(data = {}) {
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
                 const modal = document.getElementById('productModal');
                 if (!modal) return;
                 document.getElementById('productModalTitle').innerText = data.id ? 'تعديل المنتج' : 'إضافة منتج جديد';
@@ -2320,7 +2314,6 @@ function openProductModal(data = {}) {
                 if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
                 if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
                 
-<<<<<<< HEAD
                 // ====== جزء الكعكة المعدل ======
                 if (catValue === 'cake') {
                     const occasionSelect = document.getElementById('cakeOccasion');
@@ -2340,12 +2333,11 @@ function openProductModal(data = {}) {
                     }
                 }
                 // ==============================================
-=======
+
                 if (catValue === 'cake') {
                     const occasionSelect = document.getElementById('cakeOccasion');
                     if (occasionSelect) occasionSelect.value = data.features || 'general';
                 }
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
 
                 document.getElementById('hallLocation').value = data.location || '';
                 document.getElementById('hallCapacity').value = data.capacity || '';
@@ -2399,7 +2391,6 @@ function openProductModal(data = {}) {
                     fd.append('capacity', '');
                     fd.append('lat', '');
                     fd.append('lng', '');
-<<<<<<< HEAD
                     
                     // الكود الجديد لتجميع الأحجام
                     let smallPrice = document.getElementById('cakePriceSmall')?.value || '';
@@ -2416,9 +2407,7 @@ function openProductModal(data = {}) {
                         }
                     });
                     fd.append('features', cakeData);
-=======
                     fd.append('features', document.getElementById('cakeOccasion')?.value || 'general');
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
                 } else { 
                     fd.append('location', '');
                     fd.append('capacity', '');
@@ -3521,10 +3510,8 @@ setInterval(() => {
         })();
     </script>
 </body>
-<<<<<<< HEAD
 </html>
-=======
+
 </html>
 
         
->>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
