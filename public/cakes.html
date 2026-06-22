@@ -814,45 +814,18 @@ window.updateCustomPreviewSize = function() {
 };
 
 function renderCakesGrid(cakes) {
-    const container = document.getElementById('cakesGridContainer');
-    if(!container) return;
-    if(!cakes.length) { container.innerHTML = '<div class="no-data-message">😕 لا توجد كعكات متاحة حالياً. أضف كعكات من لوحة الإدارة أولاً.</div>'; return; }
-    
-    container.innerHTML = cakes.map(p=>{
-        const imgUrl = `${p.ImageUrl||'default.jpg'}`;            
+        const container = document.getElementById('cakesGridContainer');
+        if(!container) return;
+        if(!cakes.length) { container.innerHTML = '<div class="no-data-message">😕 لا توجد كعكات متاحة حالياً. أضف كعكات من لوحة الإدارة أولاً.</div>'; return; }
         
-        let mediaJson = `[&quot;${imgUrl}&quot;]`;
-        if (p.MediaFiles && p.MediaFiles !== '[]') {
-            mediaJson = escapeHtml(p.MediaFiles);
-        }
-
-        // 🌟 الشرط الخاص بك هنا:
-        // الكعكة سيكون لها أحجام إذا كتبنا في وصفها كلمة "أحجام"، أو إذا كان رقم معرفها 1 أو 3 أو 5 (يمكنك تغيير الأرقام والكلمة كما تحب)
-        const hasSizes = (p.Description && p.Description.includes("أحجام")) || [1, 3, 5].includes(p.ProductId);
-
-        let actionsHtml = '';
-
-        if (hasSizes) {
-            // إذا كانت الكعكة تحتوي على أحجام، نظهر زر واحد فقط يفتح النافذة المنبثقة
-            actionsHtml = `
-                <button class="btn-order-direct open-sizes-btn" 
-                        data-id="${p.ProductId}" 
-                        data-name="${escapeHtml(p.Name)}" 
-                        data-price="${p.Price}" 
-                        data-img="${imgUrl}" 
-                        data-features="${escapeHtml(p.Features||'')}"
-                        style="width: 100%;">
-                    <i class="fa-solid fa-layer-group"></i> اختر الحجم والخيارات
-                </button>
-            `;
-        } else {
-            // إذا كانت كعكة عادية، تظهر أزرارك القديمة الثلاثة كما هي تماماً
-            actionsHtml = `
-                <button class="btn-cart" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-cart-plus"></i> إضافة للسلة</button>
-                <button class="btn-order-direct" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-bolt"></i> اطلب الآن</button>
-                <button class="btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-features="${escapeHtml(p.Features||'')}"><i class="fa-regular fa-pen-to-square"></i> تخصيص</button>
-            `;
-        }
+        container.innerHTML = cakes.map(p=>{
+            const imgUrl = `${p.ImageUrl||'default.jpg'}`;            
+            
+            // تحضير مصفوفة الصور للنافذة المنبثقة والتقليب
+            let mediaJson = `[&quot;${imgUrl}&quot;]`;
+            if (p.MediaFiles && p.MediaFiles !== '[]') {
+                mediaJson = escapeHtml(p.MediaFiles);
+            }
 
         return `
             <div class="cake-card">
@@ -911,35 +884,19 @@ function renderCakesGrid(cakes) {
         });
     });
 
-    document.querySelectorAll('.btn-customize').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
-            document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
-            document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
-            document.getElementById('previewCakeImg').src = btn.dataset.img;
-            document.getElementById('selectedCakePreviewArea').style.display = 'flex';
-            
-            // بناء خيارات الحجم المرئية بناءً على الأسعار المحددة في الإدارة
-            const sizesData = getCakeSizesData(parseFloat(btn.dataset.price), btn.dataset.features);
-            const container = document.getElementById('sizeOptionsContainer');
-            container.innerHTML = sizesData.map((s, index) => `
-                <label class="size-option-card">
-                    <input type="radio" name="cake_size_radio" value="${s.name} ${s.desc}" data-price="${s.price}" ${index === 1 ? 'checked' : ''} onchange="window.updateCustomPreviewSize()">
-                    <div class="size-card-content">
-                        <strong>${s.name}</strong>
-                        <span class="size-desc">${s.desc}</span>
-                        <span class="size-price">${Math.round(s.price).toLocaleString()} دج</span>
-                    </div>
-                </label>
-            `).join('');
-
-            // تفعيل تحديث السعر الافتراضي فوراً (الحجم المتوسط)
-            setTimeout(window.updateCustomPreviewSize, 50);
-
-            document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
-            showToast(`تم تحديد الكعكة "${btn.dataset.name}"، يرجى اختيار الحجم.`);
+        document.querySelectorAll('.btn-customize').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
+                document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
+                document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
+                document.getElementById('previewCakeName').innerText = btn.dataset.name;
+                document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString()+' دج';
+                document.getElementById('previewCakeImg').src = btn.dataset.img;
+                document.getElementById('selectedCakePreviewArea').style.display = 'flex';
+                document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
+                showToast(`تم تحديد الكعكة "${btn.dataset.name}"، أضف التفاصيل المخصصة`);
+            });
         });
-    });
     }
     function showSlide(index) { const items=document.querySelectorAll('#productSlider .item'); if(!items.length) return; if(index<0) index=items.length-1; if(index>=items.length) index=0; items.forEach((item,i)=>item.classList.toggle('active',i===index)); currentSlideIndex=index; }
     function nextSlide(){ showSlide(currentSlideIndex+1); }
@@ -994,114 +951,6 @@ function renderCakesGrid(cakes) {
         await loadCakes(); 
         if(window.CartManager) window.CartManager.updateUI(); 
     });
-    // 1. الاستماع للضغط على زر "اختر الحجم والخيارات" لفتح النافذة
-document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.open-sizes-btn');
-    if (btn) {
-        const basePrice = parseFloat(btn.dataset.price);
-        const cakeName = btn.dataset.name;
-        const cakeId = btn.dataset.id;
-        const cakeImg = btn.dataset.img;
-
-        document.getElementById('modalCakeTitle').innerText = `خيارات كعكة: ${cakeName}`;
-        
-        const sizesData = getCakeSizesData(basePrice, btn.dataset.features);
-
-        const container = document.getElementById('sizesContainer');
-        container.innerHTML = sizesData.map(size => `
-            <div style="background:rgba(255,255,255,0.03); padding:1.2rem; border-radius:16px; border:1px solid rgba(201,150,62,0.2); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <img src="${cakeImg}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid var(--gold);">
-                    <div>
-                        <h4 style="margin:0 0 5px 0; color:#fff; font-size:1rem;">حجم ${size.name} <span style="font-size:0.75rem;color:#888;">${size.desc}</span></h4>
-                        <span style="color:var(--gold); font-weight:bold; font-size:1.1rem;">${Math.round(size.price).toLocaleString()} دج</span>
-                    </div>
-                </div>
-                <div style="display:flex; gap:6px;">
-                    <button class="btn-cart size-action-cart" data-id="${cakeId}" data-name="${cakeName} (حجم ${size.name})" data-price="${size.price}" data-img="${cakeImg}" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-solid fa-cart-plus"></i> سلة</button>
-                    <button class="btn-order-direct size-action-direct" data-id="${cakeId}" data-name="${cakeName} (حجم ${size.name})" data-price="${size.price}" data-img="${cakeImg}" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-solid fa-bolt"></i> طلب</button>
-                    <button class="btn-customize size-action-custom" data-id="${cakeId}" data-name="${cakeName}" data-size="${size.name} ${size.desc}" data-price="${size.price}" data-img="${cakeImg}" data-features="${btn.dataset.features}" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-regular fa-pen-to-square"></i> تخصيص</button>
-                </div>
-            </div>
-        `).join('');
-
-        // إظهار النافذة المنبثقة للأحجام
-        document.getElementById('cakeSizesModal').style.display = 'flex';
-        
-        // تشغيل أحداث الأزرار الثلاثة داخل نافذة الحجم
-        setupSizeModalButtons();
-    }
-});
-
-// 2. إغلاق نافذة الأحجام عند الضغط على الزر (X)
-document.getElementById('closeSizesModal')?.addEventListener('click', () => {
-    document.getElementById('cakeSizesModal').style.display = 'none';
-});
-
-// 3. دالة التحكم بالأزرار الجديدة الخاصة بكل حجم
-function setupSizeModalButtons() {
-    // أ. زر الإضافة للسلة للحجم المحدد
-    document.querySelectorAll('.size-action-cart').forEach(btn => {
-        btn.addEventListener('click', () => {
-            window.CartManager.addItem({
-                productId: parseInt(btn.dataset.id),
-                name: btn.dataset.name,
-                price: parseFloat(btn.dataset.price),
-                image: btn.dataset.img
-            }, 'cakes');
-            window.CartManager.updateUI();
-            showToast('تمت إضافة الحجم المحدد إلى السلة');
-        });
-    });
-
-    // ب. زر الطلب المباشر الفوري للحجم المحدد
-    document.querySelectorAll('.size-action-direct').forEach(btn => {
-        btn.addEventListener('click', () => {
-            window.CartManager.addItem({
-                productId: parseInt(btn.dataset.id),
-                name: btn.dataset.name,
-                price: parseFloat(btn.dataset.price),
-                image: btn.dataset.img
-            }, 'cakes');
-            window.location.href = 'order.html';
-        });
-    });
-
-    // ج. زر التخصيص (ينقل العميل للأسفل ليرفع صورته ويكتب ملاحظاته مع تثبيت الحجم المختار)
-    document.querySelectorAll('.size-action-custom').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('cakeSizesModal').style.display = 'none'; 
-            
-            document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
-            document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
-            document.getElementById('previewCakeImg').src = btn.dataset.img;
-            document.getElementById('selectedCakePreviewArea').style.display = 'flex';
-            
-            // بناء نفس الكروت البصرية في الأسفل
-            const sizesData = getCakeSizesData(parseFloat(btn.dataset.price), btn.dataset.features);
-            const container = document.getElementById('sizeOptionsContainer');
-            
-            container.innerHTML = sizesData.map((s, index) => {
-                // تحديد الحجم الذي اختاره المستخدم من النافذة المنبثقة
-                const isChecked = btn.dataset.size.includes(s.name) ? 'checked' : '';
-                return `
-                <label class="size-option-card">
-                    <input type="radio" name="cake_size_radio" value="${s.name} ${s.desc}" data-price="${s.price}" ${isChecked} onchange="window.updateCustomPreviewSize()">
-                    <div class="size-card-content">
-                        <strong>${s.name}</strong>
-                        <span class="size-desc">${s.desc}</span>
-                        <span class="size-price">${Math.round(s.price).toLocaleString()} دج</span>
-                    </div>
-                </label>
-            `}).join('');
-
-            setTimeout(window.updateCustomPreviewSize, 50);
-
-            document.getElementById('customOrderSection').scrollIntoView({ behavior: 'smooth' });
-            showToast(`تم تحديد الحجم! يمكنك الآن كتابة إضافاتك الخاصة.`);
-        });
-    });
-}
 </script>
 </body>
 </html>

@@ -37,7 +37,11 @@ const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
 
 const ROLES_CHAT_IDS = {
     superAdmin: "7545626508", // حسابك أنت (السوبر أدمن)
+<<<<<<< HEAD
     decor: "8446426225", // أضف الأيدي الخاص بموظف الديكور
+=======
+    decor: "ضع_هنا_معرف_موظف_الديكور", // أضف الأيدي الخاص بموظف الديكور
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
     photo: "8498133481" // المعرف الخاص بموظف التصوير
 };
 
@@ -463,10 +467,14 @@ app.post('/api/orders', verifyToken, async (req, res) => {
         let decorProductsText = ""; 
         let photoProductsText = ""; // متغير لجمع طلبات التصوير
         let hasDecor = false;
+<<<<<<< HEAD
         let hasPhoto = false;
 
         // مصفوفة لتجميع عناصر الديكور بتفاصيلها لاستخدامها في الرسالة المخصصة
         let decorItems = [];
+=======
+        let hasPhoto = false; // متغير لمعرفة إذا كان الطلب يحتوي على تصوير
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
 
         // المرور على عناصر السلة وفرزها
         for (const item of items) {
@@ -484,7 +492,10 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             }
 
             const quantity = item.quantity || item.Quantity || 1;
+<<<<<<< HEAD
             const unitPrice = item.unitPrice || item.UnitPrice || item.price || item.Price || 0;
+=======
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
             const itemLine = `• ${productName} (الكمية: ${quantity})\n`;
             
             // السوبر أدمن تصله كافة التفاصيل
@@ -496,6 +507,7 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             if (categoryLower === 'decor' || categoryLower === 'ديكور') {
                 decorProductsText += itemLine;
                 hasDecor = true;
+<<<<<<< HEAD
                 // حفظ بيانات العنصر لاستخدامها في رسالة الديكور المفصلة
                 decorItems.push({
                     name: productName,
@@ -503,6 +515,8 @@ app.post('/api/orders', verifyToken, async (req, res) => {
                     unitPrice: unitPrice,
                     notes: item.notes || ''
                 });
+=======
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
             } else if (categoryLower === 'photo' || categoryLower === 'photography' || categoryLower === 'تصوير') {
                 photoProductsText += itemLine;
                 hasPhoto = true;
@@ -520,6 +534,7 @@ ${superAdminProductsText}
         `;
         await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, superAdminMessage);
 
+<<<<<<< HEAD
         // --- رسالة مسؤول الديكور المخصصة (مطوّرة حسب الطلب) ---
         if (hasDecor) {
             // حساب إجمالي الديكور من العناصر المجمعة
@@ -551,13 +566,35 @@ ${superAdminProductsText}
                     [
                         { text: "✅ قبول وتأكيد التجهيز", callback_data: `decor_approve_${orderId}` },
                         { text: "❌ تعذر العمل / إلغاء", callback_data: `decor_reject_${orderId}` }
+=======
+        // صياغة وإرسال رسالة مسؤول الديكور (مع إرفاق أزرار الموافقة والإلغاء)
+        if (hasDecor) {
+            const decorMessage = `
+<b>✨ طلب ديكور جديد رقم: #${orderId}</b>
+👤 <b>اسم الزبون:</b> ${customerName}
+📞 <b>رقم الهاتف:</b> ${customerPhone}
+
+🎬 <b>الأقسام المطلوبة للديكور:</b>
+${decorProductsText}
+            `;
+
+            // بناء الأزرار التفاعلية المدمجة لتيليجرام
+            const inlineKeyboard = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ موافق (متوفر)", callback_data: `decor_approve_${orderId}` },
+                        { text: "❌ إلغاء (غير متوفر)", callback_data: `decor_reject_${orderId}` }
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
                     ]
                 ]
             };
 
             // إرسال الرسالة التفاعلية لمسؤول الديكور
             await sendTelegramNotification(ROLES_CHAT_IDS.decor, decorMessage, inlineKeyboard);
+<<<<<<< HEAD
             console.log("🚀 تم إرسال إشعار الديكور المفصل بنجاح إلى مسؤول الديكور.");
+=======
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
         }
 
         // صياغة وإرسال رسالة مسؤول التصوير
@@ -571,6 +608,10 @@ ${superAdminProductsText}
 ${photoProductsText}
             `;
 
+<<<<<<< HEAD
+=======
+            // بناء الأزرار التفاعلية المدمجة لتيليجرام لموظف التصوير
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
             const inlineKeyboardPhoto = {
                 inline_keyboard: [
                     [
@@ -580,6 +621,10 @@ ${photoProductsText}
                 ]
             };
 
+<<<<<<< HEAD
+=======
+            // إرسال الرسالة التفاعلية لمسؤول التصوير
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
             await sendTelegramNotification(ROLES_CHAT_IDS.photo, photoMessage, inlineKeyboardPhoto);
         }
 
@@ -643,9 +688,15 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
             [orderId, productId, unitPrice]
         );
 
+<<<<<<< HEAD
         // إشعار السوبر أدمن الموحد
         const customNotification = `
 🌟 <b>طلب ${category || 'مخصص'} جديد!</b> 🌟
+=======
+        // --- إرسال إشعار للسوبر أدمن ---
+        const customNotification = `
+🎂 <b>طلب كعكة مخصصة جديد!</b> 🎂
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
 رقم الطلب: #${orderId}
 الزبون: ${customerName}
 الهاتف: ${user.Phone || 'غير متوفر'}
@@ -1300,4 +1351,8 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 السيرفر يعمل على المنفذ ${PORT}`);
     console.log(`⚠️  تذكير: لتفعيل استقبال ضغطات الأزرار، يجب تعيين Webhook للبوت عبر: https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook?url=https://your-domain.com/api/telegram-webhook`);
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 5fc0c2aa445d503bdb6b0b0df24244862b3c8301
