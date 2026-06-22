@@ -2182,3 +2182,93 @@ window.openProductGallery = function(images) {
     
     document.body.appendChild(modal);
 };
+// =========================================================================
+// ✨ نظام التخصيص الموحد لجميع الصفحات (إضافة التخصيص إلى السلة مباشرة)
+// =========================================================================
+window.initializeGlobalCustomization = function() {
+    // مصفوفة تحتوي على معرفات النماذج (Forms) الخاصة بالتخصيص في كل الصفحات
+    const customFormIds = ['customCakeFormDirect', 'customDecorForm', 'customPhotoForm'];
+
+    customFormIds.forEach(formId => {
+        const form = document.getElementById(formId);
+        if (!form) return; // إذا لم يكن النموذج موجوداً في الصفحة الحالية يتخطاه
+
+        // تحديد نوع القسم بناءً على معرف النموذج
+        let category = 'cake';
+        let defaultName = 'كعكة مخصصة';
+        if (formId.includes('Decor')) { category = 'decor'; defaultName = 'تنسيق ديكور مخصص'; }
+        if (formId.includes('Photo')) { category = 'photo'; defaultName = 'جلسة تصوير مخصصة'; }
+
+        // اعتراض حدث إرسال النموذج لمنع الطلب المباشر للسيرفر
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 1. تجميع خيارات التخصيص التي أدخلها الزبون ديناميكياً
+            const formData = new FormData(form);
+            let customDetails = [];
+
+            for (let [key, value] of formData.entries()) {
+                if (!value || value.trim() === '' || key === 'productId' || key === 'catalogId') continue;
+                
+                // تحويل المسميات البرمجية إلى كلمات عربية أنيقة تظهر في الفاتورة والسلة
+                let label = key;
+                if (key === 'cakeSize' || key === 'size') label = 'الحجم';
+                else if (key === 'cakeLayers' || key === 'layers') label = 'الطبقات';
+                else if (key === 'cakeFilling' || key === 'filling') label = 'الحشوة';
+                else if (key === 'decorColor' || key === 'color') label = 'اللون المطلوب';
+                else if (key === 'duration' || key === 'hours') label = 'عدد الساعات';
+                else if (key === 'notes' || key === 'customCakeNotes') label = 'ملاحظات وتفاصيل التخصيص';
+
+                customDetails.push(`<b>${label}:</b> ${value}`);
+            }
+
+            const fullNotesText = `[طلب مخصص] ` + customDetails.join(' | ');
+            const catalogId = form.querySelector('[name="productId"]')?.value || form.querySelector('#selectedCatalogCakeId')?.value || null;
+
+            // 2. إنشاء كائن منتج مخصص فريد لتمكين الزبون من إضافته للسلة
+            const customItem = {
+                id: catalogId ? `custom-${category}-${catalogId}-${Date.now()}` : `custom-${category}-${Date.now()}`,
+                name: catalogId ? `✨ تعديل مخصص على منتج رقم (#${catalogId})` : `✨ ${defaultName}`,
+                price: 0, // السعر 0 دج ويتم تحديده لاحقاً من لوحة تحكم الإدارة بعد دراسة الطلب
+                category: category,
+                quantity: 1,
+                notes: fullNotesText // هنا يتم تخزين كل الخيارات والملاحظات لتصل إلى السيرفر وتيليجرام
+            };
+
+            // 3. ضخ المنتج المخصص داخل السلة العالمية للموقع
+            if (window.CartManager) {
+                window.CartManager.addItem(customItem);
+                if (typeof showToast === 'function') {
+                    showToast('🛒 تم إضافة تصميمك المخصص إلى السلة بنجاح!');
+                } else {
+                    alert('🛒 تم إضافة تصميمك المخصص إلى السلة بنجاح! يمكنك الآن مواصلة التسوق وإضافة خدمات أخرى.');
+                }
+            } else {
+                // حل احتياطي لحفظ البيانات في حال تصفح سريع
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                cart.push(customItem);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                alert('🛒 تم إضافة التخصيص إلى السلة!');
+            }
+
+            // 4. تنظيف الحقول وإعادة واجهة الصفحة لحالتها الطبيعية لمتابعة التصفح
+            form.reset();
+            
+            // إخفاء نافذة المعاينة المخصصة للكعك إن وجدت
+            const previewArea = document.getElementById('selectedCakePreviewArea');
+            if (previewArea) previewArea.style.display = 'none';
+
+            // إذا كان نموذج التخصيص يفتح داخل نافذة منبثقة (Modal)، قم بإغلاقها تلقائياً
+            const activeModal = document.querySelector('.modal.active') || document.querySelector('.modal.show') || document.querySelector('.customize-modal');
+            if (activeModal) {
+                activeModal.classList.remove('active', 'show');
+                if(typeof activeModal.close === 'function') activeModal.close(); // إذا كان كائن dialog
+            }
+        });
+    });
+};
+
+// تشغيل النظام الموحد تلقائياً بمجرد تحميل أي صفحة في الموقع
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(window.initializeGlobalCustomization, 200); // مهلة قصيرة لضمان تحميل عناصر الـ DOM كاملة
+});
