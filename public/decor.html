@@ -509,6 +509,59 @@
             <div style="text-align:center; width:100%; grid-column: 1/-1;" data-lang="loading">⏳ جاري تحميل الخدمات...</div>
         </div>
     </div>
+
+    <!-- قسم التخصيص الجديد للديكور -->
+    <div class="custom-order-section" id="customOrderSection" style="margin: 4rem auto; max-width: 1400px; padding: 2rem; background: var(--glass-strong); border-radius: 48px; border: 1px solid var(--glass-border);">
+        <h2 class="section-title-custom" style="text-align: center; color: var(--gold); margin-bottom: 2rem;">✨ صمم ديكور مناسبتك</h2>
+        
+        <div id="selectedCakePreviewArea" style="display: none;" class="selected-cake-preview">
+            <div class="preview-details">
+                <img id="previewCakeImg" class="preview-img" src="">
+                <div>
+                    <p style="margin:0; font-size:0.8rem;">الخدمة المختارة:</p>
+                    <h4 id="previewCakeName" style="margin:0; color:var(--gold);"></h4>
+                    <span id="previewCakePrice" style="font-weight:bold;"></span>
+                </div>
+            </div>
+            <button type="button" id="clearSelectedCakeBtn" class="btn-customize" style="padding:0.4rem 1rem;"><i class="fa-solid fa-xmark"></i> إلغاء</button>
+        </div>
+
+        <form id="customDecorForm" enctype="multipart/form-data">
+            <input type="hidden" id="selectedCatalogCakeId">
+            <input type="hidden" id="selectedCatalogCakeName">
+            <input type="hidden" id="selectedCatalogCakePrice">
+            
+            <div class="custom-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <div class="input-group-custom">
+                    <label>نوع المساحة</label>
+                    <select id="venueTypeSelect" class="custom-select" required>
+                        <option value="صالة مغلقة">صالة مغلقة</option>
+                        <option value="مساحة مفتوحة (حديقة/شاطئ)">مساحة مفتوحة (حديقة/شاطئ)</option>
+                        <option value="منزل">ديكور منزلي</option>
+                    </select>
+                </div>
+                <div class="input-group-custom">
+                    <label>الألوان المفضلة للثيم (Theme)</label>
+                    <input type="text" id="themeColors" class="custom-input" placeholder="مثال: ذهبي وأبيض، ألوان باستيل..." required>
+                </div>
+                <div class="input-group-custom">
+                    <label>تاريخ المناسبة</label>
+                    <input type="date" id="eventDateInput" class="custom-input" required>
+                </div>
+            </div>
+            <div class="input-group-custom" style="margin-top: 1.5rem;">
+                <label>تفاصيل الديكور المطلوب</label>
+                <textarea id="designNotes" rows="4" class="custom-textarea" placeholder="اذكر أنواع الزهور، الإضاءة المطلوبة، أو أي أفكار خاصة بك..."></textarea>
+            </div>
+            <div class="input-group-custom" style="margin-top: 1.5rem;">
+                <label>صورة ملهمة للديكور (اختياري)</label>
+                <input type="file" id="inspirationImageFile" accept="image/*" class="custom-input" style="background: transparent; border: 1px dashed var(--gold);">
+            </div>
+            <button type="submit" class="btn-submit-custom" id="sendCustomOrderBtn" style="width: 100%; margin-top: 2rem; padding: 1rem; border-radius: 60px; background: linear-gradient(135deg, var(--gold), #b08235); border: none; font-weight: bold; cursor: pointer;">
+                <i class="fa-regular fa-paper-plane"></i> إرسال طلب الديكور المخصص
+            </button>
+        </form>
+    </div>
 </main>
 
 <div class="modal-overlay" id="authModal">
@@ -699,12 +752,9 @@ function googleTranslateElementInit() {
                         <p class="decor-desc">${escapeHtml(p.Description||'تفاصيل الخدمة غير متوفرة')}</p>
                         <div class="decor-price">${parseFloat(p.Price).toLocaleString()} دج</div>
                         <div class="decor-actions">
-                            <button class="btn-cart" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="${p.Category}">
-                                <i class="fa-solid fa-cart-plus"></i> إضافة للسلة
-                            </button>
-                            <button class="btn-order-direct" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="${p.Category}">
-                                <i class="fa-solid fa-bolt"></i> اطلب الآن
-                            </button>
+                            <button class="btn-cart" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="${p.Category}"><i class="fa-solid fa-cart-plus"></i></button>
+                            <button class="btn-order-direct" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="${p.Category}">اطلب</button>
+                            <button class="btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" style="background: transparent; border: 1px dashed var(--gold); color: var(--text); padding: 0.7rem; border-radius: 40px; cursor: pointer;"><i class="fa-solid fa-wand-magic-sparkles"></i> تخصيص</button>
                         </div>
                     </div>
                 </div>
@@ -758,6 +808,20 @@ function googleTranslateElementInit() {
                 window.location.href='order.html';
             });
         });
+
+        // ------ إضافة مستمعات أزرار التخصيص الجديدة ------
+        document.querySelectorAll('.btn-customize').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
+                document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
+                document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
+                document.getElementById('previewCakeName').innerText = btn.dataset.name;
+                document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString() + ' دج';
+                document.getElementById('previewCakeImg').src = btn.dataset.img;
+                document.getElementById('selectedCakePreviewArea').style.display = 'flex';
+                document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
+            });
+        });
     }
 
     function showSlide(index) { 
@@ -775,6 +839,62 @@ function googleTranslateElementInit() {
         if(slideInterval) clearInterval(slideInterval); 
         slideInterval = setInterval(nextSlide, 5000); 
     }
+
+    // زر إلغاء التخصيص
+    document.getElementById('clearSelectedCakeBtn')?.addEventListener('click',()=>{ 
+        document.getElementById('selectedCakePreviewArea').style.display='none'; 
+        document.getElementById('selectedCatalogCakeId').value=''; 
+    });
+
+    // مستمع إرسال نموذج الديكور المخصص
+    document.getElementById('customDecorForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('sweet_event_token');
+        if(!token) return document.getElementById('authModal').classList.add('active');
+
+        const formData = new FormData();
+        formData.append('eventDate', document.getElementById('eventDateInput').value);
+        formData.append('category', 'ديكور');
+        
+        const venue = document.getElementById('venueTypeSelect').value;
+        const colors = document.getElementById('themeColors').value;
+        formData.append('customDetails', `نوع المساحة: ${venue}\nالألوان المفضلة: ${colors}`);
+        formData.append('notes', document.getElementById('designNotes').value);
+        
+        if(document.getElementById('selectedCatalogCakeId').value){
+            formData.append('selectedItemId', document.getElementById('selectedCatalogCakeId').value);
+            formData.append('selectedItemName', document.getElementById('selectedCatalogCakeName').value);
+            formData.append('selectedItemPrice', document.getElementById('selectedCatalogCakePrice').value);
+        }
+        
+        const imgFile = document.getElementById('inspirationImageFile').files[0];
+        if(imgFile) formData.append('inspirationImage', imgFile);
+
+        const btn = document.getElementById('sendCustomOrderBtn');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الإرسال...';
+        btn.disabled = true;
+        try {
+            const res = await fetch('/api/orders/custom', { 
+                method:'POST', 
+                headers:{'Authorization':`Bearer ${token}`}, 
+                body:formData 
+            });
+            const data = await res.json();
+            if(data.success){
+                alert('🎉 تم إرسال طلب الديكور بنجاح!');
+                document.getElementById('customDecorForm').reset();
+                document.getElementById('selectedCakePreviewArea').style.display = 'none';
+            } else {
+                alert('❌ فشل الإرسال: '+(data.error||''));
+            }
+        } catch(err){ 
+            alert('❌ خطأ في الاتصال'); 
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    });
 
     document.getElementById('prevSlideBtn')?.addEventListener('click', prevSlide);
     document.getElementById('nextSlideBtn')?.addEventListener('click', nextSlide);

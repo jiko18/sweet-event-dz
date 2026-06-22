@@ -159,8 +159,9 @@
             gap: 12px;
             justify-content: center;
             margin-top: 0.5rem;
+            flex-wrap: wrap;
         }
-        .btn-cart, .btn-buy {
+        .btn-cart, .btn-buy, .btn-customize {
             flex: 1;
             padding: 0.7rem 0;
             border-radius: 50px;
@@ -174,6 +175,7 @@
             gap: 8px;
             border: none;
             background: none;
+            min-width: 100px;
         }
         .btn-cart {
             background: transparent;
@@ -195,6 +197,16 @@
             background: #b08235;
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(201,150,62,0.4);
+        }
+        .btn-customize {
+            border: 2px dashed var(--photography-gold);
+            color: var(--photography-gold);
+            background: transparent;
+        }
+        .btn-customize:hover {
+            background: var(--photography-gold);
+            color: #000;
+            border-style: solid;
         }
         .btn-download {
             display: inline-flex;
@@ -219,6 +231,38 @@
             color: #fff;
             transform: translateY(-2px);
         }
+
+        /* ==== تنسيقات قسم التخصيص ==== */
+        .selected-cake-preview {
+            background: rgba(201,150,62,0.1);
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border: 1px solid rgba(201,150,62,0.3);
+        }
+        .preview-details { display: flex; align-items: center; gap: 15px; }
+        .preview-img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; border: 2px solid var(--photography-gold); }
+        .input-group-custom { display: flex; flex-direction: column; gap: 6px; }
+        .input-group-custom label { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+        .custom-input, .custom-select, .custom-textarea {
+            padding: 12px 18px; border-radius: 20px; border: 1px solid var(--border);
+            background: rgba(0,0,0,0.2); color: var(--text); font-family: inherit; transition: 0.3s;
+        }
+        .custom-input:focus, .custom-select:focus, .custom-textarea:focus {
+            border-color: var(--photography-gold); outline: none;
+        }
+        .btn-submit-custom:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(201,150,62,0.4); }
+        .btn-customize {
+            background: transparent; border: 1px dashed var(--photography-gold); color: var(--text);
+            padding: 0.6rem 1rem; border-radius: 30px; cursor: pointer; font-weight: 600;
+            font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s;
+        }
+        .btn-customize:hover { background: var(--photography-gold); color: #000; border-style: solid; }
 
         /* زر معرض الأعمال */
         .more-works {
@@ -252,6 +296,8 @@
             .card-media { height: 220px; }
             .card-content h3 { font-size: 1.4rem; }
             .price { font-size: 1.3rem; }
+            .action-buttons { flex-direction: column; align-items: stretch; }
+            .btn-cart, .btn-buy, .btn-customize { min-width: unset; }
         }
 
         /* تحسين الوضع المظلم (يتم توريثه من الموقع الرئيسي) */
@@ -295,13 +341,70 @@
 <main class="photography-page">
     <div class="photo-hero">
         <div class="hero-icon"><i class="fa-solid fa-camera-retro"></i></div>
-        <h1 data-lang="photography_hero_title">📸 لحظات تستحق الخلود</h1>
+        <h1 data-lang="photography_hero_title">📸 لحظات تستحق التصوير</h1>
         <p data-lang="photography_hero_sub">نوثّق مناسبتك بأعلى معايير الجمال والاحترافية – صور وفيديوهات تخطف الأنفاس</p>
     </div>
 
     <div id="photoServicesGrid" class="photo-grid">
         <div style="text-align:center; width:100%; padding:2rem;">⏳ جاري تحميل خدمات التصوير...</div>
     </div>
+
+    <!-- ========== قسم الطلب المخصص (تم إضافته) ========== -->
+    <div class="custom-order-section" id="customOrderSection" style="margin: 4rem auto; max-width: 1400px; padding: 2rem; background: var(--card-bg); border-radius: var(--card-radius); border: 1px solid var(--border); backdrop-filter: blur(12px);">
+        <h2 class="section-title-custom" style="text-align: center; color: var(--photography-gold); margin-bottom: 2rem;"><i class="fa-solid fa-camera-retro"></i> باقة تصوير مخصصة</h2>
+        
+        <div id="selectedCakePreviewArea" style="display: none;" class="selected-cake-preview">
+            <div class="preview-details">
+                <img id="previewCakeImg" class="preview-img" src="">
+                <div>
+                    <p style="margin:0; font-size:0.8rem; color: var(--text-secondary);">الخدمة المختارة:</p>
+                    <h4 id="previewCakeName" style="margin:0; color:var(--photography-gold);"></h4>
+                    <span id="previewCakePrice" style="font-weight:bold; color: var(--text);"></span>
+                </div>
+            </div>
+            <button type="button" id="clearSelectedCakeBtn" class="btn-customize" style="padding:0.4rem 1rem;"><i class="fa-solid fa-xmark"></i> إلغاء</button>
+        </div>
+
+        <form id="customPhotoForm" enctype="multipart/form-data">
+            <input type="hidden" id="selectedCatalogCakeId">
+            <input type="hidden" id="selectedCatalogCakeName">
+            <input type="hidden" id="selectedCatalogCakePrice">
+            
+            <div class="custom-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <div class="input-group-custom">
+                    <label>نوع المناسبة / الجلسة</label>
+                    <select id="eventTypeSelect" class="custom-select" required>
+                        <option value="زفاف">💍 حفل زفاف</option>
+                        <option value="خطوبة">✨ خطوبة / قراءة فاتحة</option>
+                        <option value="تخرج">🎓 تخرج</option>
+                        <option value="عيد ميلاد">🎂 عيد ميلاد</option>
+                        <option value="تصوير منتجات">📸 تصوير تجاري/منتجات</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                </div>
+                <div class="input-group-custom">
+                    <label>مدة التغطية (التقريبية)</label>
+                    <select id="coverageDuration" class="custom-select" required>
+                        <option value="ساعتان ">ساعتان (جلسة تصوير مصغرة)</option>
+                        <option value=" 6 ساعات">نصف يوم (4 - 6 ساعات)</option>
+                        <option value="يوم كامل">يوم كامل</option>
+                    </select>
+                </div>
+                <div class="input-group-custom">
+                    <label>تاريخ المناسبة</label>
+                    <input type="date" id="eventDateInput" class="custom-input" required>
+                </div>
+            </div>
+            <div class="input-group-custom" style="margin-top: 1.5rem;">
+                <label>تفاصيل إضافية</label>
+                <textarea id="designNotes" rows="4" class="custom-textarea" placeholder="هل ترغب بإضافة ألبوم مطبوع؟ تصوير درون؟ أو تحديد أماكن معينة للتصوير؟..."></textarea>
+            </div>
+            <button type="submit" class="btn-submit-custom" id="sendCustomOrderBtn" style="width: 100%; margin-top: 2rem; padding: 1rem; border-radius: 60px; background: linear-gradient(135deg, var(--photography-gold), #b08235); color: #000; border: none; font-weight: bold; cursor: pointer; transition: 0.3s;">
+                <i class="fa-regular fa-paper-plane"></i> إرسال طلب التصوير المخصص
+            </button>
+        </form>
+    </div>
+    <!-- ============================================ -->
 
     <div class="more-works">
         <a href="portfail.html"><i class="fa-regular fa-images"></i> معرض الأعمال – شاهد المزيد</a>
@@ -416,6 +519,7 @@ function googleTranslateElementInit() {
                                 <div class="action-buttons">
                                     <button class="btn-cart add-to-cart" data-id="${service.ProductId}" data-name="${escapeHtml(service.Name)}" data-price="${service.Price}" data-image="${thumbUrl}" data-cat="photo"><i class="fa-solid fa-cart-plus"></i> ${addToCartText}</button>
                                     <button class="btn-buy buy-now" data-id="${service.ProductId}" data-name="${escapeHtml(service.Name)}" data-price="${service.Price}" data-cat="photo"><i class="fa-solid fa-bolt"></i> ${buyNowText}</button>
+                                    <button class="btn-customize customize-photo" data-id="${service.ProductId}" data-name="${escapeHtml(service.Name)}" data-price="${service.Price}" data-image="${thumbUrl}"><i class="fa-solid fa-wand-magic-sparkles"></i> تخصيص</button>
                                 </div>
                                 ${isVideo && service.ImageUrl ? `<a href="${mediaUrl}" download class="btn-download"><i class="fa-solid fa-download"></i> ${downloadText}</a>` : ''}
                             </div>
@@ -455,6 +559,22 @@ function googleTranslateElementInit() {
                     });
                 });
 
+                // ربط حدث زر التخصيص
+                document.querySelectorAll('.customize-photo').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
+                        document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
+                        document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
+                        document.getElementById('previewCakeName').innerText = btn.dataset.name;
+                        document.getElementById('previewCakePrice').innerText = formatPrice(btn.dataset.price);
+                        document.getElementById('previewCakeImg').src = btn.dataset.image;
+                        document.getElementById('selectedCakePreviewArea').style.display = 'flex';
+                        document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
+                        showToast(`تم تحديد "${btn.dataset.name}"، يمكنك الآن طلب تغطية مخصصة`);
+                    });
+                });
+
                 // تفعيل عرض الوسائط المتعددة (Lightbox) عند النقر على الصورة
                 if(typeof window.startProductCarousels === 'function') window.startProductCarousels();
                 document.querySelectorAll('.card-media img').forEach(img => {
@@ -476,6 +596,72 @@ function googleTranslateElementInit() {
                 grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--danger);">⚠️ فشل الاتصال بالخادم. تأكد من تشغيل السيرفر.</div>';
             }
         }
+
+        // زر إلغاء التخصيص
+        document.getElementById('clearSelectedCakeBtn')?.addEventListener('click', () => {
+            document.getElementById('selectedCakePreviewArea').style.display = 'none';
+            document.getElementById('selectedCatalogCakeId').value = '';
+        });
+
+        // إرسال نموذج التصوير المخصص
+        document.getElementById('customPhotoForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('sweet_event_token');
+            
+            // التحقق من تسجيل الدخول
+            if(!token) {
+                if(typeof window.openAuthModal === 'function') {
+                    window.openAuthModal(false);
+                } else {
+                    window.location.href = '/?action=login';
+                }
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('eventDate', document.getElementById('eventDateInput').value);
+            formData.append('category', 'تصوير');
+
+            const eventType = document.getElementById('eventTypeSelect').value;
+            const duration = document.getElementById('coverageDuration').value;
+            formData.append('customDetails', `نوع المناسبة: ${eventType}\nمدة التغطية: ${duration}`);
+            formData.append('notes', document.getElementById('designNotes').value);
+
+            // التحقق من وجود خدمة مختارة
+            const selectedId = document.getElementById('selectedCatalogCakeId').value;
+            if(selectedId){
+                formData.append('selectedItemId', selectedId);
+                formData.append('selectedItemName', document.getElementById('selectedCatalogCakeName').value);
+                formData.append('selectedItemPrice', document.getElementById('selectedCatalogCakePrice').value);
+            }
+
+            const btn = document.getElementById('sendCustomOrderBtn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الإرسال...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/orders/custom', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if(data.success){
+                    showToast('🎉 تم إرسال طلب التصوير المخصص بنجاح!');
+                    document.getElementById('customPhotoForm').reset();
+                    document.getElementById('selectedCakePreviewArea').style.display = 'none';
+                } else {
+                    alert('❌ فشل الإرسال: ' + (data.error || ''));
+                }
+            } catch(err){
+                alert('❌ خطأ في الاتصال بالخادم، يرجى المحاولة لاحقاً');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        });
 
         // إعادة التحميل عند تغيير اللغة
         window.addEventListener('globalLanguageChanged', () => loadPhotographyServices());

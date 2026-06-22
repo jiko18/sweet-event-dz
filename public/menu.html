@@ -384,6 +384,120 @@
             transform: translateX(-50%) translateY(-3px);
             box-shadow: 0 6px 20px rgba(201, 150, 62, 0.4);
         }
+
+        /* تنسيق زر التخصيص الجديد */
+        .btn-customize {
+            background: transparent;
+            border: 1px dashed var(--gold);
+            color: var(--text);
+            padding: 0.7rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-customize:hover {
+            background: var(--gold);
+            color: #000;
+            border-style: solid;
+        }
+
+        /* قسم التخصيص */
+        .custom-order-section {
+            margin-top: 4rem;
+            background: var(--glass-strong);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 2rem;
+            border: 1px solid var(--glass-border);
+        }
+        .section-title-custom {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+        }
+        .selected-cake-preview {
+            background: rgba(201,150,62,0.1);
+            border-radius: 32px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .preview-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .preview-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+        }
+        .custom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .input-group-custom {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-group-custom label {
+            font-weight: 600;
+            color: var(--text);
+        }
+        .custom-input, .custom-select, .custom-textarea {
+            padding: 12px 18px;
+            border-radius: 28px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text);
+            font-family: inherit;
+            transition: 0.3s;
+        }
+        .custom-input:focus, .custom-select:focus, .custom-textarea:focus {
+            border-color: var(--gold);
+            outline: none;
+        }
+        .file-upload {
+            background: transparent;
+            border: 1px dashed var(--gold);
+            cursor: pointer;
+        }
+        .btn-submit-custom {
+            background: linear-gradient(135deg, var(--gold), #b08235);
+            color: #000;
+            border: none;
+            padding: 1rem;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: 0.3s;
+        }
+        .btn-submit-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(201,150,62,0.4);
+        }
     </style>
 </head>
 <body>
@@ -435,6 +549,58 @@
         <div id="sweetsGridContainer" class="sweets-grid">
             <!-- سيتم تعبئتها بواسطة JS -->
         </div>
+    </div>
+
+    <!-- قسم التخصيص الجديد للحلويات -->
+    <div class="custom-order-section" id="customOrderSection" style="margin: 4rem auto; max-width: 1400px; padding: 2rem; background: var(--glass-strong); border-radius: 48px; border: 1px solid var(--glass-border);">
+        <h2 class="section-title-custom" style="text-align: center; color: var(--gold); margin-bottom: 2rem;">🍬 تخصيص طلبية الحلويات</h2>
+        
+        <div id="selectedCakePreviewArea" style="display: none;" class="selected-cake-preview">
+            <div class="preview-details">
+                <img id="previewCakeImg" class="preview-img" src="">
+                <div>
+                    <p style="margin:0; font-size:0.8rem;">الصنف المختار:</p>
+                    <h4 id="previewCakeName" style="margin:0; color:var(--gold);"></h4>
+                    <span id="previewCakePrice" style="font-weight:bold;"></span>
+                </div>
+            </div>
+            <button type="button" id="clearSelectedCakeBtn" class="btn-customize" style="padding:0.4rem 1rem;"><i class="fa-solid fa-xmark"></i> إلغاء</button>
+        </div>
+
+        <form id="customSweetsForm" enctype="multipart/form-data">
+            <input type="hidden" id="selectedCatalogCakeId">
+            <input type="hidden" id="selectedCatalogCakeName">
+            <input type="hidden" id="selectedCatalogCakePrice">
+            
+            <div class="custom-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <div class="input-group-custom">
+                    <label>نوع التعبئة</label>
+                    <select id="packagingTypeSelect" class="custom-select" required>
+                        <option value="صواني ضيافة">صواني ضيافة</option>
+                        <option value="علب فردية">علب فردية</option>
+                    </select>
+                </div>
+                <div class="input-group-custom">
+                    <label>الكمية التقريبية</label>
+                    <input type="text" id="approximateQuantity" class="custom-input" placeholder="مثال: 5 كيلو أو 100 حبة" required>
+                </div>
+                <div class="input-group-custom">
+                    <label>تاريخ المناسبة</label>
+                    <input type="date" id="eventDateInput" class="custom-input" required>
+                </div>
+            </div>
+            <div class="input-group-custom" style="margin-top: 1.5rem;">
+                <label>ملاحظات إضافية</label>
+                <textarea id="designNotes" rows="4" class="custom-textarea" placeholder="تفاصيل أخرى تود ذكرها..."></textarea>
+            </div>
+            <div class="input-group-custom" style="margin-top: 1.5rem;">
+                <label>صورة ملهمة (اختياري)</label>
+                <input type="file" id="inspirationImageFile" accept="image/*" class="custom-input file-upload">
+            </div>
+            <button type="submit" class="btn-submit-custom" id="sendCustomOrderBtn" style="width: 100%; margin-top: 2rem; padding: 1rem; border-radius: 60px; background: linear-gradient(135deg, var(--gold), #b08235); border: none; font-weight: bold; cursor: pointer;">
+                <i class="fa-regular fa-paper-plane"></i> إرسال طلب الحلويات المخصص
+            </button>
+        </form>
     </div>
 </main>
 
@@ -588,6 +754,7 @@ function renderSweetsGrid(sweets) {
                         <div class="sweet-actions">
                             <button class="btn-cart" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="sweet"><i class="fa-solid fa-cart-plus"></i> إضافة للسلة</button>
                             <button class="btn-order-direct" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="sweet"><i class="fa-solid fa-bolt"></i> اطلب الآن</button>
+                            <button class="btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}"><i class="fa-solid fa-wand-magic-sparkles"></i> تخصيص</button>
                         </div>
                     </div>
                 </div>
@@ -643,7 +810,23 @@ function renderSweetsGrid(sweets) {
                 window.location.href = 'order.html';
             });
         });
+
+        // ------ إضافة مستمعات أزرار التخصيص الجديدة ------
+        document.querySelectorAll('.btn-customize').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
+                document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
+                document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
+                document.getElementById('previewCakeName').innerText = btn.dataset.name;
+                document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString() + ' دج';
+                document.getElementById('previewCakeImg').src = btn.dataset.img;
+                document.getElementById('selectedCakePreviewArea').style.display = 'flex';
+                document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
+                showToast(`تم تحديد "${btn.dataset.name}"، يمكنك الآن تخصيص الطلب`);
+            });
+        });
     }
+
     function showSlide(index) { 
         const items=document.querySelectorAll('#productSlider .item'); 
         if(!items.length) return; 
@@ -667,6 +850,62 @@ function renderSweetsGrid(sweets) {
         const p = window.scrollY/(document.documentElement.scrollHeight-window.innerHeight)*100; 
         const bar=document.getElementById('scrollProgress'); 
         if(bar) bar.style.width=p+'%'; 
+    });
+
+    // زر إلغاء التخصيص
+    document.getElementById('clearSelectedCakeBtn')?.addEventListener('click',()=>{ 
+        document.getElementById('selectedCakePreviewArea').style.display='none'; 
+        document.getElementById('selectedCatalogCakeId').value=''; 
+    });
+
+    // مستمع إرسال نموذج الحلويات المخصص
+    document.getElementById('customSweetsForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('sweet_event_token');
+        if(!token) return document.getElementById('authModal').classList.add('active');
+
+        const formData = new FormData();
+        formData.append('eventDate', document.getElementById('eventDateInput').value);
+        formData.append('category', 'حلويات');  // الفئة المحددة
+        
+        const packaging = document.getElementById('packagingTypeSelect').value;
+        const quantity = document.getElementById('approximateQuantity').value;
+        formData.append('customDetails', `نوع التعبئة: ${packaging}\nالكمية التقريبية: ${quantity}`);
+        formData.append('notes', document.getElementById('designNotes').value);
+        
+        if(document.getElementById('selectedCatalogCakeId').value){
+            formData.append('selectedItemId', document.getElementById('selectedCatalogCakeId').value);
+            formData.append('selectedItemName', document.getElementById('selectedCatalogCakeName').value);
+            formData.append('selectedItemPrice', document.getElementById('selectedCatalogCakePrice').value);
+        }
+        
+        const imgFile = document.getElementById('inspirationImageFile').files[0];
+        if(imgFile) formData.append('inspirationImage', imgFile);
+
+        const btn = document.getElementById('sendCustomOrderBtn');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الإرسال...';
+        btn.disabled = true;
+        try {
+            const res = await fetch('/api/orders/custom', { 
+                method:'POST', 
+                headers:{'Authorization':`Bearer ${token}`}, 
+                body:formData 
+            });
+            const data = await res.json();
+            if(data.success){
+                alert('🎉 تم إرسال طلب الحلويات المخصص بنجاح!');
+                document.getElementById('customSweetsForm').reset();
+                document.getElementById('selectedCakePreviewArea').style.display = 'none';
+            } else {
+                alert('❌ فشل الإرسال: '+(data.error||''));
+            }
+        } catch(err){ 
+            alert('❌ خطأ في الاتصال'); 
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
     });
     
     window.addEventListener('DOMContentLoaded', async()=>{ 

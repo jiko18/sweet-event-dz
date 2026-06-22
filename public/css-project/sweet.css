@@ -1352,11 +1352,7 @@ footer {
   transition: 0.5s;
 }
 
-.slide .item:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-gold);
-  border-color: var(--gold);
-}
+
 
 .content-img {
   background: rgba(0,0,0,0.65);
@@ -3159,11 +3155,7 @@ footer {
   transition: 0.5s;
 }
 
-.slide .item:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-gold);
-  border-color: var(--gold);
-}
+
 
 .content-img {
   background: rgba(0,0,0,0.65);

@@ -26,30 +26,46 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public'), {
     extensions: ['html']
 }));
+
 // الأسرار
-// الأسرار
-const SECRET_KEY = process.env.JWTS_SECRET;
+const SECRET_KEY = process.env.JWTS_SECRET || "Test_Secret_Key_12345";
 
 // =====================================================
-// إعدادات بوت تيليجرام
+// إعدادات بوت تيليجرام المطور وفريق العمل
 // =====================================================
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-async function sendTelegramNotification(message) {
+const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
+
+const ROLES_CHAT_IDS = {
+    superAdmin: "7545626508", // حسابك أنت (السوبر أدمن)
+    decor: "8446426225", // أضف الأيدي الخاص بموظف الديكور
+    photo: "8498133481" // المعرف الخاص بموظف التصوير
+};
+
+// دالة الإرسال تدعم الآن استقبال نصوص الأزرار (replyMarkup) اختياريًا
+async function sendTelegramNotification(chatId, message, replyMarkup = null) {
+    if (!chatId) return;
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    
+    const bodyData = {
+        chat_id: chatId,
+        text: message,
+        parse_mode: 'HTML'
+    };
+    
+    // إذا وُجدت أزرار تفاعلية نقوم بإرفاقها بالرسالة
+    if (replyMarkup) {
+        bodyData.reply_markup = replyMarkup;
+    }
+
     try {
-        await fetch(url, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'Markdown'
-            })
+            body: JSON.stringify(bodyData)
         });
-        console.log('✅ تم إرسال إشعار تيليجرام بنجاح');
+        return await response.json();
     } catch (err) {
-        console.error('❌ حدث خطأ أثناء إرسال إشعار تيليجرام:', err.message);
+        console.error(`❌ خطأ أثناء الإرسال للمعرّف ${chatId}:`, err.message);
     }
 }
 
@@ -91,8 +107,6 @@ async function logAdminAction(adminId, adminName, actionType, details) {
         console.error("فشل تسجيل النشاط:", err.message);
     }
 }
-
-// إنشاء الجداول تلقائياً عند بدء التشغيل (مع إضافة DeliveryAddress)
 // إنشاء الجداول تلقائياً عند بدء التشغيل (مع إضافة DeliveryAddress والأحجام Sizes)
 (async function createTables() {
     try {
@@ -128,7 +142,7 @@ async function logAdminAction(adminId, adminName, actionType, details) {
                 Longitude REAL,
                 Features TEXT,
                 UnitType TEXT DEFAULT 'none',
-                Sizes TEXT DEFAULT '[]', -- ✅ تم إضافة عمود الأحجام هنا
+                Sizes TEXT DEFAULT '[]',
                 IsDeleted INTEGER DEFAULT 0
             )
         `);
@@ -202,97 +216,6 @@ async function logAdminAction(adminId, adminName, actionType, details) {
         process.exit(1);
     }
 })();
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS Products (
-                ProductId INTEGER PRIMARY KEY AUTOINCREMENT,
-                Category TEXT,
-                Name TEXT,
-                Description TEXT,
-                Price REAL,
-                ImageUrl TEXT,
-                IsActive INTEGER DEFAULT 1,
-                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-                MediaFiles TEXT,
-                Location TEXT,
-                Capacity INTEGER,
-                Latitude REAL,
-                Longitude REAL,
-                Features TEXT,
-                UnitType TEXT DEFAULT 'none',
-                IsDeleted INTEGER DEFAULT 0
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS Orders (
-                OrderId INTEGER PRIMARY KEY AUTOINCREMENT,
-                UserId INTEGER,
-                CustomerName TEXT,
-                CustomerPhone TEXT,
-                CustomerEmail TEXT,
-                EventDate TEXT,
-                DeliveryDate TEXT,
-                DeliveryAddress TEXT,
-                Notes TEXT,
-                TotalAmount REAL,
-                Status TEXT DEFAULT 'Pending',
-                OrderDate TEXT DEFAULT CURRENT_TIMESTAMP,
-                IsDeleted INTEGER DEFAULT 0,
-                IsArchived INTEGER DEFAULT 0,
-                IsDeletedByAdmin INTEGER DEFAULT 0,
-                FOREIGN KEY (UserId) REFERENCES Users(UserID)
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS OrderItems (
-                ItemId INTEGER PRIMARY KEY AUTOINCREMENT,
-                OrderId INTEGER,
-                ProductId INTEGER,
-                Quantity INTEGER,
-                UnitPrice REAL,
-                FOREIGN KEY (OrderId) REFERENCES Orders(OrderId) ON DELETE CASCADE,
-                FOREIGN KEY (ProductId) REFERENCES Products(ProductId)
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS Reviews (
-                ReviewId INTEGER PRIMARY KEY AUTOINCREMENT,
-                UserId INTEGER,
-                ReviewerName TEXT,
-                Rating INTEGER CHECK(Rating BETWEEN 1 AND 5),
-                Comment TEXT,
-                IsApproved INTEGER DEFAULT 0,
-                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (UserId) REFERENCES Users(UserID)
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS Gallery (
-                GalleryId INTEGER PRIMARY KEY AUTOINCREMENT,
-                Title TEXT,
-                ImageUrl TEXT,
-                Category TEXT DEFAULT 'general',
-                DisplayOrder INTEGER DEFAULT 0,
-                IsActive INTEGER DEFAULT 1,
-                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS ActivityLogs (
-                LogId INTEGER PRIMARY KEY AUTOINCREMENT,
-                AdminId INTEGER,
-                AdminName TEXT,
-                ActionType TEXT,
-                Details TEXT,
-                CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        console.log('✅ جميع الجداول جاهزة على Turso');
-    } catch (err) {
-        console.error('❌ فشل إنشاء الجداول:', err.message);
-        process.exit(1);
-    }
-})();
-
 // =====================================================
 // Middleware
 // =====================================================
@@ -514,8 +437,6 @@ app.post('/api/orders', verifyToken, async (req, res) => {
         if (!items || !items.length) return res.status(400).json({ success: false, error: 'الطلب فارغ' });
         const finalDate = eventDate || deliveryDate;
         if (!finalDate) return res.status(400).json({ success: false, error: 'يرجى تحديد تاريخ التسليم' });
-        // تم إزالة الشرط الذي كان يمنع الإرسال إذا كان deliveryAddress فارغاً
-        // if (!deliveryAddress) return res.status(400).json({ success: false, error: 'يرجى إدخال عنوان التسليم' });
 
         // إدخال الطلب الرئيسي مع عنوان التسليم (يمكن أن يكون فارغاً)
         const result = await runAsync(
@@ -537,18 +458,130 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             );
         }
         
-        // --- إضافة: إرسال إشعار للتيليجرام ---
-        const notificationMessage = `
-🔔 *طلب جديد تم تسجيله!* 🔔
-رقم الطلب: #${orderId}
-الزبون: ${customerName}
-الهاتف: ${customerPhone}
-المبلغ الإجمالي: ${totalAmount} د.ج
-العنوان: ${deliveryAddress || 'غير محدد'}
-التاريخ المحدد: ${finalDate}
+        // --- الفرز البرمجي وإرسال إشعارات تيليجرام التفاعلية ---
+        let superAdminProductsText = ""; 
+        let decorProductsText = ""; 
+        let photoProductsText = ""; // متغير لجمع طلبات التصوير
+        let hasDecor = false;
+        let hasPhoto = false;
+
+        // مصفوفة لتجميع عناصر الديكور بتفاصيلها لاستخدامها في الرسالة المخصصة
+        let decorItems = [];
+
+        // المرور على عناصر السلة وفرزها
+        for (const item of items) {
+            const productId = item.productId || item.ProductId || item.id || item.Id || null;
+            let productName = item.Name || item.name || `منتج ${productId}`;
+            let productCategory = item.Category || item.category || '';
+
+            // محاولة جلب التفاصيل من قاعدة البيانات إذا لم تكن متوفرة في الطلب
+            if (productId && (!productCategory || !productName || productName.startsWith('منتج'))) {
+                const product = await getAsync(`SELECT Name, Category FROM Products WHERE ProductId = ?`, [productId]);
+                if (product) {
+                    productName = product.Name || productName;
+                    productCategory = product.Category || productCategory;
+                }
+            }
+
+            const quantity = item.quantity || item.Quantity || 1;
+            const unitPrice = item.unitPrice || item.UnitPrice || item.price || item.Price || 0;
+            const itemLine = `• ${productName} (الكمية: ${quantity})\n`;
+            
+            // السوبر أدمن تصله كافة التفاصيل
+            superAdminProductsText += itemLine;
+
+            // فرز الديكور والتصوير
+            const categoryLower = (productCategory || '').toLowerCase().trim();
+            
+            if (categoryLower === 'decor' || categoryLower === 'ديكور') {
+                decorProductsText += itemLine;
+                hasDecor = true;
+                // حفظ بيانات العنصر لاستخدامها في رسالة الديكور المفصلة
+                decorItems.push({
+                    name: productName,
+                    quantity: quantity,
+                    unitPrice: unitPrice,
+                    notes: item.notes || ''
+                });
+            } else if (categoryLower === 'photo' || categoryLower === 'photography' || categoryLower === 'تصوير') {
+                photoProductsText += itemLine;
+                hasPhoto = true;
+            }
+        }
+
+        // صياغة وإرسال رسالة السوبر أدمن (علي) الشاملة
+        const superAdminMessage = `
+<b>🔔 طلب كامل جديد رقم: #${orderId}</b>
+👤 <b>اسم الزبون:</b> ${customerName}
+📞 <b>رقم الهاتف:</b> ${customerPhone}
+
+📦 <b>تفاصيل الطلب الشاملة:</b>
+${superAdminProductsText}
         `;
-        sendTelegramNotification(notificationMessage);
-        // -------------------------------------
+        await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, superAdminMessage);
+
+        // --- رسالة مسؤول الديكور المخصصة (مطوّرة حسب الطلب) ---
+        if (hasDecor) {
+            // حساب إجمالي الديكور من العناصر المجمعة
+            const decorTotal = decorItems.reduce((sum, it) => sum + (it.unitPrice * it.quantity), 0);
+
+            let decorMessage = `🔔 <b>طلب تنسيق ديكور جديد!</b> 🔔\n\n`;
+            decorMessage += `📦 <b>رقم الطلبية:</b> #${orderId}\n`;
+            decorMessage += `👤 <b>اسم الزبون:</b> ${customerName}\n`;
+            decorMessage += `📞 <b>رقم الهاتف:</b> ${customerPhone}\n`;
+            decorMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate || 'غير محدد'}\n`;
+            decorMessage += `📍 <b>الموقع/العنوان:</b> ${deliveryAddress || 'غير محدد'}\n\n`;
+            decorMessage += `📋 <b>العناصر المطلوبة للديكور:</b> \n`;
+            
+            decorItems.forEach((item, index) => {
+                decorMessage += `${index + 1}. 🔹 <b>${item.name}</b> (الكمية: ${item.quantity})\n`;
+                if (item.notes) decorMessage += `   ✍️ ملاحظة: ${item.notes}\n`;
+            });
+
+            if (notes) {
+                decorMessage += `\n📝 <b>تفاصيل إضافية وتخصيص:</b> \n${notes}\n`;
+            }
+
+            decorMessage += `\n💰 <b>الإجمالي الخاص بالديكور:</b> ${decorTotal || 'موضح في الفاتورة'} دج\n`;
+            decorMessage += `\nاضغط على الأزرار أدناه لتحديث حالة التجهيز.`;
+
+            // بناء الأزرار التفاعلية المدمجة
+            const inlineKeyboard = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ قبول وتأكيد التجهيز", callback_data: `decor_approve_${orderId}` },
+                        { text: "❌ تعذر العمل / إلغاء", callback_data: `decor_reject_${orderId}` }
+                    ]
+                ]
+            };
+
+            // إرسال الرسالة التفاعلية لمسؤول الديكور
+            await sendTelegramNotification(ROLES_CHAT_IDS.decor, decorMessage, inlineKeyboard);
+            console.log("🚀 تم إرسال إشعار الديكور المفصل بنجاح إلى مسؤول الديكور.");
+        }
+
+        // صياغة وإرسال رسالة مسؤول التصوير
+        if (hasPhoto) {
+            const photoMessage = `
+<b>📸 طلب تصوير جديد رقم: #${orderId}</b>
+👤 <b>اسم الزبون:</b> ${customerName}
+📞 <b>رقم الهاتف:</b> ${customerPhone}
+
+🎬 <b>الخدمات المطلوبة:</b>
+${photoProductsText}
+            `;
+
+            const inlineKeyboardPhoto = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ موافق (جاهز)", callback_data: `photo_approve_${orderId}` },
+                        { text: "❌ إلغاء (غير جاهز)", callback_data: `photo_reject_${orderId}` }
+                    ]
+                ]
+            };
+
+            await sendTelegramNotification(ROLES_CHAT_IDS.photo, photoMessage, inlineKeyboardPhoto);
+        }
 
         res.json({ success: true, message: 'تم حفظ طلبك بنجاح', orderId });
     } catch (err) {
@@ -556,18 +589,18 @@ app.post('/api/orders', verifyToken, async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
+
 // =====================================================
-// 7.5 طلب كعكة مخصصة
+// طلب خدمة/منتج مخصص (شامل لجميع الأقسام)
 // =====================================================
 app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), async (req, res) => {
     try {
-        // إضافة قراءة بيانات الكعكة المختارة من الكتالوج
-        const { eventDate, eventType, cakeSize, notes, selectedCakeId, selectedCakeName, selectedCakePrice } = req.body;
+        const { eventDate, category, customDetails, notes, selectedItemId, selectedItemName, selectedItemPrice } = req.body;
         
-        let finalNotes = `--- طلب كعكة مخصصة ---\nالمناسبة: ${eventType}\nالحجم: ${cakeSize}\nالتفاصيل: ${notes || 'لا يوجد'}`;
+        let finalNotes = `--- طلب ${category || 'مخصص'} ---\n${customDetails || ''}\nملاحظات الزبون: ${notes || 'لا يوجد'}`;
         
-        if (selectedCakeName) {
-            finalNotes += `\nالكعكة الأساسية المختارة للتعديل عليها: ${selectedCakeName}`;
+        if (selectedItemName) {
+            finalNotes += `\nالعنصر الأساسي المختار: ${selectedItemName}`;
         }
 
         if (req.file) {
@@ -579,21 +612,20 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
         const customerName = `${user.Username} ${user.LastName || ''}`.trim();
 
         let productId;
-        let unitPrice = 0;
+        let unitPrice = parseFloat(selectedItemPrice) || 0;
 
-        // إذا قام الزبون بتحديد كعكة من الكتالوج، نستخدم المعرف الخاص بها لتظهر صورتها للإدارة
-        if (selectedCakeId) {
-            productId = parseInt(selectedCakeId);
-            unitPrice = parseFloat(selectedCakePrice) || 0;
+        if (selectedItemId) {
+            productId = parseInt(selectedItemId);
         } else {
-            // إذا لم يختر، ننشئ منتجاً عاماً
-            const prod = await getAsync(`SELECT ProductId FROM Products WHERE Name = 'كعكة مخصصة (حسب الطلب)'`);
+            const prodName = `طلب ${category || 'مخصص'} (حسب الطلب)`;
+            const prod = await getAsync(`SELECT ProductId FROM Products WHERE Name = ?`, [prodName]);
             if (prod) {
                 productId = prod.ProductId;
             } else {
                 const insertProd = await runAsync(
                     `INSERT INTO Products (Name, Description, Price, Category, IsActive, CreatedAt)
-                     VALUES ('كعكة مخصصة (حسب الطلب)', 'طلب كعكة بمواصفات خاصة وصورة ملهمة من الزبون', 0, 'cake', 1, CURRENT_TIMESTAMP)`
+                     VALUES (?, 'طلب بمواصفات خاصة من الزبون', 0, 'custom', 1, CURRENT_TIMESTAMP)`,
+                     [prodName]
                 );
                 productId = insertProd.lastID;
             }
@@ -606,24 +638,22 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
         );
         const orderId = orderResult.lastID;
 
-        // إدراج المنتج الصحيح في عناصر الطلب
         await runAsync(
             `INSERT INTO OrderItems (OrderId, ProductId, Quantity, UnitPrice) VALUES (?, ?, 1, ?)`,
             [orderId, productId, unitPrice]
         );
 
-        // --- إضافة: إرسال إشعار للتيليجرام ---
+        // إشعار السوبر أدمن الموحد
         const customNotification = `
-🎂 *طلب كعكة مخصصة جديد!* 🎂
+🌟 <b>طلب ${category || 'مخصص'} جديد!</b> 🌟
 رقم الطلب: #${orderId}
 الزبون: ${customerName}
 الهاتف: ${user.Phone || 'غير متوفر'}
-المناسبة: ${eventType || 'غير محدد'}
-الحجم: ${cakeSize || 'غير محدد'}
+تاريخ المناسبة: ${eventDate || 'غير محدد'}
+${customDetails || ''}
 ملاحظات: ${notes || 'لا يوجد'}
         `;
-        sendTelegramNotification(customNotification);
-        // -------------------------------------
+        await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, customNotification);
 
         res.json({ success: true, orderId, message: 'تم استلام طلبك المخصص بنجاح' });
     } catch (err) {
@@ -631,6 +661,7 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
         res.status(500).json({ success: false, error: err.message });
     }
 });
+
 // =====================================================
 // 8. جلب طلبات المستخدم الحالي
 // =====================================================
@@ -1188,6 +1219,69 @@ app.get('/api/admin/logs', verifyAdmin, async (req, res) => {
 });
 
 // =====================================================
+// مسار استقبال نقرات الأزرار من تيليجرام (Webhook)
+// =====================================================
+app.post('/api/telegram-webhook', async (req, res) => {
+    // الرد الفوري على خادم تيليجرام لإعلامه باستلام الإشارة بنجاح
+    res.sendStatus(200); 
+
+    const update = req.body;
+    if (!update.callback_query) return;
+
+    const callbackQuery = update.callback_query;
+    const callbackData = callbackQuery.data; 
+    const chatId = callbackQuery.message.chat.id;
+    const messageId = callbackQuery.message.message_id;
+    const originalText = callbackQuery.message.text;
+
+    // معالجة نقرات أقسام الديكور والتصوير معاً
+    if (callbackData.startsWith('decor_approve_') || callbackData.startsWith('decor_reject_') ||
+        callbackData.startsWith('photo_approve_') || callbackData.startsWith('photo_reject_')) {
+        
+        const isDecor = callbackData.includes('decor_');
+        const isApprove = callbackData.includes('_approve_');
+        const orderId = callbackData.split('_').pop(); 
+        
+        const statusText = isApprove ? "✅ تم القبول والموافقة" : "❌ تم الاعتذار والرفض";
+        const departmentName = isDecor ? "الديكور" : "التصوير الفوتوغرافي";
+        
+        // صياغة الرسالة التي ستصل إليك كسوبر أدمن لإعلامك بما حدث
+        const bossNotifyText = isApprove 
+            ? `<b>📢 تحديث من قسم ${departmentName}:</b>\nقام مسؤول القسم بـ <b>الموافقة</b> وتأكيد الطلب رقم <b>#${orderId}</b>.`
+            : `<b>🚨 تنبيه من قسم ${departmentName}:</b>\nقام مسؤول القسم بـ <b>إلغاء/رفض</b> المهمة للطلب رقم <b>#${orderId}</b>.`;
+
+        // 1. تحديث الرسالة الأصلية عند الموظف (لتختفي الأزرار ويظهر النص الجديد)
+        try {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    message_id: messageId,
+                    text: `${originalText}\n\n⚠️ <b>إجرائك الحالي:</b> ${statusText}`,
+                    parse_mode: 'HTML'
+                })
+            });
+        } catch (e) { console.error("خطأ أثناء تحديث رسالة الموظف:", e.message); }
+
+        // 2. إرسال الإشعار الفوري لك (السوبر أدمن) لتعرف النتيجة
+        await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, bossNotifyText);
+
+        // 3. إنهاء حالة التحميل للزر في تطبيق تيليجرام
+        try {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    callback_query_id: callbackQuery.id, 
+                    text: isApprove ? "تم إرسال موافقتك للمدير" : "تم إرسال اعتذارك للمدير" 
+                })
+            });
+        } catch (e) { console.error("خطأ في قفل حدث النقر:", e.message); }
+    }
+});
+
+// =====================================================
 // معالج الأخطاء العام والمسارات غير الموجودة (يجب أن يكون في النهاية تماماً)
 // =====================================================
 app.use((req, res) => {
@@ -1205,4 +1299,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 السيرفر يعمل على المنفذ ${PORT}`);
+    console.log(`⚠️  تذكير: لتفعيل استقبال ضغطات الأزرار، يجب تعيين Webhook للبوت عبر: https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook?url=https://your-domain.com/api/telegram-webhook`);
 });
