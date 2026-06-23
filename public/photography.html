@@ -307,6 +307,134 @@
         .dark-mode .media-badge {
             background: rgba(0, 0, 0, 0.8);
         }
+        /* =========================================
+   تنسيقات حقول إدخال قسم التخصيص (التصوير)
+   ========================================= */
+
+/* تنسيق حاوية الحقول والعناوين */
+.input-group-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.input-group-custom label {
+    color: var(--photography-gold, #c9963e) !important;
+    font-family: 'Cairo', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    margin-right: 0.5rem;
+}
+
+/* التنسيق الأساسي للحقول والقوائم المنسدلة */
+.custom-input, 
+.custom-select, 
+.custom-textarea {
+    background: rgba(26, 17, 10, 0.6) !important; /* خلفية زجاجية داكنة تناسب ثيم التصوير */
+    border: 1px solid rgba(201, 150, 62, 0.3) !important;
+    color: var(--photography-light, #fef9f2) !important;
+    padding: 1rem 1.2rem !important;
+    border-radius: 16px !important;
+    font-family: inherit !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+    outline: none !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    
+    /* إخفاء المظهر الافتراضي للمتصفح */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* تنسيق النص الإرشادي المائي (Placeholder) */
+.custom-input::placeholder, 
+.custom-textarea::placeholder {
+    color: rgba(254, 249, 242, 0.5) !important;
+}
+
+/* سهم القائمة المنسدلة الذهبي */
+.custom-select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9963e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: left 15px center !important;
+    background-size: 16px !important;
+    cursor: pointer !important;
+}
+
+/* خيارات القائمة المنسدلة */
+.custom-select option {
+    background-color: var(--photography-dark, #1a110a) !important;
+    color: var(--photography-light, #fef9f2) !important;
+    padding: 10px !important;
+}
+
+/* =========================================
+   تأثيرات التفاعل الساحرة (Hover & Focus)
+   ========================================= */
+.custom-input:hover, 
+.custom-select:hover, 
+.custom-textarea:hover {
+    border-color: rgba(201, 150, 62, 0.8) !important;
+    background: rgba(26, 17, 10, 0.85) !important;
+    transform: translateY(-2px);
+}
+
+.custom-input:focus, 
+.custom-select:focus, 
+.custom-textarea:focus {
+    border-color: var(--photography-gold, #c9963e) !important;
+    box-shadow: 0 0 15px rgba(201, 150, 62, 0.25) !important;
+    background: rgba(26, 17, 10, 0.95) !important;
+}
+
+/* =========================================
+   تنسيق أزرار السلة وإرسال الطلب (التصوير)
+   ========================================= */
+
+/* توحيد حجم ومظهر الأزرار */
+.btn-submit-custom {
+    padding: 1rem 1.5rem !important;
+    border-radius: 60px !important;
+    font-family: 'Tajawal', 'Cairo', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    flex: 1 !important;
+}
+
+/* زر إرسال الطلب المباشر (الأساسي) */
+#sendCustomOrderBtn {
+    background: linear-gradient(135deg, var(--photography-gold, #c9963e), #a87a2e) !important;
+    color: var(--photography-dark, #1a110a) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(201, 150, 62, 0.2) !important;
+}
+
+#sendCustomOrderBtn:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 25px rgba(201, 150, 62, 0.4) !important;
+    background: linear-gradient(135deg, #e0b867, var(--photography-gold, #c9963e)) !important;
+}
+
+/* زر إضافة إلى السلة (الثانوي) */
+#addToCartCustomBtn {
+    background: rgba(201, 150, 62, 0.08) !important;
+    border: 2px solid var(--photography-gold, #c9963e) !important;
+    color: var(--photography-gold, #c9963e) !important;
+}
+
+#addToCartCustomBtn:hover {
+    background: var(--photography-gold, #c9963e) !important;
+    color: var(--photography-dark, #1a110a) !important; /* ينعكس لون النص للداكن عند التمرير */
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 25px rgba(201, 150, 62, 0.3) !important;
+}
     </style>
 </head>
 <body>

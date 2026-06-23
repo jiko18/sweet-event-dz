@@ -442,6 +442,95 @@
             pointer-events: none;
         }
         .toast-notify.show { opacity: 1; }
+
+        /* =========================================
+   تنسيقات حقول إدخال قسم التخصيص (الديكور)
+   ========================================= */
+
+/* تنسيق حاوية كل حقل والتسمية (Label) */
+.input-group-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.input-group-custom label {
+    color: var(--gold);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+}
+
+/* التنسيق الأساسي للحقول والقوائم المنسدلة */
+.custom-input, 
+.custom-select, 
+.custom-textarea {
+    background: var(--glass-bg); /* خلفية زجاجية داكنة */
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    padding: 1rem 1.2rem;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: var(--transition);
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* تنسيق النص الإرشادي (Placeholder) */
+.custom-input::placeholder, 
+.custom-textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* =========================================
+   تأثيرات التفاعل (Hover & Focus)
+   ========================================= */
+
+/* عند تمرير الماوس (Hover) */
+.custom-input:hover, 
+.custom-select:hover, 
+.custom-textarea:hover {
+    border-color: rgba(201, 150, 62, 0.6); /* حواف ذهبية ناعمة */
+    background: rgba(20, 15, 12, 0.8);
+    transform: translateY(-2px); /* حركة خفيفة للأعلى */
+}
+
+/* عند النقر والكتابة داخل الحقل (Focus) */
+.custom-input:focus, 
+.custom-select:focus, 
+.custom-textarea:focus {
+    border-color: var(--gold); /* إبراز الحدود بالذهبي */
+    box-shadow: 0 0 15px rgba(201, 150, 62, 0.25); /* توهج ذهبي حول المربع */
+    background: var(--glass-ultra);
+}
+
+/* =========================================
+   تنسيق زر "إضافة إلى السلة" المخصص
+   ========================================= */
+.btn-customize {
+    background: rgba(201, 150, 62, 0.1);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-customize:hover {
+    background: var(--gold);
+    color: #1a1310;
+    box-shadow: 0 8px 25px rgba(201, 150, 62, 0.4);
+    transform: translateY(-3px);
+}
     </style>
 </head>
 <body>
