@@ -910,8 +910,8 @@ function renderCakesGrid(cakes) {
         let actionsHtml = `
             <button class="btn-cart" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-cart-plus"></i> إضافة للسلة</button>
             <button class="btn-order-direct" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-bolt"></i> اطلب الآن</button>
-// ابحث عن هذا السطر واستبدله:
-<button class="btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-sizes="${sizesJsonStr}"><i class="fa-regular fa-pen-to-square"></i> تخصيص</button>        `;
+            <button class="btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}"><i class="fa-regular fa-pen-to-square"></i> تخصيص</button>
+        `;
 
         // إذا كانت الكعكة تمتلك أحجاماً إضافية نضيف زر "عرض مزيد من الأحجام" فوق الأزرار السابقة
         if (hasSizes) {
@@ -977,7 +977,6 @@ function renderCakesGrid(cakes) {
     });
 
     // زر التخصيص العادي (ينقل للأسفل مع بيانات الكعكة فقط)
-// زر التخصيص العادي (ينقل للأسفل ويقوم بتعبئة الأحجام)
     document.querySelectorAll('.btn-customize').forEach(btn=>{
         btn.addEventListener('click',()=>{
             if (document.getElementById('selectedCatalogCakeId')) document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
@@ -986,36 +985,15 @@ function renderCakesGrid(cakes) {
             if (document.getElementById('previewCakeName')) document.getElementById('previewCakeName').innerText = btn.dataset.name;
             if (document.getElementById('previewCakePrice')) document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString() + ' دج';
             if (document.getElementById('previewCakeImg') && btn.dataset.img) document.getElementById('previewCakeImg').src = btn.dataset.img;
-            
-            // 👉 الكود الجديد: تعبئة قائمة الأحجام المنسدلة تلقائياً
-            const sizeSelect = document.getElementById('cakeSizeSelect');
-            if (sizeSelect) {
-                sizeSelect.innerHTML = '<option value="" disabled selected>الرجاء اختيار الحجم...</option>';
-                const sizesData = btn.dataset.sizes;
-                
-                if (sizesData && sizesData !== '{}') {
-                    try {
-                        // تحويل النص إلى كائن JSON
-                        const sizesObj = JSON.parse(sizesData.replace(/&quot;/g, '"'));
-                        for (const [sizeName, priceVal] of Object.entries(sizesObj)) {
-                            if (priceVal && parseFloat(priceVal) > 0) {
-                                sizeSelect.innerHTML += `<option value="${sizeName}" data-price="${priceVal}">${sizeName} - ${parseFloat(priceVal).toLocaleString()} دج</option>`;
-                            }
-                        }
-                    } catch(e) { console.error("Error parsing sizes:", e); }
-                } else {
-                    // في حال كانت كعكة لا تحتوي أحجاماً متعددة
-                    sizeSelect.innerHTML += `<option value="حجم أساسي" data-price="${btn.dataset.price}">حجم أساسي - ${parseFloat(btn.dataset.price).toLocaleString()} دج</option>`;
-                }
-            }
-
             if (document.getElementById('selectedCakePreviewArea')) document.getElementById('selectedCakePreviewArea').style.display = 'flex';
             if (document.getElementById('customOrderSection')) {
                 document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
             }
-            showToast(`تم تحديد الكعكة "${btn.dataset.name}"، اختر الحجم والتفاصيل`);
+            showToast(`تم تحديد الكعكة "${btn.dataset.name}"، أضف التفاصيل المخصصة`);
         });
     });
+}
+
 // دوال النافذة المنبثقة الجديدة
 window.handleViewMoreSizes = function(cakeId, cakeName, cakeImg, sizesData) {
     let sizesObj = {};
