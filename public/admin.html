@@ -1606,7 +1606,7 @@
             <div id="dynamicMediaPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
             
             <div class="modal-buttons" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; border-top: 1px solid var(--admin-border); padding-top: 15px;">
-                <button type="button" class="btn-secondary" id="cancelProductBtn" onclick="document.getElementById('productModal').classList.remove('active');">إلغاء</button>
+                <button type="button" class="btn-secondary" onclick="closeProductModal()">إلغاء</button>
                 <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ المنتج</button>
             </div>
         </form>
@@ -2386,12 +2386,14 @@ function openProductModal(data = {}) {
     
     // --- الكود الجديد لعرض الصورة الحالية بوضوح ---
     const previewContainer = document.getElementById('dynamicMediaPreview');
-    previewContainer.innerHTML = ''; // تنظيف الحاوية أولاً
+    previewContainer.innerHTML = ''; 
     if (data.img && data.img !== 'default.jpg' && data.img !== '') {
+        // فحص ما إذا كان الرابط سحابي (http) أم محلي
+        const imgSrc = data.img.startsWith('http') ? data.img : `/${data.img}`;
         previewContainer.innerHTML = `
             <div style="width: 100%; margin-bottom: 10px; padding: 10px; background: rgba(201,150,62,0.05); border-radius: 8px; border: 1px dashed var(--gold);">
                 <p style="font-size: 12px; color: var(--gold); margin-bottom: 8px; font-weight: bold;">الصورة الحالية للمنتج:</p>
-                <img src="/${data.img}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold);">
+                <img src="${imgSrc}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold);">
             </div>
         `;
     }
@@ -2468,28 +2470,58 @@ function openProductModal(data = {}) {
                     fd.append('lng', '');
                     fd.append('features', ''); 
                 }
-                
-                const keptMedia = selectedFilesArray.filter(file => typeof file === 'string');
+             const keptMedia = selectedFilesArray.filter(file => typeof file === 'string');
                 const newMediaFiles = selectedFilesArray.filter(file => typeof file !== 'string');
+                
                 fd.append('keptMedia', JSON.stringify(keptMedia));
-                if (newMediaFiles.length > 0) newMediaFiles.forEach(file => fd.append('media', file));
+                
+                // --- الكود الجديد المضاف لرفع الصورة الأساسية ---
+                const mainFileInput = document.getElementById('productFile');
+                if (mainFileInput && mainFileInput.files.length > 0) {
+                    fd.append('media', mainFileInput.files[0]); 
+                }
+                // ------------------------------------------------
+
+                if (newMediaFiles.length > 0) {
+                    newMediaFiles.forEach(file => fd.append('media', file));
+                }
+                
                 const url = id ? `${API_BASE}/admin/products/${id}` : `${API_BASE}/admin/products`;
                 const method = id ? 'PUT' : 'POST';
+                
                 try {
-                    const res = await fetch(url, { method, headers: { 'Authorization': `Bearer ${token}` },
-                        body: fd });
+                    const res = await fetch(url, { 
+                        method, 
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: fd 
+                    });
+                    
                     const text = await res.text();
-                    let data; try { data = JSON.parse(text); } catch (err) { alert(
-                        "❌ السيرفر لا يرد بصيغة JSON:\n" + text.substring(0, 150)); return; }
-                    if (data.success) { alert('✅ ' + data.message);
+                    let data; 
+                    
+                    try { 
+                        data = JSON.parse(text); 
+                    } catch (err) { 
+                        alert("❌ السيرفر لا يرد بصيغة JSON:\n" + text.substring(0, 150)); 
+                        return; 
+                    }
+                    
+                    if (data.success) { 
+                        alert('✅ ' + data.message);
                         document.getElementById('productModal')?.classList.remove('active');
                         selectedFilesArray = [];
                         document.getElementById('dynamicMediaPreview').innerHTML = '';
+                        // تحديث الجداول والإحصائيات بعد الحفظ
                         fetchProducts();
-                        fetchStats(); } else alert('❌ خطأ: ' + (data.error || 'غير معروف'));
-                } catch (err) { console.error(err);
-                    alert("❌ فشل الاتصال بالسيرفر."); }
-            }
+                        fetchStats(); 
+                    } else {
+                        alert('❌ خطأ: ' + (data.error || 'غير معروف'));
+                    }
+                } catch (err) { 
+                    console.error(err);
+                    alert("❌ فشل الاتصال بالسيرفر."); 
+                }
+            } // نهاية الدالة
             async function deleteProduct(id, name) {
                 if (!id || id === 'undefined') return alert('خطأ: معرّف المنتج مفقود!');
                 if (!confirm(`هل تريد بالتأكيد حذف المنتج "${name}"؟`)) return;
