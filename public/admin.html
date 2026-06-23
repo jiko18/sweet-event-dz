@@ -1591,13 +1591,13 @@
                 <small style="color: var(--text-muted); display:block; margin-top:4px;">يمكنك رفع صورة أو مقطع فيديو قصير للمنتج.</small>
             </div>
 
-            <div class="form-group">
-                <label>حالة المنتج:</label>
-                <select id="productStatus" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
-                    <option value="available">متوفر</option>
-                    <option value="unavailable">غير متوفر مؤقتاً</option>
-                </select>
-            </div>
+          <div class="form-group">
+    <label>حالة المنتج:</label>
+    <select id="productActive" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+        <option value="true">متوفر</option>
+        <option value="false">غير متوفر مؤقتاً</option>
+    </select>
+</div>
 
           <div class="form-group">
                 <label><i class="fa-solid fa-cloud-arrow-up"></i> رفع صور وفيديوهات إضافية:</label>
@@ -2310,7 +2310,7 @@
                         <td>${unitTypeDisplay}</td>
                         <td><span class="status-badge ${p.IsActive?'status-Completed':'status-Cancelled'}">${p.IsActive?'نشط':'غير نشط'}</span></td>
                         <td class="action-buttons">
-                            <button class="action-btn edit" data-id="${p.ProductId}" data-name="${p.Name}" data-desc="${p.Description||''}" data-price="${p.Price}" data-cat="${p.Category}" data-active="${p.IsActive}" data-img="${p.ImageUrl||''}" data-media='${(p.MediaFiles||'[]').replace(/'/g,"&#39;")}' data-location="${p.Location||''}" data-capacity="${p.Capacity||''}" data-lat="${p.Lat||''}" data-lng="${p.Lng||''}" data-features="${p.Features||''}" data-unittype="${p.UnitType||''}"><i class="fa-solid fa-pen"></i></button>
+<button class="action-btn edit" data-id="${p.ProductId}" data-name="${p.Name}" data-desc="${p.Description||''}" data-price="${p.Price}" data-cat="${p.Category}" data-active="${p.IsActive}" data-img="${p.ImageUrl||''}" data-media='${(p.MediaFiles||'[]').replace(/'/g,"&#39;")}' data-location="${p.Location||''}" data-capacity="${p.Capacity||''}" data-lat="${p.Lat||''}" data-lng="${p.Lng||''}" data-features="${p.Features||''}" data-unittype="${p.UnitType||''}" data-sizes='${(p.Sizes||"{}").replace(/'/g,"&#39;")}'><i class="fa-solid fa-pen"></i></button>
                             <button class="action-btn delete" data-id="${p.ProductId}" data-name="${p.Name}"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>`;
@@ -2349,18 +2349,17 @@ function openProductModal(data = {}) {
     if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
     
     // ====== جزء الكعكة المصحح (تم حذف الكود المكرر تحته) ======
-    if (catValue === 'cake') {
+  if (catValue === 'cake') {
         const occasionSelect = document.getElementById('cakeOccasion');
+        if (occasionSelect) occasionSelect.value = data.features || 'general';
+        
         try {
-            // محاولة فك تشفير البيانات كـ JSON
-            let parsedFeatures = JSON.parse(data.features || '{}');
-            if (occasionSelect) occasionSelect.value = parsedFeatures.occasion || 'general';
-            document.getElementById('cakePriceSmall').value = parsedFeatures.sizes?.small || '';
-            document.getElementById('cakePriceMedium').value = parsedFeatures.sizes?.medium || '';
-            document.getElementById('cakePriceLarge').value = parsedFeatures.sizes?.large || '';
+            // قراءة الأحجام من العمود الجديد مباشرة
+            let parsedSizes = JSON.parse(data.sizes || '{}');
+            document.getElementById('cakePriceSmall').value = parsedSizes["صغير"] || parsedSizes.small || '';
+            document.getElementById('cakePriceMedium').value = parsedSizes["متوسط"] || parsedSizes.medium || '';
+            document.getElementById('cakePriceLarge').value = parsedSizes["كبير"] || parsedSizes.large || '';
         } catch(e) {
-            // إذا كانت بيانات قديمة (نص عادي)
-            if (occasionSelect) occasionSelect.value = data.features || 'general';
             document.getElementById('cakePriceSmall').value = '';
             document.getElementById('cakePriceMedium').value = data.price || '';
             document.getElementById('cakePriceLarge').value = '';
@@ -2442,29 +2441,27 @@ function openProductModal(data = {}) {
                     fd.append('lat', document.getElementById('hallLat')?.value || '');
                     fd.append('lng', document.getElementById('hallLng')?.value || '');
                     fd.append('features', document.getElementById('hallFeatures')?.value || '');
-                } else if (category === 'cake') {
-                    fd.append('location', '');
-                    fd.append('capacity', '');
-                    fd.append('lat', '');
-                    fd.append('lng', '');
-                    
-                    // الكود الجديد لتجميع الأحجام
-                    let smallPrice = document.getElementById('cakePriceSmall')?.value || '';
-                    let mediumPrice = document.getElementById('cakePriceMedium')?.value || '';
-                    let largePrice = document.getElementById('cakePriceLarge')?.value || '';
-                    let occasionVal = document.getElementById('cakeOccasion')?.value || 'general';
-                    
-                    let cakeData = JSON.stringify({
-                        occasion: occasionVal,
-                        sizes: {
-                            small: smallPrice,
-                            medium: mediumPrice,
-                            large: largePrice
-                        }
-                    });
-                    fd.append('features', cakeData);
-                    fd.append('features', document.getElementById('cakeOccasion')?.value || 'general');
-                } else { 
+       } else if (category === 'cake') {
+            fd.append('location', '');
+            fd.append('capacity', '');
+            fd.append('lat', '');
+            fd.append('lng', '');
+            
+            let smallPrice = document.getElementById('cakePriceSmall')?.value || '';
+            let mediumPrice = document.getElementById('cakePriceMedium')?.value || '';
+            let largePrice = document.getElementById('cakePriceLarge')?.value || '';
+            let occasionVal = document.getElementById('cakeOccasion')?.value || 'general';
+            
+            // بناء كائن الأحجام بأسماء عربية ليظهر بأناقة في الموقع
+            let sizesData = JSON.stringify({
+                "صغير": smallPrice,
+                "متوسط": mediumPrice,
+                "كبير": largePrice
+            });
+            
+            fd.append('sizes', sizesData); 
+            fd.append('features', occasionVal); 
+        } else {
                     fd.append('location', '');
                     fd.append('capacity', '');
                     fd.append('lat', '');
