@@ -2443,7 +2443,7 @@ function openProductModal(data = {}) {
                     fd.append('lat', document.getElementById('hallLat')?.value || '');
                     fd.append('lng', document.getElementById('hallLng')?.value || '');
                     fd.append('features', document.getElementById('hallFeatures')?.value || '');
-       } else if (category === 'cake') {
+  } else if (category === 'cake') {
             fd.append('location', '');
             fd.append('capacity', '');
             fd.append('lat', '');
@@ -2454,12 +2454,13 @@ function openProductModal(data = {}) {
             let largePrice = document.getElementById('cakePriceLarge')?.value || '';
             let occasionVal = document.getElementById('cakeOccasion')?.value || 'general';
             
-            // بناء كائن الأحجام بأسماء عربية ليظهر بأناقة في الموقع
-            let sizesData = JSON.stringify({
-                "صغير": smallPrice,
-                "متوسط": mediumPrice,
-                "كبير": largePrice
-            });
+            // بناء كائن الأحجام بشكل نظيف (تجاهل الأحجام الفارغة)
+            let sizesObj = {};
+            if (smallPrice) sizesObj["صغير"] = smallPrice;
+            if (mediumPrice) sizesObj["متوسط"] = mediumPrice;
+            if (largePrice) sizesObj["كبير"] = largePrice;
+            
+            let sizesData = Object.keys(sizesObj).length > 0 ? JSON.stringify(sizesObj) : '{}';
             
             fd.append('sizes', sizesData); 
             fd.append('features', occasionVal); 
