@@ -891,15 +891,17 @@ function renderCakesGrid(cakes) {
             mediaJson = escapeHtml(p.MediaFiles);
         }
 
-        // قراءة أسعار الأحجام من قاعدة البيانات
+      // قراءة أسعار الأحجام من عمود Sizes الجديد
         let sizesObj = null;
         try {
-            let parsedFeatures = JSON.parse(p.Features || '{}');
-            if (parsedFeatures.sizes && (parsedFeatures.sizes.small || parsedFeatures.sizes.medium || parsedFeatures.sizes.large)) {
-                sizesObj = parsedFeatures.sizes;
+            if (p.Sizes && p.Sizes !== '[]' && p.Sizes !== '{}') {
+                sizesObj = JSON.parse(p.Sizes);
+            } else {
+                // توافق مع الكعكات القديمة التي سُجلت سابقاً
+                let parsedFeatures = JSON.parse(p.Features || '{}');
+                if (parsedFeatures.sizes) sizesObj = parsedFeatures.sizes;
             }
         } catch(e) {}
-
         let hasSizes = sizesObj !== null; 
         const sizesJsonStr = sizesObj ? JSON.stringify(sizesObj).replace(/"/g, '&quot;') : '';        
         hasSizes = hasSizes || (p.Description && p.Description.includes("أحجام")) || [1, 3, 5].includes(p.ProductId);
