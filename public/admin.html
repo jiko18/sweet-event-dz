@@ -1599,25 +1599,19 @@
                 </select>
             </div>
 
-            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; border-top: 1px solid var(--admin-border); padding-top: 15px;">
-                <button type="button" class="btn btn-secondary" onclick="closeProductModal()" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--admin-border); background: transparent; color: var(--text); cursor: pointer;">إلغاء</button>
-                <button type="submit" class="btn btn-primary" style="padding: 10px 20px; border-radius: 8px; border: none; background: var(--gold); color: white; cursor: pointer;"><i class="fa-solid fa-floppy-disk"></i> حفظ المنتج</button>
+          <div class="form-group">
+                <label><i class="fa-solid fa-cloud-arrow-up"></i> رفع صور وفيديوهات إضافية:</label>
+                <input type="file" id="productMediaInput" accept="image/*,video/*" multiple style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
+            </div>
+            <div id="dynamicMediaPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
+            
+            <div class="modal-buttons" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; border-top: 1px solid var(--admin-border); padding-top: 15px;">
+                <button type="button" class="btn-secondary" onclick="closeProductModal()">إلغاء</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ المنتج</button>
             </div>
         </form>
     </div>
 </div>
-                </div>
-
-                <div class="form-group"><label><i class="fa-solid fa-cloud-arrow-up"></i> صور وفيديوهات المنتج:</label><input type="file" id="productMediaInput" accept="image/*,video/*" multiple style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);"></div>
-                <div id="dynamicMediaPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
-                <div class="form-group"><label>حالة المنتج</label><select id="productActive"><option value="true">نشط</option><option value="false">غير نشط</option></select></div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-secondary" id="cancelProductBtn">إلغاء</button>
-                    <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ المنتج</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <div id="imagePreviewModal" class="image-preview-modal" onclick="window.closeImagePreview()">
         <img id="previewImage" class="preview-img" src="" alt="معاينة">
     </div>
@@ -2333,76 +2327,96 @@
                 document.querySelectorAll('#productsTableBody .delete').forEach(b => b.addEventListener('click', () =>
                     deleteProduct(b.dataset.id, b.dataset.name)));
             }
-            
-            // ====== دالة فتح نموذج المنتج (معدلة للكعكة) ======
+           // ====== دالة فتح نموذج المنتج (معدلة ومصححة للكعكة) ======
 function openProductModal(data = {}) {
-                const modal = document.getElementById('productModal');
-                if (!modal) return;
-                document.getElementById('productModalTitle').innerText = data.id ? 'تعديل المنتج' : 'إضافة منتج جديد';
-                document.getElementById('productId').value = data.id || '';
-                document.getElementById('productName').value = data.name || '';
-                document.getElementById('productDesc').value = data.desc || '';
-                let priceVal = data.price || 0;
-                document.getElementById('productPrice').value = (parseFloat(priceVal) > 0) ? priceVal : '';
-                const catValue = data.cat || localStorage.getItem('admin_last_cat') || 'cake';
-                document.getElementById('productCategory').value = catValue;
-                document.getElementById('productUnitType').value = data.unittype || 'none';
-                document.getElementById('productActive').value = (data.active === 'false' || data.active === false) ?
-                    'false' : 'true';
-                
-                const hallFieldsDiv = document.getElementById('hallSpecificFields');
-                const cakeFieldsDiv = document.getElementById('cakeSpecificFields');
-                
-                if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
-                if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
-                
-                // ====== جزء الكعكة المعدل ======
-                if (catValue === 'cake') {
-                    const occasionSelect = document.getElementById('cakeOccasion');
-                    try {
-                        // محاولة فك تشفير البيانات كـ JSON
-                        let parsedFeatures = JSON.parse(data.features || '{}');
-                        if (occasionSelect) occasionSelect.value = parsedFeatures.occasion || 'general';
-                        document.getElementById('cakePriceSmall').value = parsedFeatures.sizes?.small || '';
-                        document.getElementById('cakePriceMedium').value = parsedFeatures.sizes?.medium || '';
-                        document.getElementById('cakePriceLarge').value = parsedFeatures.sizes?.large || '';
-                    } catch(e) {
-                        // إذا كانت بيانات قديمة (نص عادي)
-                        if (occasionSelect) occasionSelect.value = data.features || 'general';
-                        document.getElementById('cakePriceSmall').value = '';
-                        document.getElementById('cakePriceMedium').value = data.price || '';
-                        document.getElementById('cakePriceLarge').value = '';
-                    }
-                }
-                // ==============================================
+    const modal = document.getElementById('productModal');
+    if (!modal) return;
+    document.getElementById('productModalTitle').innerText = data.id ? 'تعديل المنتج' : 'إضافة منتج جديد';
+    document.getElementById('productId').value = data.id || '';
+    document.getElementById('productName').value = data.name || '';
+    document.getElementById('productDesc').value = data.desc || '';
+    let priceVal = data.price || 0;
+    document.getElementById('productPrice').value = (parseFloat(priceVal) > 0) ? priceVal : '';
+    const catValue = data.cat || localStorage.getItem('admin_last_cat') || 'cake';
+    document.getElementById('productCategory').value = catValue;
+    document.getElementById('productUnitType').value = data.unittype || 'none';
+    document.getElementById('productActive').value = (data.active === 'false' || data.active === false) ? 'false' : 'true';
+    
+    const hallFieldsDiv = document.getElementById('hallSpecificFields');
+    const cakeFieldsDiv = document.getElementById('cakeSpecificFields');
+    
+    if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
+    if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
+    
+    // ====== جزء الكعكة المصحح (تم حذف الكود المكرر تحته) ======
+    if (catValue === 'cake') {
+        const occasionSelect = document.getElementById('cakeOccasion');
+        try {
+            // محاولة فك تشفير البيانات كـ JSON
+            let parsedFeatures = JSON.parse(data.features || '{}');
+            if (occasionSelect) occasionSelect.value = parsedFeatures.occasion || 'general';
+            document.getElementById('cakePriceSmall').value = parsedFeatures.sizes?.small || '';
+            document.getElementById('cakePriceMedium').value = parsedFeatures.sizes?.medium || '';
+            document.getElementById('cakePriceLarge').value = parsedFeatures.sizes?.large || '';
+        } catch(e) {
+            // إذا كانت بيانات قديمة (نص عادي)
+            if (occasionSelect) occasionSelect.value = data.features || 'general';
+            document.getElementById('cakePriceSmall').value = '';
+            document.getElementById('cakePriceMedium').value = data.price || '';
+            document.getElementById('cakePriceLarge').value = '';
+        }
+    }
+    // ==============================================
 
-                if (catValue === 'cake') {
-                    const occasionSelect = document.getElementById('cakeOccasion');
-                    if (occasionSelect) occasionSelect.value = data.features || 'general';
-                }
+    document.getElementById('hallLocation').value = data.location || '';
+    document.getElementById('hallCapacity').value = data.capacity || '';
+    document.getElementById('hallLat').value = data.lat || '';
+    document.getElementById('hallLng').value = data.lng || '';
+    document.getElementById('hallFeatures').value = data.features || '';
+    
+    selectedFilesArray = [];
+    let mediaArray = [];
+    try { 
+        if (data.media && data.media !== '[]') mediaArray = JSON.parse(data.media); 
+        else if (data.img && data.img !== 'default.jpg') mediaArray = [data.img]; 
+    } catch (e) { 
+        mediaArray = []; 
+    }
+    
+    if (mediaArray.length > 0) selectedFilesArray = [...mediaArray];
+    
+    // --- الكود الجديد لعرض الصورة الحالية بوضوح ---
+    const previewContainer = document.getElementById('dynamicMediaPreview');
+    previewContainer.innerHTML = ''; // تنظيف الحاوية أولاً
+    if (data.img && data.img !== 'default.jpg' && data.img !== '') {
+        previewContainer.innerHTML = `
+            <div style="width: 100%; margin-bottom: 10px; padding: 10px; background: rgba(201,150,62,0.05); border-radius: 8px; border: 1px dashed var(--gold);">
+                <p style="font-size: 12px; color: var(--gold); margin-bottom: 8px; font-weight: bold;">الصورة الحالية للمنتج:</p>
+                <img src="/${data.img}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold);">
+            </div>
+        `;
+    }
+    renderMediaPreview();
+    // ----------------------------------------------
 
-                document.getElementById('hallLocation').value = data.location || '';
-                document.getElementById('hallCapacity').value = data.capacity || '';
-                document.getElementById('hallLat').value = data.lat || '';
-                document.getElementById('hallLng').value = data.lng || '';
-                document.getElementById('hallFeatures').value = data.features || '';
-                
-                selectedFilesArray = [];
-                let mediaArray = [];
-                try { if (data.media && data.media !== '[]') mediaArray = JSON.parse(data.media); else if (data.img &&
-                        data.img !== 'default.jpg') mediaArray = [data.img]; } catch (e) { mediaArray = []; }
-                if (mediaArray.length > 0) selectedFilesArray = [...mediaArray];
-                renderMediaPreview();
-                const mediaInput = document.getElementById('productMediaInput');
-                if (mediaInput) mediaInput.value = '';
-                modal.classList.add('active');
-                if (catValue === 'hall') { setTimeout(() => { initAdminMap(); const latVal = parseFloat(data.lat);
-                        const lngVal = parseFloat(data.lng); if (!isNaN(latVal) && !isNaN(lngVal) && latVal !==
-                            0 && lngVal !== 0 && adminMap) { const newCenter = L.latLng(latVal, lngVal); if (
-                                adminMarker) adminMarker.setLatLng(newCenter); else adminMarker = L.marker(
-                                newCenter).addTo(adminMap);
-                            adminMap.setView(newCenter, 15); } }, 150); }
-            }
+    const mediaInput = document.getElementById('productMediaInput');
+    if (mediaInput) mediaInput.value = '';
+    modal.classList.add('active');
+    
+    if (catValue === 'hall') { 
+        setTimeout(() => { 
+            initAdminMap(); 
+            const latVal = parseFloat(data.lat);
+            const lngVal = parseFloat(data.lng); 
+            if (!isNaN(latVal) && !isNaN(lngVal) && latVal !== 0 && lngVal !== 0 && adminMap) { 
+                const newCenter = L.latLng(latVal, lngVal); 
+                if (adminMarker) adminMarker.setLatLng(newCenter); 
+                else adminMarker = L.marker(newCenter).addTo(adminMap);
+                adminMap.setView(newCenter, 15); 
+            } 
+        }, 150); 
+    }
+}
 
             // ====== دالة حفظ المنتج (معدلة للكعكة) ======
             async function saveProduct(e) {
