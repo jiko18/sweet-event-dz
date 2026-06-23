@@ -1201,7 +1201,6 @@ function googleTranslateElementInit() {
         const cakeName = document.getElementById('selectedCatalogCakeName').value || 'كعكة مخصصة';
         const cakePrice = parseFloat(document.getElementById('selectedCatalogCakePrice').value || 0);
 
-        if(!eventDate) return showToast('⚠️ يرجى تحديد تاريخ المناسبة أولاً.');
 
         const customDetails = `نوع المناسبة: ${eventType} | الحجم: ${cakeSize} | التاريخ: ${eventDate} | الملاحظات: ${notes}`;
 
