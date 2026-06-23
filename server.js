@@ -205,7 +205,7 @@ async function logAdminAction(adminId, adminName, actionType, details) {
                 CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        await db.execute(`
+     await db.execute(`
             CREATE TABLE IF NOT EXISTS ActivityLogs (
                 LogId INTEGER PRIMARY KEY AUTOINCREMENT,
                 AdminId INTEGER,
@@ -215,6 +215,15 @@ async function logAdminAction(adminId, adminName, actionType, details) {
                 CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
             )
         `);
+        
+        // محاولة إضافة عمود Sizes تلقائياً عند تشغيل السيرفر
+        try {
+            await db.execute('ALTER TABLE Products ADD COLUMN Sizes TEXT DEFAULT "[]";');
+            console.log('✅ تم إضافة عمود Sizes إلى جدول المنتجات بنجاح');
+        } catch (e) {
+            // يتم تجاهل الخطأ بصمت إذا كان العمود موجوداً مسبقاً
+        }
+
         console.log('✅ جميع الجداول جاهزة على Turso');
     } catch (err) {
         console.error('❌ فشل إنشاء الجداول:', err.message);
