@@ -848,12 +848,15 @@ app.get('/api/admin/products', verifyAdmin, async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
-
+// =====================================================
+// مسار إضافة منتج جديد (معدل لدعم الأحجام)
+// =====================================================
 app.post('/api/admin/products', verifyAdmin, (req, res) => {
     upload.array('media', 10)(req, res, async function (err) {
         if (err) return res.status(400).json({ success: false, error: err.message });
         try {
-            const { name, description, price, category, isActive, location, capacity, lat, lng, features, unitType } = req.body;
+            // تم إضافة sizes هنا
+            const { name, description, price, category, isActive, location, capacity, lat, lng, features, unitType, sizes } = req.body;
             const activeBit = isActive === 'true' ? 1 : 0;
             let imageUrl = '';
             let mediaFiles = '[]';
@@ -862,13 +865,17 @@ app.post('/api/admin/products', verifyAdmin, (req, res) => {
                 imageUrl = urls[0];
                 mediaFiles = JSON.stringify(urls);
             }
+            
+            // التأكد من أن الأحجام عبارة عن مصفوفة صالحة
+            const finalSizes = sizes ? sizes : '[]';
+
             await runAsync(
-                `INSERT INTO Products (Name, Description, Price, Category, ImageUrl, MediaFiles, IsActive, CreatedAt, Location, Capacity, Latitude, Longitude, Features, UnitType)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO Products (Name, Description, Price, Category, ImageUrl, MediaFiles, IsActive, CreatedAt, Location, Capacity, Latitude, Longitude, Features, UnitType, Sizes)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, ?)`,
                 [name, description || '', price, category, imageUrl, mediaFiles, activeBit,
                  location || null, capacity ? parseInt(capacity) : null,
                  lat ? parseFloat(lat) : null, lng ? parseFloat(lng) : null,
-                 features || null, unitType || 'none']
+                 features || null, unitType || 'none', finalSizes] // إضافة finalSizes هنا
             );
             res.json({ success: true, message: 'تمت إضافة المنتج بنجاح' });
         } catch (err) {
@@ -878,13 +885,18 @@ app.post('/api/admin/products', verifyAdmin, (req, res) => {
     });
 });
 
+// =====================================================
+// مسار تعديل منتج موجود (معدل لدعم الأحجام)
+// =====================================================
 app.put('/api/admin/products/:id', verifyAdmin, (req, res) => {
     upload.array('media', 10)(req, res, async function (err) {
         if (err) return res.status(400).json({ success: false, error: err.message });
         try {
             const productId = parseInt(req.params.id);
             if (isNaN(productId)) return res.status(400).json({ success: false, error: 'معرّف المنتج غير صالح' });
-            const { name, description, price, category, isActive, location, capacity, lat, lng, features, unitType, keptMedia } = req.body;
+            
+            // تم إضافة sizes هنا
+            const { name, description, price, category, isActive, location, capacity, lat, lng, features, unitType, keptMedia, sizes } = req.body;
             const activeBit = isActive === 'true' ? 1 : 0;
             let keptMediaArray = [];
             if (keptMedia) try { keptMediaArray = JSON.parse(keptMedia); } catch(e) {}
@@ -897,17 +909,21 @@ app.put('/api/admin/products/:id', verifyAdmin, (req, res) => {
                 const firstImage = mergedMedia.find(f => /\.(jpeg|jpg|png|gif|webp)$/i.test(f));
                 finalImageUrl = firstImage || mergedMedia[0];
             }
+
+            // التأكد من أن الأحجام عبارة عن مصفوفة صالحة
+            const finalSizes = sizes ? sizes : '[]';
+
             await runAsync(
                 `UPDATE Products SET 
                     Name = ?, Description = ?, Price = ?, Category = ?, IsActive = ?,
                     Location = ?, Capacity = ?, Latitude = ?, Longitude = ?, Features = ?,
-                    UnitType = ?, ImageUrl = ?, MediaFiles = ?
+                    UnitType = ?, ImageUrl = ?, MediaFiles = ?, Sizes = ?
                  WHERE ProductId = ?`,
                 [name, description || '', price, category, activeBit,
                  location || null, capacity ? parseInt(capacity) : null,
                  lat ? parseFloat(lat) : null, lng ? parseFloat(lng) : null,
                  features || null, unitType || 'none',
-                 finalImageUrl, mergedMediaJson, productId]
+                 finalImageUrl, mergedMediaJson, finalSizes, productId] // إضافة finalSizes هنا
             );
             res.json({ success: true, message: 'تم تحديث المنتج بنجاح' });
         } catch (err) {
@@ -916,18 +932,6 @@ app.put('/api/admin/products/:id', verifyAdmin, (req, res) => {
         }
     });
 });
-
-app.delete('/api/admin/products/:id', verifyAdmin, async (req, res) => {
-    try {
-        const productId = parseInt(req.params.id);
-        if (isNaN(productId)) return res.status(400).json({ success: false, error: 'معرّف المنتج غير صحيح' });
-        await runAsync(`UPDATE Products SET IsDeleted = 1, IsActive = 0 WHERE ProductId = ?`, [productId]);
-        res.json({ success: true, message: 'تم حذف المنتج بنجاح' });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
 // =====================================================
 // مسارات المستخدمين للإدارة
 // =====================================================
