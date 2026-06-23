@@ -1606,7 +1606,7 @@
             <div id="dynamicMediaPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
             
             <div class="modal-buttons" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; border-top: 1px solid var(--admin-border); padding-top: 15px;">
-                <button type="button" class="btn-secondary" onclick="closeProductModal()">إلغاء</button>
+                <button type="button" class="btn-secondary" id="cancelProductBtn" onclick="document.getElementById('productModal').classList.remove('active');">إلغاء</button>
                 <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ المنتج</button>
             </div>
         </form>
