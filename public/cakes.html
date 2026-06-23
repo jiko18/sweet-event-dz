@@ -616,30 +616,30 @@
             box-shadow: 0 4px 12px rgba(201, 150, 62, 0.3);
         }
 
-    .btn-view-more-sizes {
-            background: rgba(201, 150, 62, 0.08);
-            color: var(--gold);
-            border: 1px solid rgba(201, 150, 62, 0.3);
-            padding: 6px 14px;
-            border-radius: 30px;
+        /* تنسيق زر عرض مزيد من الأحجام داخل بطاقة المنتج */
+        .btn-view-more-sizes {
+            background: transparent;
+            color: #c9963e;
+            border: 1px solid #c9963e;
+            padding: 10px 15px;
+            border-radius: 8px;
             font-family: 'Tajawal', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: inline-flex;
+            display: flex;
             justify-content: center;
             align-items: center;
-            gap: 6px;
-            width: max-content;
-            margin: 0 auto 12px auto;
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 8px;
         }
 
         .btn-view-more-sizes:hover {
-            background: var(--gold);
-            color: #000;
-            border-color: var(--gold);
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, #c9963e, #a87a2e);
+            color: #1a1310;
+            box-shadow: 0 4px 15px rgba(201, 150, 62, 0.2);
         }
     </style>
 </head>
@@ -883,7 +883,7 @@ function renderCakesGrid(cakes) {
     if(!container) return;
     if(!cakes.length) { container.innerHTML = '<div class="no-data-message">😕 لا توجد كعكات متاحة حالياً. أضف كعكات من لوحة الإدارة أولاً.</div>'; return; }
     
-container.innerHTML = cakes.map(p=>{
+    container.innerHTML = cakes.map(p=>{
         const imgUrl = `${p.ImageUrl||'default.jpg'}`;            
         
         let mediaJson = `[&quot;${imgUrl}&quot;]`;
@@ -891,32 +891,34 @@ container.innerHTML = cakes.map(p=>{
             mediaJson = escapeHtml(p.MediaFiles);
         }
 
-        // قراءة أسعار الأحجام بشكل آمن جداً لمنع انهيار الصفحة
+      // قراءة أسعار الأحجام من عمود Sizes الجديد
         let sizesObj = null;
         try {
-            if (p.Sizes && p.Sizes !== '[]' && p.Sizes !== '{}' && p.Sizes !== 'null') {
+            if (p.Sizes && p.Sizes !== '[]' && p.Sizes !== '{}') {
                 sizesObj = JSON.parse(p.Sizes);
+            } else {
+                // توافق مع الكعكات القديمة التي سُجلت سابقاً
+                let parsedFeatures = JSON.parse(p.Features || '{}');
+                if (parsedFeatures.sizes) sizesObj = parsedFeatures.sizes;
             }
-        } catch(e) { console.error("Error parsing sizes:", e); }
-        
-        let hasSizes = sizesObj !== null && Object.keys(sizesObj).length > 0; 
+        } catch(e) {}
+        let hasSizes = sizesObj !== null; 
         const sizesJsonStr = sizesObj ? JSON.stringify(sizesObj).replace(/"/g, '&quot;') : '';        
+        hasSizes = hasSizes || (p.Description && p.Description.includes("أحجام")) || [1, 3, 5].includes(p.ProductId);
         
-        // استخدام data-* بدلاً من onclick لتفادي أخطاء الـ Syntax وانهيار الـ HTML
+        // الأزرار الأساسية (تظهر دائماً)
         let actionsHtml = `
             <button class="btn-cart" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-cart-plus"></i> إضافة للسلة</button>
             <button class="btn-order-direct" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-cat="cakes"><i class="fa-solid fa-bolt"></i> اطلب الآن</button>
-            <button class="btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-sizes="${sizesJsonStr}"><i class="fa-regular fa-pen-to-square"></i> تخصيص</button>
-        `;
+// ابحث عن هذا السطر واستبدله:
+<button class="btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-sizes="${sizesJsonStr}"><i class="fa-regular fa-pen-to-square"></i> تخصيص</button>        `;
 
-        // إضافة زر الأحجام الأنيق فوق الأزرار الأساسية مع إعطائه نفس كلاس التخصيص
+        // إذا كانت الكعكة تمتلك أحجاماً إضافية نضيف زر "عرض مزيد من الأحجام" فوق الأزرار السابقة
         if (hasSizes) {
             actionsHtml = `
-                <div style="text-align: center; width: 100%;">
-                    <button class="btn-view-more-sizes btn-customize" data-id="${p.ProductId}" data-name="${escapeHtml(p.Name)}" data-price="${p.Price}" data-img="${imgUrl}" data-sizes="${sizesJsonStr}">
-                        <i class="fa-solid fa-layer-group"></i> متوفر بأحجام أخرى
-                    </button>
-                </div>
+                <button class="btn-view-more-sizes" onclick="handleViewMoreSizes('${p.ProductId}', '${escapeHtml(p.Name).replace(/'/g, "\\'")}', '${imgUrl}', '${sizesJsonStr}')">
+                    <i class="fa-solid fa-layer-group"></i> عرض مزيد من الأحجام
+                </button>
             ` + actionsHtml;
         }
 
@@ -931,7 +933,7 @@ container.innerHTML = cakes.map(p=>{
                     <h3 class="cake-title">${escapeHtml(p.Name)}</h3>
                     <p class="cake-desc">${escapeHtml(p.Description||'كعكة فاخرة')}</p>
                     <div class="cake-price">${parseFloat(p.Price).toLocaleString()} دج</div>
-                    <div class="cake-actions" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <div class="cake-actions">
                         ${actionsHtml}
                     </div>
                 </div>
@@ -974,100 +976,94 @@ container.innerHTML = cakes.map(p=>{
         });
     });
 
-    // زر التخصيص والأحجام (تم دمجها لتستدعي نفس الدالة الموحدة)
+    // زر التخصيص العادي (ينقل للأسفل مع بيانات الكعكة فقط)
+// زر التخصيص العادي (ينقل للأسفل ويقوم بتعبئة الأحجام)
     document.querySelectorAll('.btn-customize').forEach(btn=>{
-        btn.addEventListener('click', ()=>{
-            // استدعاء الدالة الموحدة وتمرير البيانات من الـ dataset بأمان
-            window.handleViewMoreSizes(
-                btn.dataset.id,
-                btn.dataset.name,
-                btn.dataset.img,
-                btn.dataset.sizes,
-                btn.dataset.price
-            );
+        btn.addEventListener('click',()=>{
+            if (document.getElementById('selectedCatalogCakeId')) document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
+            if (document.getElementById('selectedCatalogCakeName')) document.getElementById('selectedCatalogCakeName').value = btn.dataset.name;
+            if (document.getElementById('selectedCatalogCakePrice')) document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
+            if (document.getElementById('previewCakeName')) document.getElementById('previewCakeName').innerText = btn.dataset.name;
+            if (document.getElementById('previewCakePrice')) document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString() + ' دج';
+            if (document.getElementById('previewCakeImg') && btn.dataset.img) document.getElementById('previewCakeImg').src = btn.dataset.img;
+            
+            // 👉 الكود الجديد: تعبئة قائمة الأحجام المنسدلة تلقائياً
+            const sizeSelect = document.getElementById('cakeSizeSelect');
+            if (sizeSelect) {
+                sizeSelect.innerHTML = '<option value="" disabled selected>الرجاء اختيار الحجم...</option>';
+                const sizesData = btn.dataset.sizes;
+                
+                if (sizesData && sizesData !== '{}') {
+                    try {
+                        // تحويل النص إلى كائن JSON
+                        const sizesObj = JSON.parse(sizesData.replace(/&quot;/g, '"'));
+                        for (const [sizeName, priceVal] of Object.entries(sizesObj)) {
+                            if (priceVal && parseFloat(priceVal) > 0) {
+                                sizeSelect.innerHTML += `<option value="${sizeName}" data-price="${priceVal}">${sizeName} - ${parseFloat(priceVal).toLocaleString()} دج</option>`;
+                            }
+                        }
+                    } catch(e) { console.error("Error parsing sizes:", e); }
+                } else {
+                    // في حال كانت كعكة لا تحتوي أحجاماً متعددة
+                    sizeSelect.innerHTML += `<option value="حجم أساسي" data-price="${btn.dataset.price}">حجم أساسي - ${parseFloat(btn.dataset.price).toLocaleString()} دج</option>`;
+                }
+            }
+
+            if (document.getElementById('selectedCakePreviewArea')) document.getElementById('selectedCakePreviewArea').style.display = 'flex';
+            if (document.getElementById('customOrderSection')) {
+                document.getElementById('customOrderSection').scrollIntoView({behavior:'smooth'});
+            }
+            showToast(`تم تحديد الكعكة "${btn.dataset.name}"، اختر الحجم والتفاصيل`);
         });
     });
-// دوال النافذة المنبثقة الجديدة والمطورة
-window.handleViewMoreSizes = function(cakeId, cakeName, cakeImg, sizesData, basePrice) {
-    // 1. النزول السلس لقسم الطلب المخصص
-    const customSection = document.getElementById('customOrderSection');
-    if (customSection) customSection.scrollIntoView({ behavior: 'smooth' });
-
-    // 2. تحليل الأحجام بأمان
+// دوال النافذة المنبثقة الجديدة
+window.handleViewMoreSizes = function(cakeId, cakeName, cakeImg, sizesData) {
     let sizesObj = {};
-    let hasSizes = false;
     try {
-        if (sizesData && sizesData !== '{}' && sizesData !== 'null' && sizesData !== '') {
-            let cleanData = typeof sizesData === 'string' ? sizesData.replace(/&quot;/g, '"') : sizesData;
-            sizesObj = typeof cleanData === 'string' ? JSON.parse(cleanData) : cleanData;
-            hasSizes = Object.keys(sizesObj).length > 0;
-        }
-    } catch(e) { console.error("خطأ في قراءة بيانات الأحجام:", e); }
-
-    // في حال عدم وجود أحجام، نضع الحجم الأساسي
-    if (!hasSizes && basePrice) {
-        sizesObj = { "حجم أساسي": basePrice };
+        sizesObj = typeof sizesData === 'string' ? JSON.parse(sizesData) : sizesData;
+    } catch(e) {
+        console.error("خطأ في قراءة بيانات الأحجام:", e);
+        return;
     }
 
-    // 3. تحديث واجهة المعاينة (Preview) والحقول المخفية في نموذج التخصيص
-    if(document.getElementById('selectedCatalogCakeId')) document.getElementById('selectedCatalogCakeId').value = cakeId;
-    if(document.getElementById('selectedCatalogCakeName')) document.getElementById('selectedCatalogCakeName').value = cakeName;
-    if(document.getElementById('selectedCatalogCakePrice')) document.getElementById('selectedCatalogCakePrice').value = basePrice;
-    if(document.getElementById('previewCakeName')) document.getElementById('previewCakeName').innerText = cakeName;
-    if(document.getElementById('previewCakePrice')) document.getElementById('previewCakePrice').innerText = parseFloat(basePrice).toLocaleString() + ' دج';
-    if(document.getElementById('previewCakeImg') && cakeImg) document.getElementById('previewCakeImg').src = cakeImg;
-    if(document.getElementById('selectedCakePreviewArea')) document.getElementById('selectedCakePreviewArea').style.display = 'flex';
-
-    // 4. تعبئة قائمة الأحجام المنسدلة (Dropdown) أسفل الصفحة
-    const sizeSelect = document.getElementById('cakeSizeSelect');
-    if (sizeSelect) {
-        sizeSelect.innerHTML = '<option value="" disabled selected>الرجاء اختيار الحجم...</option>';
-        for (const [sName, sPrice] of Object.entries(sizesObj)) {
-            if (sPrice && parseFloat(sPrice) > 0) {
-                sizeSelect.innerHTML += `<option value="${sName}" data-price="${sPrice}">${sName} - ${parseFloat(sPrice).toLocaleString()} دج</option>`;
-            }
-        }
+    // الانتقال السلس لأسفل الصفحة نحو قسم التخصيص
+    const customOrderSection = document.getElementById('customOrderSection');
+    if (customOrderSection) {
+        customOrderSection.scrollIntoView({ behavior: 'smooth' });
     }
 
-    if(typeof showToast === 'function') showToast(`تم تحديد الكعكة "${cakeName}"، اختر الحجم والتفاصيل`);
-
-    // 5. بناء وفتح النافذة المنبثقة (Modal) إذا كان هناك أحجام متعددة
-    if (hasSizes) {
-        const container = document.getElementById('cakeSizesContainer');
-        const modal = document.getElementById('cakeSizesModal');
-        if (container && modal) {
-            container.innerHTML = '';
-            for (const [sizeName, priceVal] of Object.entries(sizesObj)) {
-                if (!priceVal || priceVal == 0) continue;
-                const sizeCard = document.createElement('div');
-                sizeCard.className = 'size-row-card';
-                sizeCard.innerHTML = `
-                    <img src="${cakeImg || 'images/default-cake.jpg'}" alt="${cakeName}" class="size-cake-img" onerror="this.src='https://placehold.co/100x100?text=Cake'">
-                    <div class="size-info-meta">
-                        <span class="size-title-name">${cakeName} (${sizeName})</span>
-                        <span class="size-price-tag">${parseFloat(priceVal).toLocaleString()} دج</span>
-                    </div>
-                    <button class="btn-select-size-trigger"
-                            data-id="${cakeId}"
-                            data-name="${cakeName}"
-                            data-size="${sizeName}"
-                            data-price="${priceVal}"
-                            data-img="${cakeImg}">
-                        اختيار هذا الحجم
-                    </button>
-                `;
-                container.appendChild(sizeCard);
-            }
-            // تأخير بسيط جداً ليفتح الـ Modal أثناء النزول لأسفل بشكل سينمائي
-            setTimeout(() => {
-                modal.style.display = 'flex';
-                if (typeof bindDynamicSizeSelection === 'function') bindDynamicSizeSelection();
-            }, 250);
-        }
-    } else {
-        // إذا لم تكن هناك أحجام متعددة، نركز الانتباه على القائمة المنسدلة
-        if (sizeSelect) sizeSelect.focus();
+    // بناء محتوى النافذة المنبثقة بشكل ديناميكي
+    const container = document.getElementById('cakeSizesContainer');
+    const modal = document.getElementById('cakeSizesModal');
+    if (!container || !modal) return;
+    
+    container.innerHTML = '';
+    
+    for (const [sizeName, priceVal] of Object.entries(sizesObj)) {
+        if (!priceVal || priceVal == 0) continue;
+        
+        const sizeCard = document.createElement('div');
+        sizeCard.className = 'size-row-card';
+        sizeCard.innerHTML = `
+            <img src="${cakeImg || 'images/default-cake.jpg'}" alt="${cakeName}" class="size-cake-img">
+            <div class="size-info-meta">
+                <span class="size-title-name">${cakeName} (${sizeName})</span>
+                <span class="size-price-tag">${parseFloat(priceVal).toLocaleString()} دج</span>
+            </div>
+            <button class="btn-select-size-trigger" 
+                    data-id="${cakeId}" 
+                    data-name="${cakeName}" 
+                    data-size="${sizeName}" 
+                    data-price="${priceVal}" 
+                    data-img="${cakeImg}">
+                اختيار هذا الحجم
+            </button>
+        `;
+        container.appendChild(sizeCard);
     }
+    
+    modal.style.display = 'flex';
+    bindDynamicSizeSelection();
 };
 
 window.closeSizesModal = function() {
@@ -1080,20 +1076,19 @@ function bindDynamicSizeSelection() {
         btn.onclick = function() {
             document.getElementById('cakeSizesModal').style.display = 'none';
             
-            // تحديث البيانات المخفية
             if(document.getElementById('selectedCatalogCakeId')) document.getElementById('selectedCatalogCakeId').value = btn.dataset.id;
             if(document.getElementById('selectedCatalogCakeName')) document.getElementById('selectedCatalogCakeName').value = `${btn.dataset.name} (${btn.dataset.size})`;
             if(document.getElementById('selectedCatalogCakePrice')) document.getElementById('selectedCatalogCakePrice').value = btn.dataset.price;
             
-            // تحديث واجهة المعاينة
             if(document.getElementById('previewCakeName')) document.getElementById('previewCakeName').innerText = `${btn.dataset.name} (${btn.dataset.size})`;
             if(document.getElementById('previewCakePrice')) document.getElementById('previewCakePrice').innerText = parseFloat(btn.dataset.price).toLocaleString() + ' دج';
             if(document.getElementById('previewCakeImg')) document.getElementById('previewCakeImg').src = btn.dataset.img;
             if(document.getElementById('selectedCakePreviewArea')) document.getElementById('selectedCakePreviewArea').style.display = 'flex';
             
-            // تحديد الحجم تلقائياً في القائمة المنسدلة
+            // ملء حقل الحجم تلقائياً في نموذج التخصيص
             const sizeSelect = document.getElementById('cakeSizeSelect');
             if (sizeSelect) {
+                // نحاول تحديد الخيار المناسب إذا كان موجوداً مسبقاً
                 for (let opt of sizeSelect.options) {
                     if (opt.value === btn.dataset.size) {
                         sizeSelect.value = btn.dataset.size;
@@ -1108,6 +1103,7 @@ function bindDynamicSizeSelection() {
         };
     });
 }
+
     // بقية الدوال (السلايدر، التقديم المخصص ...)
     function showSlide(index) { const items=document.querySelectorAll('#productSlider .item'); if(!items.length) return; if(index<0) index=items.length-1; if(index>=items.length) index=0; items.forEach((item,i)=>item.classList.toggle('active',i===index)); currentSlideIndex=index; }
     function nextSlide(){ showSlide(currentSlideIndex+1); }
