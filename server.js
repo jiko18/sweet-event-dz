@@ -769,18 +769,20 @@ app.get('/api/check-role', verifyToken, (req, res) => {
     res.json({ role: req.user.role });
 });
 
-// =====================================================
-// مسار مؤقت لإضافة عمود DeliveryAddress إلى جدول الطلبيات في Turso
-// =====================================================
 app.get('/api/fix-db', async (req, res) => {
+    let messages = [];
     try {
         await db.execute('ALTER TABLE Orders ADD COLUMN DeliveryAddress TEXT;');
-        res.json({ success: true, message: 'تم إضافة عمود عنوان التسليم بنجاح! قاعدة البيانات جاهزة الآن.' });
-    } catch (err) {
-        res.json({ success: false, message: 'العمود موجود مسبقاً أو حدث خطأ', error: err.message });
-    }
-});
+        messages.push('تم إضافة DeliveryAddress');
+    } catch (err) { messages.push('DeliveryAddress موجود مسبقاً'); }
+    
+    try {
+        await db.execute('ALTER TABLE Products ADD COLUMN Sizes TEXT DEFAULT "[]";');
+        messages.push('تم إضافة عمود Sizes بنجاح');
+    } catch (err) { messages.push('Sizes موجود مسبقاً'); }
 
+    res.json({ success: true, message: messages.join(' | ') });
+});
 // =====================================================
 // 12.5. إدارة التقييمات للأدمن
 // =====================================================
