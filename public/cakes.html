@@ -1142,7 +1142,6 @@ function googleTranslateElementInit() {
         const token = localStorage.getItem('sweet_event_token');
         if(!token){ alert('الرجاء تسجيل الدخول أولاً'); document.getElementById('authModal').classList.add('active'); return; }
         const eventDate = document.getElementById('eventDateInput')?.value;
-        if(!eventDate) return alert('يرجى تحديد تاريخ المناسبة.');
         const formData = new FormData();
         formData.append('eventDate', eventDate);
         formData.append('eventType', document.getElementById('eventTypeSelect').value);
