@@ -1173,6 +1173,31 @@ function bindDynamicSizeSelection() {
         await loadCakes(); 
         if(window.CartManager) window.CartManager.updateUI(); 
     });
+  function navigateToCustomization() {
+    // 1. التمرير السلس إلى قسم التخصيص بأسفل الصفحة
+    const customSection = document.getElementById('customCakeFormDirect') || document.getElementById('selectedCakePreviewArea');
+    if (customSection) {
+        customSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 2. فتح القائمة المنسدلة للأحجام تلقائياً لتظهر للمستخدم
+    const sizeSelect = document.getElementById('cakeSizeSelect');
+    if (sizeSelect) {
+        sizeSelect.focus();
+        // جعل القائمة تنسدل وتظهر خياراتها مباشرة (بمقدار 3 خيارات)
+        sizeSelect.size = 3; 
+        
+        // إعادة شكل القائمة لطبيعتها (حجم 1) بمجرد أن يختار الزبون الحجم
+        sizeSelect.onchange = function() {
+            sizeSelect.size = 1;
+        };
+        
+        // إعادة شكل القائمة لطبيعتها أيضاً إذا نقر الزبون في أي مكان آخر خارجها
+        sizeSelect.onblur = function() {
+            sizeSelect.size = 1;
+        };
+    }
+}
 </script>
 </body>
 </html>
