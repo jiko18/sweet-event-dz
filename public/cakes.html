@@ -1171,56 +1171,105 @@ function googleTranslateElementInit() {
         } catch(err){ alert('❌ خطأ في الاتصال بالسيرفر'); }
         finally { btn.innerHTML=original; btn.disabled=false; }
     }
-
-    // المستمعات العامة
+// المستمعات العامة
     document.getElementById('prevSlideBtn')?.addEventListener('click', prevSlide);
     document.getElementById('nextSlideBtn')?.addEventListener('click', nextSlide);
     
-    document.getElementById('clearSelectedCakeBtn')?.addEventListener('click',()=>{ document.getElementById('selectedCakePreviewArea').style.display='none'; document.getElementById('selectedCatalogCakeId').value=''; });
+    document.getElementById('clearSelectedCakeBtn')?.addEventListener('click', () => { 
+        const previewArea = document.getElementById('selectedCakePreviewArea');
+        if(previewArea) previewArea.style.display = 'none'; 
+        
+        const catalogCakeId = document.getElementById('selectedCatalogCakeId');
+        if(catalogCakeId) catalogCakeId.value = ''; 
+    });
+    
     document.getElementById('customCakeFormDirect')?.addEventListener('submit', submitCustomOrder);
-    window.addEventListener('scroll',()=>{ const p = window.scrollY/(document.documentElement.scrollHeight-window.innerHeight)*100; const bar=document.getElementById('scrollProgress'); if(bar) bar.style.width=p+'%'; });
+    
+    window.addEventListener('scroll', () => { 
+        const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100; 
+        const bar = document.getElementById('scrollProgress'); 
+        if(bar) bar.style.width = p + '%'; 
+    });
     
     // الاستماع لتغيير الحجم من القائمة المنسدلة
     document.getElementById('cakeSizeSelect')?.addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         const newPrice = selectedOption.getAttribute('data-price');
         if(newPrice) {
-            document.getElementById('selectedCatalogCakePrice').value = newPrice;
-            document.getElementById('previewCakePrice').innerText = parseFloat(newPrice).toLocaleString() + ' دج';
+            const priceInput = document.getElementById('selectedCatalogCakePrice');
+            const priceDisplay = document.getElementById('previewCakePrice');
+            
+            if(priceInput) priceInput.value = newPrice;
+            if(priceDisplay) priceDisplay.innerText = parseFloat(newPrice).toLocaleString() + ' دج';
         }
     });
 
     // زر "إضافة إلى السلة" في نموذج التخصيص
     document.getElementById('addToCartCustomBtn')?.addEventListener('click', function() {
-        const eventDate = document.getElementById('eventDateInput')?.value;
-        const eventType = document.getElementById('eventTypeSelect').value;
-        const cakeSize = document.getElementById('cakeSizeSelect').value || 'غير محدد';
-        const notes = document.getElementById('designNotes').value;
+        // جلب القيم بأمان لتجنب الأخطاء البرمجية
+        const eventDateInput = document.getElementById('eventDateInput');
+        const eventDate = eventDateInput ? eventDateInput.value : 'غير محدد';
         
-        const cakeId = document.getElementById('selectedCatalogCakeId').value;
-        const cakeName = document.getElementById('selectedCatalogCakeName').value || 'كعكة مخصصة';
-        const cakePrice = parseFloat(document.getElementById('selectedCatalogCakePrice').value || 0);
+        const eventTypeSelect = document.getElementById('eventTypeSelect');
+        const eventType = eventTypeSelect ? eventTypeSelect.value : 'غير محدد';
+        
+        const cakeSizeSelect = document.getElementById('cakeSizeSelect');
+        const cakeSize = cakeSizeSelect ? cakeSizeSelect.value : 'غير محدد';
+        
+        const designNotes = document.getElementById('designNotes');
+        const notes = designNotes ? designNotes.value : 'لا يوجد';
+        
+        const cakeIdInput = document.getElementById('selectedCatalogCakeId');
+        const cakeId = cakeIdInput ? cakeIdInput.value : '';
+        
+        const cakeNameInput = document.getElementById('selectedCatalogCakeName');
+        const cakeName = cakeNameInput && cakeNameInput.value ? cakeNameInput.value : 'كعكة مخصصة';
+        
+        const cakePriceInput = document.getElementById('selectedCatalogCakePrice');
+        const cakePrice = cakePriceInput ? parseFloat(cakePriceInput.value || 0) : 0;
 
+        const previewCakeImg = document.getElementById('previewCakeImg');
+        const cakeImage = previewCakeImg ? previewCakeImg.src : 'https://placehold.co/100x100?text=Custom';
 
-        const customDetails = `نوع المناسبة: ${eventType} | الحجم: ${cakeSize} | التاريخ: ${eventDate} | الملاحظات: ${notes}`;
+        // تجميع الملاحظات الإضافية (أزلنا الحجم من هنا لتجنب التكرار، لأن السيرفر سيقرأه من المتغير المستقل)
+        const customDetails = `نوع المناسبة: ${eventType} | التاريخ: ${eventDate} | الملاحظات: ${notes}`;
 
-        window.CartManager.addItem({ 
-            productId: cakeId ? parseInt(cakeId) : Date.now(),
-            name: `[مخصص] ${cakeName}`, 
-            price: cakePrice, 
-            image: document.getElementById('previewCakeImg').src || 'https://placehold.co/100x100?text=Custom',
-            notes: customDetails 
-        }, 'cakes'); 
+        if (window.CartManager) {
+            // إرسال المنتج إلى السلة
+            window.CartManager.addItem({ 
+                productId: cakeId ? parseInt(cakeId) : Date.now(),
+                name: `[مخصص] ${cakeName}`, 
+                price: cakePrice, 
+                image: cakeImage,
+                notes: customDetails,
+                cakeSize: cakeSize // 🔥 التعديل الجوهري: هذا المتغير سيقوم السيرفر بقراءته وإضافته بجانب اسم الكعكة
+            }, 'cakes'); 
+            
+            window.CartManager.updateUI();
+        }
 
-        window.CartManager.updateUI();
-        document.getElementById('customCakeFormDirect').reset();
-        document.getElementById('selectedCakePreviewArea').style.display = 'none';
-        showToast('🛒 تم إضافة التصميم إلى السلة بنجاح!');
+        // تفريغ النموذج وإخفاء مساحة المعاينة
+        const formDirect = document.getElementById('customCakeFormDirect');
+        if(formDirect) formDirect.reset();
+        
+        const previewArea = document.getElementById('selectedCakePreviewArea');
+        if(previewArea) previewArea.style.display = 'none';
+        
+        // إظهار إشعار النجاح
+        if (typeof showToast === 'function') {
+            showToast('🛒 تم إضافة التصميم إلى السلة بنجاح!');
+        } else {
+            alert('🛒 تم إضافة التصميم إلى السلة بنجاح!');
+        }
     });
 
-    window.addEventListener('DOMContentLoaded', async()=>{ 
-        await loadCakes(); 
-        if(window.CartManager) window.CartManager.updateUI(); 
+    window.addEventListener('DOMContentLoaded', async () => { 
+        if (typeof loadCakes === 'function') {
+            await loadCakes(); 
+        }
+        if (window.CartManager) {
+            window.CartManager.updateUI(); 
+        }
     });
 
     function navigateToCustomization() {
