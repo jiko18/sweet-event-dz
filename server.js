@@ -944,6 +944,28 @@ app.put('/api/admin/products/:id', verifyAdmin, (req, res) => {
     });
 });
 // =====================================================
+// مسار حذف منتج من لوحة الإدارة (الحذف الآمن Soft Delete)
+// =====================================================
+app.delete('/api/admin/products/:id', verifyAdmin, async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+        if (isNaN(productId)) {
+            return res.status(400).json({ success: false, error: 'معرّف المنتج غير صالح' });
+        }
+
+        // نقوم بالحذف الآمن (إخفاء المنتج) للحفاظ على سلامة فواتير الطلبات السابقة المرتبطة به
+        await runAsync(
+            `UPDATE Products SET IsDeleted = 1, IsActive = 0 WHERE ProductId = ?`, 
+            [productId]
+        );
+        
+        res.json({ success: true, message: 'تم حذف المنتج بنجاح من النظام' });
+    } catch (err) {
+        console.error("Admin Delete Product Error:", err.message);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+// =====================================================
 // مسارات المستخدمين للإدارة
 // =====================================================
 app.get('/api/admin/users', verifyAdmin, async (req, res) => {
