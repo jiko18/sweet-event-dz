@@ -496,7 +496,7 @@ app.post('/api/orders', verifyToken, async (req, res) => {
 
             const quantity = item.quantity || item.Quantity || 1;
             
-            // 🔥 التعديل هنا: استخراج الحجم (cakeSize أو size) المرسل من تفاصيل العنصر في السلة
+            // 1. استخراج الحجم المرسل من السلة (سواء للطلب العادي أو المخصص)
             const itemSize = item.cakeSize || item.size || item.Size || null;
             const sizeDisplay = itemSize ? ` [الحجم: ${itemSize}]` : '';
             
@@ -521,6 +521,20 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             }
         }
 
+        // 🔥 التعديل الجوهري للوحة التحكم 🔥
+        // نقوم بتحديث حقل الـ Notes للطلب في قاعدة البيانات ليشمل تفاصيل المنتجات مع أحجامها بدقة
+        try {
+            // تنظيف النص من وسوم HTML المخصصة لتيليجرام ليخزن كنص نقي ومقروء في لوحة التحكم
+            let dbSummaryText = superAdminProductsText.replace(/<b>/g, '').replace(/<\/b>/g, '').replace(/<i>/g, '').replace(/<\/i>/g, '');
+            let finalNotesForDb = notes 
+                ? `ملاحظات عامة: ${notes}\n\n📋 تفاصيل المنتجات والأحجام للطلب:\n${dbSummaryText}` 
+                : `📋 تفاصيل المنتجات والأحجام للطلب:\n${dbSummaryText}`;
+            
+            await runAsync(`UPDATE Orders SET Notes = ? WHERE OrderId = ?`, [finalNotesForDb, orderId]);
+        } catch (dbErr) {
+            console.error("خطأ أثناء تحديث ملاحظات الأحجام في قاعدة البيانات:", dbErr.message);
+        }
+
         // 1️⃣ صياغة وإرسال رسالة السوبر أدمن (أنت) الشاملة مع السعر الكلي
         const superAdminMessage = `
 👑 <b>لوحة التحكم | طلب كامل جديد رقم: #${orderId}</b>
@@ -537,7 +551,6 @@ ${superAdminProductsText}
 💰 <b>إجمالي المبلغ الكلي:</b> ${totalAmount} دج
         `;
         await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, superAdminMessage);
-
 
         // 2️⃣ إرسال رسالة مسؤول الديكور (بشكل هيكلي موحد وبدون أسعار)
         if (hasDecor) {
@@ -571,7 +584,7 @@ ${superAdminProductsText}
             console.log(`🚀 تم إرسال إشعار الديكور الموحد للطلب #${orderId}`);
         }
 
-        // 3️⃣ إرسال رسالة مسؤول التصوير (إذا كان الطلب يحتوي على خدمات تصوير)
+        // 3️⃣ إرسال رسالة مسؤول التصوير
         if (hasPhoto) {
             let photoMessage = `📸 <b>إشعار قسم التصوير والتوثيق</b> 📸\n`;
             photoMessage += `----------------------------------------\n`;
