@@ -460,8 +460,7 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             [req.user.userId, customerName, customerPhone, customerEmail || null, finalDate, deliveryAddress || null, notes || null, totalAmount]
         );
         const orderId = result.lastID;
-
-        // إدخال عناصر الطلب في قاعدة البيانات
+// إدخال عناصر الطلب في قاعدة البيانات
         for (const item of items) {
             const productId = item.productId || item.ProductId || item.id || item.Id || null;
             const quantity = item.quantity || item.Quantity || 1;
@@ -497,10 +496,14 @@ app.post('/api/orders', verifyToken, async (req, res) => {
 
             const quantity = item.quantity || item.Quantity || 1;
             
-            // صياغة السطر البرمجي للعنصر مع ملاحظته الفردية إن وجدت
-            let itemLine = `• <b>${productName}</b> (الكمية: ${quantity})\n`;
+            // 🔥 التعديل هنا: استخراج الحجم (cakeSize أو size) المرسل من تفاصيل العنصر في السلة
+            const itemSize = item.cakeSize || item.size || item.Size || null;
+            const sizeDisplay = itemSize ? ` [الحجم: ${itemSize}]` : '';
+            
+            // صياغة السطر البرمجي للعنصر مع ملاحظته الفردية وإضافة الحجم إن وجد
+            let itemLine = `• <b>${productName}${sizeDisplay}</b> (الكمية: ${quantity})\n`;
             if (item.notes) {
-                itemLine += `   ✍️ <i>ملاحظة التخصيص: ${item.notes}</i>\n`;
+                itemLine += `    ✍️ <i>ملاحظة التخصيص: ${item.notes}</i>\n`;
             }
             
             // السوبر أدمن تصله كافة التفاصيل
@@ -568,6 +571,37 @@ ${superAdminProductsText}
             console.log(`🚀 تم إرسال إشعار الديكور الموحد للطلب #${orderId}`);
         }
 
+        // 3️⃣ إرسال رسالة مسؤول التصوير (إذا كان الطلب يحتوي على خدمات تصوير)
+        if (hasPhoto) {
+            let photoMessage = `📸 <b>إشعار قسم التصوير والتوثيق</b> 📸\n`;
+            photoMessage += `----------------------------------------\n`;
+            photoMessage += `📦 <b>رقم الطلبية:</b> #${orderId}\n`;
+            photoMessage += `👤 <b>اسم الزبون:</b> ${customerName}\n`;
+            photoMessage += `📞 <b>رقم الهاتف:</b> ${customerPhone}\n`;
+            photoMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate}\n`;
+            photoMessage += `📍 <b>الموقع والعنوان:</b> ${deliveryAddress || 'غير محدد'}\n`;
+            photoMessage += `----------------------------------------\n`;
+            photoMessage += `📋 <b>العناصر المطلوبة التابعة لقسمك:</b>\n`;
+            photoMessage += photoProductsText;
+
+            if (notes) {
+                photoMessage += `\n📝 <b>تفاصيل إضافية وتخصيص عام:</b>\n${notes}\n`;
+            }
+            photoMessage += `----------------------------------------\n`;
+            photoMessage += `👉 <i>يرجى مراجعة جدول أعمالك ثم الضغط على القرار المناسب:</i>`;
+
+            const inlineKeyboardPhoto = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ الموافقة على التصوير", callback_data: `photo_approve_${orderId}` },
+                        { text: "❌ الاعتذار والرفض", callback_data: `photo_reject_${orderId}` }
+                    ]
+                ]
+            };
+
+            await sendTelegramNotification(ROLES_CHAT_IDS.photo, photoMessage, inlineKeyboardPhoto);
+            console.log(`🚀 تم إرسال إشعار التصوير الموحد للطلب #${orderId}`);
+        }
 
         // 3️⃣ إرسال رسالة مسؤول التصوير (بنفس الهيكل المتطابق تماماً وبدون أسعار)
         if (hasPhoto) {
@@ -607,15 +641,19 @@ ${superAdminProductsText}
         res.status(500).json({ success: false, error: err.message });
     }
 });
-
 // =====================================================
-// طلب خدمة/منتج مخصص (شامل لجميع الأقسام)
+// طلب خدمة/منتج مخصص (شامل لجميع الأقسام) - معدل لإظهار الحجم والمناسبة
 // =====================================================
 app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), async (req, res) => {
     try {
-        const { eventDate, category, customDetails, notes, selectedItemId, selectedItemName, selectedItemPrice } = req.body;
+        // التعديل: استخراج cakeSize و eventType المرسلة من الفرونت إند
+        const { eventDate, category, customDetails, notes, selectedItemId, selectedItemName, selectedItemPrice, cakeSize, eventType } = req.body;
         
-        let finalNotes = `--- طلب ${category || 'مخصص'} ---\n${customDetails || ''}\nملاحظات الزبون: ${notes || 'لا يوجد'}`;
+        // تضمين تفاصيل الحجم والمناسبة داخل الملاحظات التي تخزن في قاعدة البيانات
+        let finalNotes = `--- طلب ${category || 'مخصص'} ---\n`;
+        if (eventType) finalNotes += `نوع المناسبة: ${eventType}\n`;
+        if (cakeSize) finalNotes += `الحجم المطلوب: ${cakeSize}\n`;
+        finalNotes += `${customDetails || ''}\nملاحظات الزبون: ${notes || 'لا يوجد'}`;
         
         if (selectedItemName) {
             finalNotes += `\nالعنصر الأساسي المختار: ${selectedItemName}`;
@@ -661,15 +699,21 @@ app.post('/api/orders/custom', verifyToken, upload.single('inspirationImage'), a
             [orderId, productId, unitPrice]
         );
 
-        // إشعار السوبر أدمن الموحد
+        // التعديل: صياغة رسالة تيليجرام لتشمل تفاصيل الحجم ونوع المناسبة بوضوح للـ الأدمن
         const customNotification = `
 🌟 <b>طلب ${category || 'مخصص'} جديد!</b> 🌟
-رقم الطلب: #${orderId}
-الزبون: ${customerName}
-الهاتف: ${user.Phone || 'غير متوفر'}
-تاريخ المناسبة: ${eventDate || 'غير محدد'}
-${customDetails || ''}
-ملاحظات: ${notes || 'لا يوجد'}
+----------------------------------------
+📦 <b>رقم الطلب:</b> #${orderId}
+👤 <b>الزبون:</b> ${customerName}
+📞 <b>الهاتف:</b> ${user.Phone || 'غير متوفر'}
+📅 <b>تاريخ المناسبة:</b> ${eventDate || 'غير محدد'}
+✨ <b>نوع المناسبة:</b> ${eventType || 'غير محدد'}
+📏 <b>الحجم المطلوب:</b> ${cakeSize || 'غير محدد'}
+----------------------------------------
+📝 <b>تفاصيل التصميم والنكهات:</b>
+${customDetails || 'لا توجد تفاصيل إضافية'}
+
+📝 <b>ملاحظات إضافية:</b> ${notes || 'لا يوجد'}
         `;
         await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, customNotification);
 
@@ -679,7 +723,6 @@ ${customDetails || ''}
         res.status(500).json({ success: false, error: err.message });
     }
 });
-
 // =====================================================
 // 8. جلب طلبات المستخدم الحالي
 // =====================================================
