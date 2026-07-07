@@ -743,14 +743,6 @@
             background: #f8d7da;
             color: #721c24;
         }
-        .status-Confirmed {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        .status-Completed {
-            background: #d4edda;
-            color: #155724;
-        }
 
         .product-img-sm {
             width: 44px;
@@ -1325,15 +1317,15 @@
                     </div>
                     <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1rem;">
                         <input type="text" id="orderSearch" placeholder="🔍 بحث برقم الطلب أو اسم الزبون أو الهاتف..." style="flex:1;padding:0.6rem 1rem;border-radius:25px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
-                     <select id="orderStatusFilter" style="padding:0.6rem 1rem;border-radius:25px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
-    <option value="all">📋 جميع الحالات</option>
-    <option value="Pending">🟡 قيد الانتظار</option>
-    <option value="Studying">⚪ قيد التواصل</option>
-    <option value="Approved">🔵 الموافقة والانجاز</option>
-    <option value="InProgress">🟠 تم التجهيز</option>
-    <option value="Delivered">🟢 تم التسليم</option>
-    <option value="Cancelled">🔴 ملغي</option>
-</select>
+                        <select id="orderStatusFilter" style="padding:0.6rem 1rem;border-radius:25px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
+                            <option value="all">📋 جميع الحالات</option>
+                            <option value="Pending">🟡 قيد الانتظار</option>
+                            <option value="Studying">⚪ قيد التواصل</option>
+                            <option value="Approved">🔵 الموافقة والانجاز</option>
+                            <option value="InProgress">🟠 تم التجهيز</option>
+                            <option value="Delivered">🟢 تم التسليم</option>
+                            <option value="Cancelled">🔴 ملغي</option>
+                        </select>
                     </div>
                     <div class="data-table-wrap">
                         <table class="data-table" id="ordersTable">
@@ -1877,14 +1869,14 @@
                 const ctx = canvas.getContext('2d');
                 if (!ctx) return;
 
-             const statusNamesAr = {
-    'Pending': 'قيد الانتظار',
-    'Studying': 'قيد التواصل',
-    'Approved': 'الموافقة والانجاز',
-    'InProgress': 'تم التجهيز',
-    'Delivered': 'تم التسليم',
-    'Cancelled': 'ملغي'
-};
+                // التسميات الجديدة
+                const statusNamesAr = {
+                    'Pending': 'قيد الانتظار',
+                    'Studying': 'قيد التواصل',
+                    'Approved': 'الموافقة والانجاز',
+                    'InProgress': 'تم التجهيز',
+                    'Delivered': 'تم التسليم',
+                    'Cancelled': 'ملغي'
                 };
                 const colors = ['#f39c12', '#7f8c8d', '#3498db', '#ff9f43', '#27ae60', '#e74c3c'];
                 const isDark = document.body.classList.contains('dark-mode');
@@ -2182,8 +2174,15 @@
             function renderRecentOrders(orders) {
                 const list = document.getElementById('recentOrdersList');
                 if (!list) return;
-                const statusNamesAr = { 'Pending': 'قيد الانتظار', 'Studying': 'قيد الدراسة', 'Approved': 'موافق عليه',
-                    'InProgress': 'قيد الإنجاز', 'Delivered': 'تم التسليم', 'Cancelled': 'ملغي' };
+                // التسميات الجديدة
+                const statusNamesAr = { 
+                    'Pending': 'قيد الانتظار', 
+                    'Studying': 'قيد التواصل', 
+                    'Approved': 'الموافقة والانجاز',
+                    'InProgress': 'تم التجهيز', 
+                    'Delivered': 'تم التسليم', 
+                    'Cancelled': 'ملغي' 
+                };
                 const dotColors = { 'Pending': 'amber', 'Studying': 'amber', 'Approved': 'teal', 'InProgress': 'purple',
                     'Delivered': 'teal', 'Cancelled': 'rose' };
                 list.innerHTML = orders.slice(0, 8).map(o => `
@@ -2593,12 +2592,13 @@ function openProductModal(data = {}) {
                     return; 
                 }
 
+                // التسميات الجديدة
                 const statusNamesAr = { 
                     'Pending': 'قيد الانتظار', 
-                    'Studying': 'قيد الدراسة', 
-                    'Approved': 'الموافقة',
-                    'InProgress': 'قيد الإنجاز', 
-                    'Delivered': 'تم التوصيل', 
+                    'Studying': 'قيد التواصل', 
+                    'Approved': 'الموافقة والانجاز',
+                    'InProgress': 'تم التجهيز', 
+                    'Delivered': 'تم التسليم', 
                     'Cancelled': 'ملغي' 
                 };
 
@@ -3597,6 +3597,4 @@ setInterval(() => {
         })();
     </script>
 </body>
-</html>
-
 </html>
