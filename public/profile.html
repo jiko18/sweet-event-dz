@@ -792,18 +792,18 @@
         window.location.href = '/';
     }
 
-    function getOrderStatusText(status) {
-        const statusMap = {
-            'Pending': 'قيد الانتظار',
-            'Studying': 'قيد الدراسة',
-            'Approved': 'تم التأكيد',
-            'InProgress': 'قيد الإنجاز',
-            'Delivered': 'تم التسليم',
-            'Completed': 'مكتمل',
-            'Cancelled': 'ملغي'
-        };
-        return statusMap[status] || status;
-    }
+   function getOrderStatusText(status) {
+    const statusMap = {
+        'Pending': 'قيد الانتظار',
+        'Studying': 'قيد التواصل',
+        'Approved': 'الموافقة والانجاز',
+        'InProgress': 'تم التجهيز',
+        'Delivered': 'تم التسليم',
+        'Completed': 'مكتمل',
+        'Cancelled': 'ملغي'
+    };
+    return statusMap[status] || status;
+}
 
     function showToast(msg, isError = false) {
         const toast = document.getElementById('toastMsg');
