@@ -1520,3 +1520,15 @@ input[type="file"].custom-input::file-selector-button:hover {
     background-color: rgba(201, 150, 62, 0.1) !important;
     transform: translateY(-2px);
 }
+/* تنسيق صورة المعاينة في قسم التخصيص لتجنب الأحجام الكبيرة */
+#selectedCakePreviewArea img,
+#previewCakeImg {
+    max-width: 100% !important;
+    max-height: 250px !important; /* يمكنك تعديل الارتفاع ليناسب تصميمك */
+    width: auto !important;
+    object-fit: cover; /* يضمن تناسق الصورة دون تشويه أبعادها */
+    border-radius: 12px;
+    display: block;
+    margin: 0 auto 15px auto; /* لتوسيط الصورة وإبعادها عن الحقول أسفلها */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
