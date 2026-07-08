@@ -1520,24 +1520,3 @@ input[type="file"].custom-input::file-selector-button:hover {
     background-color: rgba(201, 150, 62, 0.1) !important;
     transform: translateY(-2px);
 }
-/* ===================================================== */
-/* تنسيق صورة المعاينة (التخصيص) لمنعها من احتلال الشاشة */
-/* ===================================================== */
-
-#selectedCakePreviewArea {
-    width: 100%;
-    max-width: 800px; /* تحديد أقصى عرض لمنطقة المعاينة */
-    margin: 20px auto; /* توسيط المنطقة */
-    text-align: center;
-}
-
-#selectedCakePreviewArea img,
-#previewCakeImg {
-    max-width: 100%;
-    max-height: 400px; /* 🔴 هذا هو السطر الأهم: يمنع الصورة من تخطي هذا الارتفاع */
-    object-fit: cover; /* يحافظ على أبعاد الصورة الأنيقة بدون أي تمطيط أو تشويه */
-    border-radius: var(--card-radius, 16px); /* حواف دائرية تتناسب مع تصميم موقعك */
-    box-shadow: 0 8px 25px rgba(201, 150, 62, 0.15); /* ظل خفيف متناسق مع اللون الذهبي */
-    display: block;
-    margin: 0 auto 20px auto;
-}
