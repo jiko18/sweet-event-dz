@@ -1503,6 +1503,12 @@
                 <label>اسم المنتج</label>
                 <input type="text" id="productName" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
             </div>
+
+            <!-- ===== حقل المؤلف الجديد ===== -->
+            <div class="form-group">
+                <label>المؤلف (للإصدارات)</label>
+                <input type="text" id="productAuthor" placeholder="اسم المؤلف" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+            </div>
             
             <div class="form-group">
                 <label>الوصف</label>
@@ -1581,6 +1587,12 @@
                 <label>صورة أو فيديو المنتج:</label>
                 <input type="file" id="productFile" accept="image/*,video/*" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
                 <small style="color: var(--text-muted); display:block; margin-top:4px;">يمكنك رفع صورة أو مقطع فيديو قصير للمنتج.</small>
+            </div>
+
+            <!-- ===== حقل رفع ملف الكتاب (PDF/Document) الجديد ===== -->
+            <div class="form-group">
+                <label>رفع ملف الكتاب (PDF أو Document)</label>
+                <input type="file" class="form-control" id="productPdfFile" accept=".pdf,.doc,.docx" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
             </div>
 
           <div class="form-group">
@@ -2310,7 +2322,7 @@
                         <td>${unitTypeDisplay}</td>
                         <td><span class="status-badge ${p.IsActive?'status-Completed':'status-Cancelled'}">${p.IsActive?'نشط':'غير نشط'}</span></td>
                         <td class="action-buttons">
-<button class="action-btn edit" data-id="${p.ProductId}" data-name="${p.Name}" data-desc="${p.Description||''}" data-price="${p.Price}" data-cat="${p.Category}" data-active="${p.IsActive}" data-img="${p.ImageUrl||''}" data-media='${(p.MediaFiles||'[]').replace(/'/g,"&#39;")}' data-location="${p.Location||''}" data-capacity="${p.Capacity||''}" data-lat="${p.Lat||''}" data-lng="${p.Lng||''}" data-features="${p.Features||''}" data-unittype="${p.UnitType||''}" data-sizes='${(p.Sizes||"{}").replace(/'/g,"&#39;")}'><i class="fa-solid fa-pen"></i></button>
+<button class="action-btn edit" data-id="${p.ProductId}" data-name="${p.Name}" data-desc="${p.Description||''}" data-price="${p.Price}" data-cat="${p.Category}" data-active="${p.IsActive}" data-img="${p.ImageUrl||''}" data-media='${(p.MediaFiles||'[]').replace(/'/g,"&#39;")}' data-location="${p.Location||''}" data-capacity="${p.Capacity||''}" data-lat="${p.Lat||''}" data-lng="${p.Lng||''}" data-features="${p.Features||''}" data-unittype="${p.UnitType||''}" data-sizes='${(p.Sizes||"{}").replace(/'/g,"&#39;")}' data-author="${p.Author||''}" data-fileurl="${p.FileUrl||''}"><i class="fa-solid fa-pen"></i></button>
                             <button class="action-btn delete" data-id="${p.ProductId}" data-name="${p.Name}"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>`;
@@ -2342,13 +2354,25 @@ function openProductModal(data = {}) {
     document.getElementById('productUnitType').value = data.unittype || 'none';
     document.getElementById('productActive').value = (data.active === 'false' || data.active === false) ? 'false' : 'true';
     
+    // تعبئة حقلي المؤلف وملف PDF
+    document.getElementById('productAuthor').value = data.author || '';
+    // تفريغ حقل PDF عند الإضافة الجديدة
+    if (!data.id) {
+        document.getElementById('productPdfFile').value = '';
+    } else {
+        // في حالة التعديل، يمكن تعيين قيمة fileUrl إن وجدت (للعرض فقط)
+        if (data.fileurl) {
+            // يمكن إضافة عنصر لعرض رابط الملف الحالي
+        }
+    }
+    
     const hallFieldsDiv = document.getElementById('hallSpecificFields');
     const cakeFieldsDiv = document.getElementById('cakeSpecificFields');
     
     if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
     if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
     
-    // ====== جزء الكعكة المصحح (تم حذف الكود المكرر تحته) ======
+    // ====== جزء الكعكة المصحح ======
   if (catValue === 'cake') {
         const occasionSelect = document.getElementById('cakeOccasion');
         if (occasionSelect) occasionSelect.value = data.features || 'general';
@@ -2419,74 +2443,108 @@ function openProductModal(data = {}) {
     }
 }
 
-            // ====== دالة حفظ المنتج (معدلة للكعكة) ======
+            // ====== دالة حفظ المنتج (معدلة للكعكة وإضافة PDF والمؤلف) ======
             async function saveProduct(e) {
                 e.preventDefault();
                 const id = document.getElementById('productId')?.value;
                 const fd = new FormData();
                 fd.append('name', document.getElementById('productName')?.value || '');
-
+                fd.append('author', document.getElementById('productAuthor')?.value || '');
                 let priceValue = document.getElementById('productPrice')?.value;
                 let priceNumber = parseFloat(priceValue);
                 if (isNaN(priceNumber)) priceNumber = 0;
                 fd.append('price', priceNumber);
-
                 fd.append('category', document.getElementById('productCategory')?.value || 'cake');
                 fd.append('description', document.getElementById('productDesc')?.value || '');
                 fd.append('isActive', document.getElementById('productActive')?.value || 'true');
                 fd.append('unitType', document.getElementById('productUnitType')?.value || 'none');
                 const category = document.getElementById('productCategory')?.value || 'cake';
                 
+                // === رفع الصورة وملف PDF ===
+                const imageFile = document.getElementById('productFile').files[0];
+                const pdfFile = document.getElementById('productPdfFile').files[0];
+                let imageUrl = 'https://placehold.co/400x600';
+                let pdfUrl = '';
+
+                // 1. رفع الصورة إن وجدت
+                if (imageFile) {
+                    const formDataImg = new FormData();
+                    formDataImg.append('bookImage', imageFile);
+                    try {
+                        const uploadRes = await fetch('/api/upload-book', { method: 'POST', body: formDataImg });
+                        const uploadData = await uploadRes.json();
+                        if (uploadRes.ok) imageUrl = uploadData.imageUrl;
+                    } catch (err) { console.error('فشل رفع الصورة:', err); }
+                } else if (window._tempImageData) {
+                    imageUrl = window._tempImageData;
+                }
+
+                // 2. رفع ملف PDF إن وجد
+                if (pdfFile) {
+                    const pdfFormData = new FormData();
+                    pdfFormData.append('bookPdf', pdfFile);
+                    try {
+                        const pdfRes = await fetch('/api/upload-pdf', { method: 'POST', body: pdfFormData });
+                        if (pdfRes.ok) {
+                            const pdfData = await pdfRes.json();
+                            pdfUrl = pdfData.fileUrl;
+                        }
+                    } catch (err) { console.error('فشل رفع PDF:', err); }
+                }
+
+                // 3. باقي حقول النموذج (الصالات، الكعك، إلخ)
                 if (category === 'hall') {
                     fd.append('location', document.getElementById('hallLocation')?.value || '');
                     fd.append('capacity', document.getElementById('hallCapacity')?.value || '');
                     fd.append('lat', document.getElementById('hallLat')?.value || '');
                     fd.append('lng', document.getElementById('hallLng')?.value || '');
                     fd.append('features', document.getElementById('hallFeatures')?.value || '');
-  } else if (category === 'cake') {
-            fd.append('location', '');
-            fd.append('capacity', '');
-            fd.append('lat', '');
-            fd.append('lng', '');
-            
-            let smallPrice = document.getElementById('cakePriceSmall')?.value || '';
-            let mediumPrice = document.getElementById('cakePriceMedium')?.value || '';
-            let largePrice = document.getElementById('cakePriceLarge')?.value || '';
-            let occasionVal = document.getElementById('cakeOccasion')?.value || 'general';
-            
-            // بناء كائن الأحجام بشكل نظيف (تجاهل الأحجام الفارغة)
-            let sizesObj = {};
-            if (smallPrice) sizesObj["صغير"] = smallPrice;
-            if (mediumPrice) sizesObj["متوسط"] = mediumPrice;
-            if (largePrice) sizesObj["كبير"] = largePrice;
-            
-            let sizesData = Object.keys(sizesObj).length > 0 ? JSON.stringify(sizesObj) : '{}';
-            
-            fd.append('sizes', sizesData); 
-            fd.append('features', occasionVal); 
-        } else {
+                } else if (category === 'cake') {
+                    fd.append('location', '');
+                    fd.append('capacity', '');
+                    fd.append('lat', '');
+                    fd.append('lng', '');
+                    
+                    let smallPrice = document.getElementById('cakePriceSmall')?.value || '';
+                    let mediumPrice = document.getElementById('cakePriceMedium')?.value || '';
+                    let largePrice = document.getElementById('cakePriceLarge')?.value || '';
+                    let occasionVal = document.getElementById('cakeOccasion')?.value || 'general';
+                    
+                    let sizesObj = {};
+                    if (smallPrice) sizesObj["صغير"] = smallPrice;
+                    if (mediumPrice) sizesObj["متوسط"] = mediumPrice;
+                    if (largePrice) sizesObj["كبير"] = largePrice;
+                    
+                    let sizesData = Object.keys(sizesObj).length > 0 ? JSON.stringify(sizesObj) : '{}';
+                    
+                    fd.append('sizes', sizesData); 
+                    fd.append('features', occasionVal); 
+                } else {
                     fd.append('location', '');
                     fd.append('capacity', '');
                     fd.append('lat', '');
                     fd.append('lng', '');
                     fd.append('features', ''); 
                 }
-             const keptMedia = selectedFilesArray.filter(file => typeof file === 'string');
-                const newMediaFiles = selectedFilesArray.filter(file => typeof file !== 'string');
-                
-                fd.append('keptMedia', JSON.stringify(keptMedia));
-                
-                // --- الكود الجديد المضاف لرفع الصورة الأساسية ---
-                const mainFileInput = document.getElementById('productFile');
-                if (mainFileInput && mainFileInput.files.length > 0) {
-                    fd.append('media', mainFileInput.files[0]); 
-                }
-                // ------------------------------------------------
 
+                // 4. الملفات الإضافية والوسائط المحتفظ بها
+                const keptMedia = selectedFilesArray.filter(file => typeof file === 'string');
+                const newMediaFiles = selectedFilesArray.filter(file => typeof file !== 'string');
+                fd.append('keptMedia', JSON.stringify(keptMedia));
+                // إضافة ملف الصورة الرئيسي إن وجد
+                if (imageFile) {
+                    fd.append('media', imageFile);
+                }
                 if (newMediaFiles.length > 0) {
                     newMediaFiles.forEach(file => fd.append('media', file));
                 }
-                
+
+                // إضافة imageUrl و pdfUrl إلى البيانات (سيتم إرسالها كـ JSON في body إذا لم نستخدم FormData)
+                // ولكننا نستخدم FormData، لذا سنضيفهم كحقول إضافية
+                fd.append('imageUrl', imageUrl);
+                fd.append('fileUrl', pdfUrl);
+
+                // 5. إرسال الطلب
                 const url = id ? `${API_BASE}/admin/products/${id}` : `${API_BASE}/admin/products`;
                 const method = id ? 'PUT' : 'POST';
                 
