@@ -482,8 +482,13 @@ app.post('/api/orders', verifyToken, async (req, res) => {
         let superAdminProductsText = ""; 
         let decorProductsText = ""; 
         let photoProductsText = ""; 
+        let sweetsProductsText = ""; // متغير قسم الحلويات
+        let cakesProductsText = "";  // متغير قسم الكعكات
+
         let hasDecor = false;
         let hasPhoto = false;
+        let hasSweets = false;
+        let hasCakes = false;
 
         // المرور على عناصر السلة وفرزها حسب التخصص
         for (const item of items) {
@@ -491,7 +496,6 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             let productName = item.Name || item.name || `منتج ${productId}`;
             let productCategory = item.Category || item.category || '';
 
-            // جلب التفاصيل من قاعدة البيانات إذا لم تكن متوفرة
             if (productId && (!productCategory || !productName || productName.startsWith('منتج'))) {
                 const product = await getAsync(`SELECT Name, Category FROM Products WHERE ProductId = ?`, [productId]);
                 if (product) {
@@ -501,29 +505,31 @@ app.post('/api/orders', verifyToken, async (req, res) => {
             }
 
             const quantity = item.quantity || item.Quantity || 1;
-            
-            // 1. استخراج الحجم المرسل من السلة (سواء للطلب العادي أو المخصص)
             const itemSize = item.cakeSize || item.size || item.Size || null;
             const sizeDisplay = itemSize ? ` [الحجم: ${itemSize}]` : '';
             
-            // صياغة السطر البرمجي للعنصر مع ملاحظته الفردية وإضافة الحجم إن وجد
             let itemLine = `• <b>${productName}${sizeDisplay}</b> (الكمية: ${quantity})\n`;
             if (item.notes) {
                 itemLine += `    ✍️ <i>ملاحظة التخصيص: ${item.notes}</i>\n`;
             }
             
-            // السوبر أدمن تصله كافة التفاصيل
             superAdminProductsText += itemLine;
 
-            // فرز التصنيف بدقة لضمان وصول كل منتج لقسمه
             const categoryLower = (productCategory || '').toLowerCase().trim();
             
+            // الفرز حسب الأقسام
             if (categoryLower === 'decor' || categoryLower === 'ديكور') {
                 decorProductsText += itemLine;
                 hasDecor = true;
             } else if (categoryLower === 'photo' || categoryLower === 'photography' || categoryLower === 'تصوير') {
                 photoProductsText += itemLine;
                 hasPhoto = true;
+            } else if (categoryLower === 'sweets' || categoryLower === 'حلويات' || categoryLower === 'حلوى') {
+                sweetsProductsText += itemLine;
+                hasSweets = true;
+            } else if (categoryLower === 'cakes' || categoryLower === 'كعك' || categoryLower === 'كيك' || categoryLower === 'كعكات') {
+                cakesProductsText += itemLine;
+                hasCakes = true;
             }
         }
 
@@ -629,6 +635,72 @@ ${superAdminProductsText}
             if (photoEmployees.length > 0) {
                 await sendTelegramNotification(photoEmployees, photoMessage, inlineKeyboardPhoto);
                 console.log(`🚀 تم إرسال إشعار التصوير الموحد للطلب #${orderId}`);
+            }
+        }
+
+        // 4️⃣ إرسال رسالة مسؤول الحلويات
+        if (hasSweets) {
+            let sweetsMessage = `🍬 <b>إشعار قسم الحلويات</b> 🍬\n`;
+            sweetsMessage += `----------------------------------------\n`;
+            sweetsMessage += `📦 <b>رقم الطلبية:</b> #${orderId}\n`;
+            sweetsMessage += `👤 <b>اسم الزبون:</b> ${customerName}\n`;
+            sweetsMessage += `📞 <b>رقم الهاتف:</b> ${customerPhone}\n`;
+            sweetsMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate}\n`;
+            sweetsMessage += `📍 <b>الموقع والعنوان:</b> ${deliveryAddress || 'غير محدد'}\n`;
+            sweetsMessage += `----------------------------------------\n`;
+            sweetsMessage += `📋 <b>العناصر المطلوبة التابعة لقسمك:</b>\n`;
+            sweetsMessage += sweetsProductsText;
+
+            if (notes) sweetsMessage += `\n📝 <b>تفاصيل إضافية وتخصيص عام:</b>\n${notes}\n`;
+            
+            sweetsMessage += `----------------------------------------\n`;
+            sweetsMessage += `👉 <i>يرجى مراجعة جدول أعمالك ثم الضغط على القرار المناسب:</i>`;
+
+            const inlineKeyboardSweets = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ الموافقة على تحضير الحلويات", callback_data: `sweets_approve_${orderId}` },
+                        { text: "❌ الاعتذار والرفض", callback_data: `sweets_reject_${orderId}` }
+                    ]
+                ]
+            };
+
+            const sweetsEmployees = await getTelegramIdsByRole('sweets');
+            if (sweetsEmployees.length > 0) {
+                await sendTelegramNotification(sweetsEmployees, sweetsMessage, inlineKeyboardSweets);
+            }
+        }
+
+        // 5️⃣ إرسال رسالة مسؤول الكعكات
+        if (hasCakes) {
+            let cakesMessage = `🎂 <b>إشعار قسم الكعكات (الكيك)</b> 🎂\n`;
+            cakesMessage += `----------------------------------------\n`;
+            cakesMessage += `📦 <b>رقم الطلبية:</b> #${orderId}\n`;
+            cakesMessage += `👤 <b>اسم الزبون:</b> ${customerName}\n`;
+            cakesMessage += `📞 <b>رقم الهاتف:</b> ${customerPhone}\n`;
+            cakesMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate}\n`;
+            cakesMessage += `📍 <b>الموقع والعنوان:</b> ${deliveryAddress || 'غير محدد'}\n`;
+            cakesMessage += `----------------------------------------\n`;
+            cakesMessage += `📋 <b>العناصر المطلوبة التابعة لقسمك:</b>\n`;
+            cakesMessage += cakesProductsText;
+
+            if (notes) cakesMessage += `\n📝 <b>تفاصيل إضافية وتخصيص عام:</b>\n${notes}\n`;
+            
+            cakesMessage += `----------------------------------------\n`;
+            cakesMessage += `👉 <i>يرجى مراجعة جدول أعمالك ثم الضغط على القرار المناسب:</i>`;
+
+            const inlineKeyboardCakes = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ الموافقة على تحضير الكعكة", callback_data: `cakes_approve_${orderId}` },
+                        { text: "❌ الاعتذار والرفض", callback_data: `cakes_reject_${orderId}` }
+                    ]
+                ]
+            };
+
+            const cakesEmployees = await getTelegramIdsByRole('cakes');
+            if (cakesEmployees.length > 0) {
+                await sendTelegramNotification(cakesEmployees, cakesMessage, inlineKeyboardCakes);
             }
         }
 
@@ -850,7 +922,7 @@ app.get('/api/fix-db', async (req, res) => {
 // =====================================================
 app.put('/api/admin/users/:id/assign-role', verifyAdmin, async (req, res) => {
     try {
-        // role يمكن أن يكون: 'admin', 'customer', 'decor', 'photo'
+        // role يمكن أن يكون: 'admin', 'customer', 'decor', 'photo', 'sweets', 'cakes'
         const { role, telegramChatId } = req.body; 
         const userId = req.params.id;
         
@@ -1339,7 +1411,7 @@ app.get('/api/admin/logs', verifyAdmin, async (req, res) => {
 });
 
 // =====================================================
-// مسار استقبال نقرات الأزرار من تيليجرام (Webhook)
+// مسار استقبال نقرات الأزرار من تيليجرام (Webhook) - معدل لدعم جميع الأقسام
 // =====================================================
 app.post('/api/telegram-webhook', async (req, res) => {
     // الرد الفوري على خادم تيليجرام لإعلامه باستلام الإشارة بنجاح
@@ -1354,23 +1426,30 @@ app.post('/api/telegram-webhook', async (req, res) => {
     const messageId = callbackQuery.message.message_id;
     const originalText = callbackQuery.message.text;
 
-    // معالجة نقرات أقسام الديكور والتصوير معاً
+    // معالجة نقرات جميع الأقسام
     if (callbackData.startsWith('decor_approve_') || callbackData.startsWith('decor_reject_') ||
-        callbackData.startsWith('photo_approve_') || callbackData.startsWith('photo_reject_')) {
+        callbackData.startsWith('photo_approve_') || callbackData.startsWith('photo_reject_') ||
+        callbackData.startsWith('sweets_approve_') || callbackData.startsWith('sweets_reject_') ||
+        callbackData.startsWith('cakes_approve_') || callbackData.startsWith('cakes_reject_')) {
         
-        const isDecor = callbackData.includes('decor_');
         const isApprove = callbackData.includes('_approve_');
         const orderId = callbackData.split('_').pop(); 
         
+        // تحديد اسم القسم بناءً على الكلمة المفتاحية
+        let departmentName = "";
+        if (callbackData.startsWith('decor_')) departmentName = "الديكور";
+        else if (callbackData.startsWith('photo_')) departmentName = "التصوير الفوتوغرافي";
+        else if (callbackData.startsWith('sweets_')) departmentName = "الحلويات";
+        else if (callbackData.startsWith('cakes_')) departmentName = "الكعكات";
+        
         const statusText = isApprove ? "✅ تم القبول والموافقة" : "❌ تم الاعتذار والرفض";
-        const departmentName = isDecor ? "الديكور" : "التصوير الفوتوغرافي";
         
         // صياغة الرسالة التي ستصل إليك كسوبر أدمن لإعلامك بما حدث
         const bossNotifyText = isApprove 
             ? `<b>📢 تحديث من قسم ${departmentName}:</b>\nقام مسؤول القسم بـ <b>الموافقة</b> وتأكيد الطلب رقم <b>#${orderId}</b>.`
             : `<b>🚨 تنبيه من قسم ${departmentName}:</b>\nقام مسؤول القسم بـ <b>إلغاء/رفض</b> المهمة للطلب رقم <b>#${orderId}</b>.`;
 
-        // 1. تحديث الرسالة الأصلية عند الموظف (لتختفي الأزرار ويظهر النص الجديد)
+        // 1. تحديث الرسالة الأصلية عند الموظف
         try {
             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText`, {
                 method: 'POST',
@@ -1385,7 +1464,6 @@ app.post('/api/telegram-webhook', async (req, res) => {
         } catch (e) { console.error("خطأ أثناء تحديث رسالة الموظف:", e.message); }
 
         // 2. إرسال الإشعار الفوري لك (السوبر أدمن) لتعرف النتيجة
-        // نجلب السوبر أدمن من قاعدة البيانات
         const superAdmins = await getTelegramIdsByRole('admin');
         await sendTelegramNotification(superAdmins, bossNotifyText);
 
