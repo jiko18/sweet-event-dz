@@ -12,6 +12,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
+        /* ===== جميع الأنماط السابقة تبقى كما هي ===== */
         :root {
             --admin-bg: #f7f2eb;
             --admin-sidebar: rgba(252, 248, 242, 0.92);
@@ -760,6 +761,7 @@
             display: flex;
             gap: 6px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         .action-btn {
             background: none;
@@ -781,6 +783,12 @@
         }
         .action-btn.delete:hover {
             background: rgba(231, 76, 60, 0.1);
+        }
+        .action-btn.employee {
+            color: var(--accent-purple);
+        }
+        .action-btn.employee:hover {
+            background: rgba(142, 111, 196, 0.1);
         }
 
         .modal-overlay {
@@ -1308,7 +1316,7 @@
                 </div>
             </div>
 
-            <!-- ==================== ORDERS TAB (تمت إضافة عمود عنوان التسليم) ==================== -->
+            <!-- ==================== ORDERS TAB ==================== -->
             <div id="ordersTab" class="tab-content" style="display:none;">
                 <div class="section-card-v2">
                     <div class="section-header-v2">
@@ -1633,6 +1641,32 @@
                 <div class="modal-buttons">
                     <button type="button" class="btn-secondary" id="cancelUserRoleBtn">إلغاء</button>
                     <button type="submit" class="btn-primary">حفظ الصلاحية</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== نافذة تعيين الموظف (جديدة) ===== -->
+    <div id="assignEmployeeModal" class="modal-overlay">
+        <div class="modal-container">
+            <button class="close-modal" id="closeAssignModal">&times;</button>
+            <h3><i class="fa-solid fa-user-tie"></i> تعيين موظف (ديكور / تصوير)</h3>
+            <form id="assignEmployeeForm">
+                <input type="hidden" id="assignUserId">
+                <div class="form-group">
+                    <label>الدور الوظيفي</label>
+                    <select id="assignRole">
+                        <option value="decor">ديكور</option>
+                        <option value="photo">تصوير</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>معرف التليجرام (Chat ID)</label>
+                    <input type="text" id="assignTelegramId" placeholder="مثال: 123456789">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="cancelAssignBtn">إلغاء</button>
+                    <button type="submit" class="btn-primary">تعيين</button>
                 </div>
             </form>
         </div>
@@ -2541,7 +2575,7 @@ function openProductModal(data = {}) {
                     alert('❌ فشل الاتصال بالسيرفر.'); }
             }
 
-            // ==================== ORDERS (مع عمود عنوان التسليم) ====================
+            // ==================== ORDERS ====================
             async function fetchOrders() {
                 try {
                     const currentToken = localStorage.getItem('sweet_event_token') || token;
@@ -2562,8 +2596,7 @@ function openProductModal(data = {}) {
                     if (result.success) {
                         allOrdersData = result.orders;
                         renderOrdersTable();
-                        // 👉 أضف هذا السطر هنا لتشغيل جرس الإشعارات
-            processOrderNotifications(allOrdersData);
+                        processOrderNotifications(allOrdersData);
                     } else {
                         console.error("خطأ من السيرفر:", result.error);
                     }
@@ -2742,6 +2775,33 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                 } catch (err) { console.error(err); }
             }
 
+            // ============ تعيين موظف (دالة جديدة) ============
+            async function assignEmployeeRole(userId, selectedRole, telegramId) {
+                try {
+                    const response = await fetch(`/api/admin/users/${userId}/assign-role`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('sweet_event_token')}`
+                        },
+                        body: JSON.stringify({
+                            role: selectedRole,
+                            telegramChatId: telegramId
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('✅ تم تعيين الموظف وتحديد قسمه بنجاح!');
+                        fetchUsers(); // تحديث الجدول
+                    } else {
+                        alert('❌ حدث خطأ: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('❌ فشل الاتصال بالسيرفر');
+                }
+            }
+
             function renderUsersTable() {
                 const search = (document.getElementById('userSearch')?.value || '').toLowerCase();
                 let filtered = allUsersData.filter(u => {
@@ -2760,10 +2820,24 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                     <td>${u.Wilaya||'-'}</td>
                     <td><span class="status-badge ${u.IsAdmin?'status-Completed':'status-Pending'}">${u.IsAdmin?'مدير':'عميل'}</span></td>
                     <td>${new Date(u.CreatedAt).toLocaleDateString('ar')}</td>
-                    <td class="action-buttons"><button class="action-btn edit" data-id="${u.UserID}" data-role="${u.IsAdmin}"><i class="fa-solid fa-user-shield"></i></button></td>
+                    <td class="action-buttons">
+                        <button class="action-btn edit" data-id="${u.UserID}" data-role="${u.IsAdmin}"><i class="fa-solid fa-user-shield"></i></button>
+                        <button class="action-btn employee" data-id="${u.UserID}" title="تعيين كموظف (ديكور/تصوير)"><i class="fa-solid fa-user-tie"></i></button>
+                    </td>
                 </tr>`).join('');
+
+                // ربط أزرار تعديل الصلاحيات (admin)
                 document.querySelectorAll('#usersTableBody .edit').forEach(b => b.addEventListener('click', () =>
                     openUserRoleModal(b.dataset.id, b.dataset.role === 'true')));
+
+                // ربط أزرار تعيين الموظف (جديد)
+                document.querySelectorAll('#usersTableBody .employee').forEach(b => b.addEventListener('click', function() {
+                    const userId = this.dataset.id;
+                    if (!userId) return alert('معرف المستخدم غير صالح');
+                    // فتح النافذة المنبثقة وتعيين userId
+                    document.getElementById('assignUserId').value = userId;
+                    document.getElementById('assignEmployeeModal').classList.add('active');
+                }));
             }
 
             function openUserRoleModal(userId, isAdmin) {
@@ -3539,6 +3613,35 @@ document.getElementById('productCategory')?.addEventListener('change', function(
                 }
 
                 document.getElementById('generateReportBtn')?.addEventListener('click', fetchMonthlyReport);
+
+                // ===== ربط نموذج تعيين الموظف =====
+                document.getElementById('assignEmployeeForm')?.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const userId = document.getElementById('assignUserId').value;
+                    const selectedRole = document.getElementById('assignRole').value;
+                    const telegramId = document.getElementById('assignTelegramId').value.trim();
+                    if (!telegramId) {
+                        alert('يرجى إدخال معرف التليجرام الخاص بالموظف.');
+                        return;
+                    }
+                    await assignEmployeeRole(userId, selectedRole, telegramId);
+                    document.getElementById('assignEmployeeModal').classList.remove('active');
+                    // تنظيف الحقول
+                    document.getElementById('assignUserId').value = '';
+                    document.getElementById('assignTelegramId').value = '';
+                });
+
+                // إلغاء النافذة
+                document.getElementById('cancelAssignBtn')?.addEventListener('click', function() {
+                    document.getElementById('assignEmployeeModal').classList.remove('active');
+                });
+                document.getElementById('closeAssignModal')?.addEventListener('click', function() {
+                    document.getElementById('assignEmployeeModal').classList.remove('active');
+                });
+                // إغلاق النافذة عند النقر خارج المحتوى
+                document.getElementById('assignEmployeeModal')?.addEventListener('click', function(e) {
+                    if (e.target === this) this.classList.remove('active');
+                });
             }
 
             setTimeout(() => {
