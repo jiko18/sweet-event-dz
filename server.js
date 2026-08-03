@@ -35,13 +35,8 @@ const SECRET_KEY = process.env.JWTS_SECRET || "Test_Secret_Key_12345";
 // =====================================================
 const TELEGRAM_BOT_TOKEN = "8728009776:AAFxzl8Po5Njl1NeA69juUmNeCi6P271Ffo";
 
-const ROLES_CHAT_IDS = {
-    superAdmin: ["7545626508", "6283553550"],// حسابك أنت (السوبر أدمن)
-    decor: "8446426225", // أضف الأيدي الخاص بموظف الديكور
-    photo: "8498133481" // المعرف الخاص بموظف التصوير
-};
+// تم حذف ROLES_CHAT_IDS كما هو مطلوب، وسيتم جلب المعرفات من قاعدة البيانات
 
-// دالة الإرسال تدعم الآن استقبال نصوص الأزرار (replyMarkup) اختياريًا
 // ====== دالة إرسال الإشعارات إلى تيليجرام (معدلة لتدعم الشركاء) ======
 async function sendTelegramNotification(chatIdOrArray, text, reply_markup = null) {
     if (!chatIdOrArray) return;
@@ -98,6 +93,17 @@ async function getAsync(sql, params = []) {
 async function allAsync(sql, params = []) {
     const result = await db.execute({ sql, args: params });
     return result.rows;
+}
+
+// دالة لجلب جميع معرفات التليجرام للموظفين حسب دورهم
+async function getTelegramIdsByRole(role) {
+    try {
+        const users = await allAsync(`SELECT TelegramChatId FROM Users WHERE Role = ? AND TelegramChatId IS NOT NULL`, [role]);
+        return users.map(user => user.TelegramChatId);
+    } catch (err) {
+        console.error(`خطأ في جلب معرفات قسم ${role}:`, err.message);
+        return [];
+    }
 }
 
 // دالة لتسجيل نشاطات المشرفين
@@ -550,7 +556,11 @@ ${superAdminProductsText}
 ----------------------------------------
 💰 <b>إجمالي المبلغ الكلي:</b> ${totalAmount} دج
         `;
-        await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, superAdminMessage);
+
+        // نجلب حسابات السوبر أدمن من قاعدة البيانات (يمكن إضافة معرفات إضافية يدوياً كضمان)
+        const superAdmins = await getTelegramIdsByRole('admin');
+        // إذا أردت إضافة الآيدي الخاص بك يدوياً كضمان: superAdmins.push("6283553550");
+        await sendTelegramNotification(superAdmins, superAdminMessage);
 
         // 2️⃣ إرسال رسالة مسؤول الديكور (بشكل هيكلي موحد وبدون أسعار)
         if (hasDecor) {
@@ -580,8 +590,11 @@ ${superAdminProductsText}
                 ]
             };
 
-            await sendTelegramNotification(ROLES_CHAT_IDS.decor, decorMessage, inlineKeyboardDecor);
-            console.log(`🚀 تم إرسال إشعار الديكور الموحد للطلب #${orderId}`);
+            const decorEmployees = await getTelegramIdsByRole('decor');
+            if (decorEmployees.length > 0) {
+                await sendTelegramNotification(decorEmployees, decorMessage, inlineKeyboardDecor);
+                console.log(`🚀 تم إرسال إشعار الديكور الموحد للطلب #${orderId}`);
+            }
         }
 
         // 3️⃣ إرسال رسالة مسؤول التصوير
@@ -612,40 +625,11 @@ ${superAdminProductsText}
                 ]
             };
 
-            await sendTelegramNotification(ROLES_CHAT_IDS.photo, photoMessage, inlineKeyboardPhoto);
-            console.log(`🚀 تم إرسال إشعار التصوير الموحد للطلب #${orderId}`);
-        }
-
-        // 3️⃣ إرسال رسالة مسؤول التصوير (بنفس الهيكل المتطابق تماماً وبدون أسعار)
-        if (hasPhoto) {
-            let photoMessage = `🔔 <b>إشعار قسم التصوير والتوثيق</b> 🔔\n`;
-            photoMessage += `----------------------------------------\n`;
-            photoMessage += `📦 <b>رقم الطلبية:</b> #${orderId}\n`;
-            photoMessage += `👤 <b>اسم الزبون:</b> ${customerName}\n`;
-            photoMessage += `📞 <b>رقم الهاتف:</b> ${customerPhone}\n`;
-            photoMessage += `📅 <b>تاريخ المناسبة:</b> ${finalDate}\n`;
-            photoMessage += `📍 <b>الموقع والعنوان:</b> ${deliveryAddress || 'غير محدد'}\n`;
-            photoMessage += `----------------------------------------\n`;
-            photoMessage += `📋 <b>العناصر المطلوبة التابعة لقسمك:</b>\n`;
-            photoMessage += photoProductsText;
-
-            if (notes) {
-                photoMessage += `\n📝 <b>تفاصيل إضافية وتخصيص عام:</b>\n${notes}\n`;
+            const photoEmployees = await getTelegramIdsByRole('photo');
+            if (photoEmployees.length > 0) {
+                await sendTelegramNotification(photoEmployees, photoMessage, inlineKeyboardPhoto);
+                console.log(`🚀 تم إرسال إشعار التصوير الموحد للطلب #${orderId}`);
             }
-            photoMessage += `----------------------------------------\n`;
-            photoMessage += `👉 <i>يرجى مراجعة جدول أعمالك ثم الضغط على القرار المناسب:</i>`;
-
-            const inlineKeyboardPhoto = {
-                inline_keyboard: [
-                    [
-                        { text: "✅ الموافقة على إجراءات الطلبية", callback_data: `photo_approve_${orderId}` },
-                        { text: "❌ الاعتذار والرفض", callback_data: `photo_reject_${orderId}` }
-                    ]
-                ]
-            };
-
-            await sendTelegramNotification(ROLES_CHAT_IDS.photo, photoMessage, inlineKeyboardPhoto);
-            console.log(`🚀 تم إرسال إشعار التصوير الموحد للطلب #${orderId}`);
         }
 
         res.json({ success: true, message: 'تم حفظ طلبك بنجاح', orderId });
@@ -728,7 +712,10 @@ ${customDetails || 'لا توجد تفاصيل إضافية'}
 
 📝 <b>ملاحظات إضافية:</b> ${notes || 'لا يوجد'}
         `;
-        await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, customNotification);
+        
+        // إرسال إشعار للسوبر أدمن باستخدام المعرفات من قاعدة البيانات
+        const superAdmins = await getTelegramIdsByRole('admin');
+        await sendTelegramNotification(superAdmins, customNotification);
 
         res.json({ success: true, orderId, message: 'تم استلام طلبك المخصص بنجاح' });
     } catch (err) {
@@ -834,6 +821,9 @@ app.get('/api/check-role', verifyToken, (req, res) => {
     res.json({ role: req.user.role });
 });
 
+// =====================================================
+// 12.5. مسار تحديث قاعدة البيانات (معدل لإضافة TelegramChatId)
+// =====================================================
 app.get('/api/fix-db', async (req, res) => {
     let messages = [];
     try {
@@ -846,10 +836,38 @@ app.get('/api/fix-db', async (req, res) => {
         messages.push('تم إضافة عمود Sizes بنجاح');
     } catch (err) { messages.push('Sizes موجود مسبقاً'); }
 
+    // الكود الجديد لإضافة حقل تليجرام
+    try {
+        await db.execute('ALTER TABLE Users ADD COLUMN TelegramChatId TEXT;');
+        messages.push('تم إضافة عمود TelegramChatId بنجاح');
+    } catch (err) { messages.push('TelegramChatId موجود مسبقاً'); }
+
     res.json({ success: true, message: messages.join(' | ') });
 });
+
 // =====================================================
-// 12.5. إدارة التقييمات للأدمن
+// 12.6. تعيين دور ومُعرف تليجرام لموظف من قبل الإدارة
+// =====================================================
+app.put('/api/admin/users/:id/assign-role', verifyAdmin, async (req, res) => {
+    try {
+        // role يمكن أن يكون: 'admin', 'customer', 'decor', 'photo'
+        const { role, telegramChatId } = req.body; 
+        const userId = req.params.id;
+        
+        // تحديث دور المستخدم وإضافة آيدي تليجرام الخاص به
+        await runAsync(
+            `UPDATE Users SET Role = ?, TelegramChatId = ? WHERE UserID = ?`, 
+            [role, telegramChatId || null, userId]
+        );
+        
+        res.json({ success: true, message: 'تم تعيين الموظف بنجاح!' });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// =====================================================
+// 12.7. إدارة التقييمات للأدمن
 // =====================================================
 app.get('/api/admin/reviews', verifyAdmin, async (req, res) => {
     try {
@@ -1367,7 +1385,9 @@ app.post('/api/telegram-webhook', async (req, res) => {
         } catch (e) { console.error("خطأ أثناء تحديث رسالة الموظف:", e.message); }
 
         // 2. إرسال الإشعار الفوري لك (السوبر أدمن) لتعرف النتيجة
-        await sendTelegramNotification(ROLES_CHAT_IDS.superAdmin, bossNotifyText);
+        // نجلب السوبر أدمن من قاعدة البيانات
+        const superAdmins = await getTelegramIdsByRole('admin');
+        await sendTelegramNotification(superAdmins, bossNotifyText);
 
         // 3. إنهاء حالة التحميل للزر في تطبيق تيليجرام
         try {
