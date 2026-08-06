@@ -996,256 +996,130 @@
                 -webkit-print-color-adjust: exact;
             }
         }
-
         /* ========================================================
    إصلاحات التجاوب مع الهواتف الذكية (Mobile Responsiveness)
+   لصفحة الإدارة (admin.html)
    ======================================================== */
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 10px !important;
-            }
-            .content-header {
-                margin-bottom: 15px;
-            }
-            .content-header h1 {
-                font-size: 1.25rem;
-            }
-            .section-card-v2 {
-                padding: 12px;
-                border-radius: 14px;
-            }
-            .section-header-v2 h2 {
-                font-size: 1rem;
-            }
-            .stats-grid-v2 {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 10px;
-            }
-            .stat-card-v2 {
-                padding: 10px;
-                gap: 10px;
-            }
-            .stat-card-v2 .stat-icon-v2 {
-                width: 36px;
-                height: 36px;
-                font-size: 1rem;
-                border-radius: 10px;
-            }
-            .stat-card-v2 .stat-info-v2 h3 {
-                font-size: 1.05rem;
-            }
-            .stat-card-v2 .stat-info-v2 p {
-                font-size: 0.65rem;
-            }
-            .chart-wrapper {
-                height: 220px;
-            }
-            .chart-wrapper-sm {
-                height: 200px;
-            }
-            .data-table-wrap {
-                margin: 0 -5px;
-            }
-            .data-table {
-                min-width: 480px !important;
-                font-size: 0.75rem;
-            }
-            .data-table th,
-            .data-table td {
-                padding: 6px 4px !important;
-            }
-            .product-img-sm {
-                width: 30px;
-                height: 30px;
-            }
-            .status-badge {
-                padding: 3px 6px;
-                font-size: 0.6rem;
-            }
-            .action-btn {
-                font-size: 0.8rem;
-                padding: 3px 5px;
-            }
-            input[type="text"],
-            select,
-            input[type="date"] {
-                padding: 8px 12px !important;
-                font-size: 0.8rem !important;
-            }
-            .btn-primary,
-            .btn-secondary,
-            .btn-danger {
-                padding: 6px 10px;
-                font-size: 0.75rem;
-            }
-            .modal-container {
-                padding: 15px;
-                width: 94%;
-            }
-            .modal-container h3 {
-                font-size: 1.1rem;
-                margin-bottom: 12px;
-            }
-            #reportTab .hide-on-print {
-                padding: 15px !important;
-                gap: 10px !important;
-            }
-            #reportGrandTotal {
-                font-size: 1.1rem;
-            }
-            .noti-dropdown {
-                position: fixed !important;
-                top: calc(var(--header-height) + 8px) !important;
-                left: 50% !important;
-                right: auto !important;
-                transform: translateX(-50%) !important;
-                width: 92% !important;
-                max-width: 350px !important;
-                max-height: 65vh !important;
-                box-shadow: var(--shadow-xl) !important;
-            }
-        }
+@media (max-width: 768px) {
+    /* 1. هيكل الصفحة والهوامش */
+    .main-content {
+        padding: 10px !important;
+    }
+    .content-header {
+        margin-bottom: 15px;
+    }
+    .content-header h1 {
+        font-size: 1.25rem;
+    }
+    .section-card-v2 {
+        padding: 12px;
+        border-radius: 14px;
+    }
+    .section-header-v2 h2 {
+        font-size: 1rem;
+    }
 
-        @media (max-width: 400px) {
-            .stats-grid-v2 {
-                grid-template-columns: 1fr !important;
-            }
-        }
+    /* 2. لوحة المعلومات (الإحصائيات) */
+    .stats-grid-v2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px;
+    }
+    .stat-card-v2 {
+        padding: 10px;
+        gap: 10px;
+    }
+    .stat-card-v2 .stat-icon-v2 {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+    .stat-card-v2 .stat-info-v2 h3 {
+        font-size: 1.05rem;
+    }
+    .stat-card-v2 .stat-info-v2 p {
+        font-size: 0.65rem;
+    }
+    .chart-wrapper {
+        height: 220px;
+    }
+    .chart-wrapper-sm {
+        height: 200px;
+    }
 
-        /* ============ ستايلات نافذة التعديل (المضافة) ============ */
-        .modal-edit {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 10002;
-        }
-        .modal-edit.active {
-            display: flex;
-        }
-        .modal-edit .modal-content {
-            background: var(--admin-glass-strong);
-            backdrop-filter: blur(22px);
-            padding: 25px 30px;
-            border-radius: 16px;
-            width: 360px;
-            max-width: 94%;
-            box-shadow: var(--shadow-xl);
-            border: 1px solid var(--admin-border-strong);
-        }
-        .modal-edit .modal-content h3 {
-            color: var(--gold);
-            font-family: 'Playfair Display', serif;
-            margin-top: 0;
-            margin-bottom: 18px;
-            font-size: 1.3rem;
-            border-bottom: 1px solid var(--admin-border);
-            padding-bottom: 10px;
-        }
-        .modal-edit .modal-content label {
-            display: block;
-            font-weight: 600;
-            margin-top: 10px;
-            margin-bottom: 4px;
-            font-size: 0.85rem;
-            color: var(--text);
-        }
-        .modal-edit .modal-content .full-width {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 10px;
-            border: 1px solid var(--admin-border);
-            background: var(--admin-glass);
-            color: var(--text);
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: var(--transition);
-            margin: 6px 0 4px;
-        }
-        .modal-edit .modal-content .full-width:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(201, 150, 62, 0.15);
-        }
-        .modal-edit .modal-content .modal-buttons {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            margin-top: 18px;
-            border-top: 1px solid var(--admin-border);
-            padding-top: 16px;
-        }
-        .modal-edit .modal-content .modal-buttons button {
-            flex: 1;
-            padding: 10px 12px;
-            border-radius: 10px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: var(--transition);
-            font-family: inherit;
-        }
-        .modal-edit .modal-content .btn-save {
-            background: #28a745;
-            color: white;
-        }
-        .modal-edit .modal-content .btn-save:hover {
-            background: #1e7e34;
-            transform: translateY(-1px);
-        }
-        .modal-edit .modal-content .btn-cancel {
-            background: #6c757d;
-            color: white;
-        }
-        .modal-edit .modal-content .btn-cancel:hover {
-            background: #5a6268;
-            transform: translateY(-1px);
-        }
+    /* 3. تصغير الجداول وتقليل التمرير */
+    .data-table-wrap {
+        margin: 0 -5px; /* لتوسيع المساحة المتاحة للجدول إلى الحواف */
+    }
+    .data-table {
+        min-width: 480px !important; /* تقليل عرض الجدول بشكل كبير جداً */
+        font-size: 0.75rem; 
+    }
+    .data-table th, .data-table td {
+        padding: 6px 4px !important; /* تقليص الفراغات بين الخلايا */
+    }
+    .product-img-sm {
+        width: 30px;
+        height: 30px;
+    }
+    .status-badge {
+        padding: 3px 6px;
+        font-size: 0.6rem;
+    }
+    .action-btn {
+        font-size: 0.8rem;
+        padding: 3px 5px;
+    }
 
-        .btn-edit-user {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: var(--transition);
-            font-family: inherit;
-        }
-        .btn-edit-user:hover {
-            background: #0069d9;
-            transform: translateY(-1px);
-        }
-        .btn-edit-user i {
-            margin-left: 4px;
-        }
+    /* 4. الحقول، الأزرار وشريط البحث */
+    input[type="text"], select, input[type="date"] {
+        padding: 8px 12px !important;
+        font-size: 0.8rem !important;
+    }
+    .btn-primary, .btn-secondary, .btn-danger {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+    
+    /* 5. النوافذ المنبثقة (Modals) مثل إضافة منتج وتغيير الحالة */
+    .modal-container {
+        padding: 15px;
+        width: 94%;
+    }
+    .modal-container h3 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+    
+   /* 6. التقرير الشهري */
+    #reportTab .hide-on-print {
+        padding: 15px !important;
+        gap: 10px !important;
+    }
+    #reportGrandTotal {
+        font-size: 1.1rem;
+    }
 
-        .admin-tag {
-            display: inline-block;
-            background: var(--gold);
-            color: #000;
-            padding: 3px 12px;
-            border-radius: 14px;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-        .role-tag {
-            display: inline-block;
-            background: rgba(201, 150, 62, 0.12);
-            color: var(--gold-dark);
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
+    /* 7. إصلاح مظهر قائمة الإشعارات في الموبايل */
+    .noti-dropdown {
+        position: fixed !important;
+        top: calc(var(--header-height) + 8px) !important; 
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important; 
+        width: 92% !important; 
+        max-width: 350px !important; 
+        max-height: 65vh !important; 
+        box-shadow: var(--shadow-xl) !important;
+    }
+}
+
+/* لشاشات الهواتف الصغيرة جداً */
+@media (max-width: 400px) {
+    .stats-grid-v2 {
+        grid-template-columns: 1fr !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -1438,7 +1312,7 @@
                             </thead>
                             <tbody id="productsTableBody"><tr><td colspan="8">⏳ جاري التحميل...</td></tr>
                         </table>
-                    </div>
+                    </div> 
                 </div>
             </div>
 
@@ -1468,11 +1342,11 @@
                             </thead>
                             <tbody id="ordersTableBody"><tr><td colspan="10">⏳ جاري التحميل...</td></tr>
                         </table>
-                    </div>
+                    </div> 
                 </div>
             </div>
 
-            <!-- ==================== USERS TAB (باستخدام النافذة المنبثقة) ==================== -->
+            <!-- ==================== USERS TAB (معدل) ==================== -->
             <div id="usersTab" class="tab-content" style="display:none;">
                 <div class="section-card-v2">
                     <div class="section-header-v2">
@@ -1493,7 +1367,7 @@
                             </thead>
                             <tbody id="usersTableBody"><tr><td colspan="5">⏳ جاري التحميل...</td></tr>
                         </table>
-                    </div>
+                    </div> 
                 </div>
             </div>
 
@@ -1511,7 +1385,7 @@
                             </thead>
                             <tbody id="reviewsTableBody"><tr><td colspan="7">⏳ جاري التحميل...</td></tr>
                         </table>
-                    </div>
+                    </div> 
                 </div>
             </div>
 
@@ -1530,7 +1404,7 @@
                             </thead>
                             <tbody id="galleryTableBody"><tr><td colspan="7">⏳ جاري التحميل...</td></tr>
                         </table>
-                    </div>
+                    </div> 
                 </div>
             </div>
 
@@ -1558,15 +1432,14 @@
                                 <label>كلمة المرور الحالية (مطلوبة لتأكيد التعديل)</label>
                                 <input type="password" id="adminCurrentPassword" placeholder="كلمة المرور الحالية">
                             </div>
-                            <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
-                                <button type="button" class="btn-primary" onclick="updateAdminProfile()" style="flex: 1; justify-content: center;">
-                                    <i class="fa-solid fa-save"></i> حفظ التعديلات
-                                </button>
-                                <button type="button" id="profileLogoutBtn" class="btn-danger" style="flex: 1; justify-content: center; background-color: var(--danger); color: white;">
-                                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
-                                </button>
-                            </div>
-                        </form>
+<div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+    <button type="button" class="btn-primary" onclick="updateAdminProfile()" style="flex: 1; justify-content: center;">
+        <i class="fa-solid fa-save"></i> حفظ التعديلات
+    </button>
+    <button type="button" id="profileLogoutBtn" class="btn-danger" style="flex: 1; justify-content: center; background-color: var(--danger); color: white;">
+        <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+    </button>
+</div>                        </form>
                     </div>
 
                     <div class="section-card-v2" id="auditLogSection">
@@ -1632,147 +1505,119 @@
         </main>
     </div>
 
-    <!-- ==================== MODAL: تعديل صلاحيات المستخدم (نافذة منبثقة أنيقة) ==================== -->
-    <div id="editModal" class="modal-edit">
-        <div class="modal-content">
-            <h3><i class="fa-solid fa-user-gear"></i> تعديل صلاحيات المستخدم</h3>
-            <input type="hidden" id="editUserId">
-
-            <label>الدور الوظيفي:</label>
-            <select id="editRole" class="full-width">
-                <option value="customer">عميل عادي</option>
-                <option value="cake">مساعد مدير - قسم الكعكات</option>
-                <option value="sweet">مساعد مدير - قسم الحلويات</option>
-                <option value="decor">مساعد مدير - قسم الديكور</option>
-                <option value="photo">مساعد مدير - قسم التصوير</option>
-                <option value="hall">مساعد مدير - قسم الصالات</option>
-            </select>
-
-            <label>آيدي التليجرام:</label>
-            <input type="text" id="editTelegramId" class="full-width" placeholder="أدخل ID التليجرام (اختياري)">
-
-            <div class="modal-buttons">
-                <button onclick="saveUserChanges()" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
-                <button onclick="closeEditModal()" class="btn-cancel"><i class="fa-solid fa-xmark"></i> إلغاء</button>
+  <div id="productModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 700px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 25px; border-radius: 15px; background: var(--surface); box-shadow: 0 5px 25px rgba(0,0,0,0.2); margin: auto;">
+        <button class="close-modal" id="closeProductModal">&times;</button>
+        <h3 id="productModalTitle" style="margin-bottom: 20px; color: var(--gold); border-bottom: 1px solid var(--admin-border); padding-bottom: 10px;"><i class="fa-solid fa-box-open"></i> إضافة منتج جديد</h3>
+        
+        <form id="productForm" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 16px;">
+            <input type="hidden" id="productId">
+            
+            <div class="form-group">
+                <label>اسم المنتج</label>
+                <input type="text" id="productName" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
             </div>
-        </div>
-    </div>
+            
+            <div class="form-group">
+                <label>الوصف</label>
+                <textarea id="productDesc" rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text); resize: vertical;"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>السعر (دج)</label>
+                <input type="number" id="productPrice" step="0.01" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+            </div>
+            
+            <div class="form-group">
+                <label>الفئة</label>
+                <select id="productCategory" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+                    <option value="cake">كعكات</option>
+                    <option value="sweet">حلويات</option>
+                    <option value="decor">ديكور</option>
+                    <option value="photo">تصوير</option>
+                    <option value="hall">صالات</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>نوع كمية المنتج:</label>
+                <select id="productUnitType" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+                    <option value="none">بدون تحديد</option>
+                    <option value="kg">بالكيلوغرام (كلغ)</option>
+                    <option value="piece">بالوحدة (قطعة / حبة)</option>
+                </select>
+            </div>
+            
+            <div id="hallSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
+                <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-building"></i> إعدادات الصالة (للخرائط)</h4>
+                <div class="form-group"><label>موقع الصالة (العنوان)</label><input type="text" id="hallLocation" placeholder="مثال: الطاهير - جيجل" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"></div>
+                <div class="form-group"><label>إحداثيات الموقع:</label><div style="display:flex;gap:10px;"><input type="text" id="hallLat" placeholder="خط العرض" readonly style="width:50%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"><input type="text" id="hallLng" placeholder="خط الطول" readonly style="width:50%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"></div></div>
+                <div class="form-group"><label>اضغط على الخريطة لتحديد الموقع:</label><div id="adminMap" style="height:280px;width:100%;border-radius:8px;border:1px solid var(--admin-border);margin-top:5px;"></div></div>
+                <div class="form-group"><label><i class="fa-solid fa-users"></i> سعة الصالة (عدد الأشخاص)</label><input type="number" id="hallCapacity" placeholder="مثال: 500" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"></div>
+                <div class="form-group"><label><i class="fa-solid fa-wand-magic-sparkles"></i> التجهيزات (افصل بفاصلة)</label><textarea id="hallFeatures" rows="2" placeholder="إضاءة LED, نظام صوتي, تكييف..." style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border); resize: vertical;"></textarea></div>
+            </div>
 
-    <!-- ==================== باقي النوافذ المنبثقة (منتجات، طلبات، معرض، إلخ) ==================== -->
-    <div id="productModal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 700px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 25px; border-radius: 15px; background: var(--surface); box-shadow: 0 5px 25px rgba(0,0,0,0.2); margin: auto;">
-            <button class="close-modal" id="closeProductModal">&times;</button>
-            <h3 id="productModalTitle" style="margin-bottom: 20px; color: var(--gold); border-bottom: 1px solid var(--admin-border); padding-bottom: 10px;"><i class="fa-solid fa-box-open"></i> إضافة منتج جديد</h3>
-
-            <form id="productForm" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 16px;">
-                <input type="hidden" id="productId">
-
+            <div id="cakeSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
+                <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-cake-candles"></i> تصنيف الكعكة (للفلترة)</h4>
                 <div class="form-group">
-                    <label>اسم المنتج</label>
-                    <input type="text" id="productName" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
-                </div>
-
-                <div class="form-group">
-                    <label>الوصف</label>
-                    <textarea id="productDesc" rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text); resize: vertical;"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>السعر (دج)</label>
-                    <input type="number" id="productPrice" step="0.01" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
-                </div>
-
-                <div class="form-group">
-                    <label>الفئة</label>
-                    <select id="productCategory" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
-                        <option value="cake">كعكات</option>
-                        <option value="sweet">حلويات</option>
-                        <option value="decor">ديكور</option>
-                        <option value="photo">تصوير</option>
-                        <option value="hall">صالات</option>
+                    <label>نوع المناسبة:</label>
+                    <select id="cakeOccasion" style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
+                        <option value="general">عامة (بدون تحديد)</option>
+                        <option value="wedding">زفاف</option>
+                        <option value="engagement">خطوبة</option>
+                        <option value="birthday">عيد ميلاد</option>
+                        <option value="graduation">تخرج</option>
+                        <option value="circumcision">ختان</option>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>نوع كمية المنتج:</label>
-                    <select id="productUnitType" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
-                        <option value="none">بدون تحديد</option>
-                        <option value="kg">بالكيلوغرام (كلغ)</option>
-                        <option value="piece">بالوحدة (قطعة / حبة)</option>
-                    </select>
-                </div>
-
-                <div id="hallSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
-                    <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-building"></i> إعدادات الصالة (للخرائط)</h4>
-                    <div class="form-group"><label>موقع الصالة (العنوان)</label><input type="text" id="hallLocation" placeholder="مثال: الطاهير - جيجل" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"></div>
-                    <div class="form-group"><label>إحداثيات الموقع:</label><div style="display:flex;gap:10px;"><input type="text" id="hallLat" placeholder="خط العرض" readonly style="width:50%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"><input type="text" id="hallLng" placeholder="خط الطول" readonly style="width:50%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"></div></div>
-                    <div class="form-group"><label>اضغط على الخريطة لتحديد الموقع:</label><div id="adminMap" style="height:280px;width:100%;border-radius:8px;border:1px solid var(--admin-border);margin-top:5px;"></div></div>
-                    <div class="form-group"><label><i class="fa-solid fa-users"></i> سعة الصالة (عدد الأشخاص)</label><input type="number" id="hallCapacity" placeholder="مثال: 500" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);"></div>
-                    <div class="form-group"><label><i class="fa-solid fa-wand-magic-sparkles"></i> التجهيزات (افصل بفاصلة)</label><textarea id="hallFeatures" rows="2" placeholder="إضاءة LED, نظام صوتي, تكييف..." style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border); resize: vertical;"></textarea></div>
-                </div>
-
-                <div id="cakeSpecificFields" style="display:none;background:rgba(201,150,62,0.05);padding:15px;border-radius:10px;border:1px dashed var(--gold);margin-bottom:1rem;">
-                    <h4 style="margin-bottom:12px;color:var(--gold);font-size:0.95rem;"><i class="fa-solid fa-cake-candles"></i> تصنيف الكعكة (للفلترة)</h4>
-                    <div class="form-group">
-                        <label>نوع المناسبة:</label>
-                        <select id="cakeOccasion" style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
-                            <option value="general">عامة (بدون تحديد)</option>
-                            <option value="wedding">زفاف</option>
-                            <option value="engagement">خطوبة</option>
-                            <option value="birthday">عيد ميلاد</option>
-                            <option value="graduation">تخرج</option>
-                            <option value="circumcision">ختان</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" style="margin-top: 15px; border-top: 1px dashed var(--gold); padding-top: 15px;">
-                        <label><i class="fa-solid fa-layer-group"></i> أسعار أحجام الكعكة (دج):</label>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
-                            <div style="flex: 1; min-width: 100px;">
-                                <label style="font-size: 0.75rem; color: var(--text-muted);">حجم صغير</label>
-                                <input type="number" id="cakePriceSmall" placeholder="مثال: 2500" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);">
-                            </div>
-                            <div style="flex: 1; min-width: 100px;">
-                                <label style="font-size: 0.75rem; color: var(--text-muted);">حجم متوسط (أساسي)</label>
-                                <input type="number" id="cakePriceMedium" placeholder="مثال: 4000" oninput="document.getElementById('productPrice').value = this.value" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);">
-                            </div>
-                            <div style="flex: 1; min-width: 100px;">
-                                <label style="font-size: 0.75rem; color: var(--text-muted);">حجم كبير</label>
-                                <input type="number" id="cakePriceLarge" placeholder="مثال: 6500" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);">
-                            </div>
+                <div class="form-group" style="margin-top: 15px; border-top: 1px dashed var(--gold); padding-top: 15px;">
+                    <label><i class="fa-solid fa-layer-group"></i> أسعار أحجام الكعكة (دج):</label>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                        <div style="flex: 1; min-width: 100px;">
+                            <label style="font-size: 0.75rem; color: var(--text-muted);">حجم صغير</label>
+                            <input type="number" id="cakePriceSmall" placeholder="مثال: 2500" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);">
                         </div>
-                        <small style="color: var(--text-muted); display: block; margin-top: 5px;">* اترك الحقول فارغة إذا كنت تريد أن يقوم النظام بحسابها تلقائياً كالسابق.</small>
+                        <div style="flex: 1; min-width: 100px;">
+                            <label style="font-size: 0.75rem; color: var(--text-muted);">حجم متوسط (أساسي)</label>
+                            <input type="number" id="cakePriceMedium" placeholder="مثال: 4000" oninput="document.getElementById('productPrice').value = this.value" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);">
+                        </div>
+                        <div style="flex: 1; min-width: 100px;">
+                            <label style="font-size: 0.75rem; color: var(--text-muted);">حجم كبير</label>
+                            <input type="number" id="cakePriceLarge" placeholder="مثال: 6500" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border);">
+                        </div>
                     </div>
+                    <small style="color: var(--text-muted); display: block; margin-top: 5px;">* اترك الحقول فارغة إذا كنت تريد أن يقوم النظام بحسابها تلقائياً كالسابق.</small>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label>صورة أو فيديو المنتج:</label>
-                    <input type="file" id="productFile" accept="image/*,video/*" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
-                    <small style="color: var(--text-muted); display:block; margin-top:4px;">يمكنك رفع صورة أو مقطع فيديو قصير للمنتج.</small>
-                </div>
+            <div class="form-group">
+                <label>صورة أو فيديو المنتج:</label>
+                <input type="file" id="productFile" accept="image/*,video/*" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+                <small style="color: var(--text-muted); display:block; margin-top:4px;">يمكنك رفع صورة أو مقطع فيديو قصير للمنتج.</small>
+            </div>
 
-                <div class="form-group">
-                    <label>حالة المنتج:</label>
-                    <select id="productActive" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
-                        <option value="true">متوفر</option>
-                        <option value="false">غير متوفر مؤقتاً</option>
-                    </select>
-                </div>
+          <div class="form-group">
+    <label>حالة المنتج:</label>
+    <select id="productActive" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--admin-border); background:var(--admin-glass); color:var(--text);">
+        <option value="true">متوفر</option>
+        <option value="false">غير متوفر مؤقتاً</option>
+    </select>
+</div>
 
-                <div class="form-group">
-                    <label><i class="fa-solid fa-cloud-arrow-up"></i> رفع صور وفيديوهات إضافية:</label>
-                    <input type="file" id="productMediaInput" accept="image/*,video/*" multiple style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
-                </div>
-                <div id="dynamicMediaPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
-
-                <div class="modal-buttons" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; border-top: 1px solid var(--admin-border); padding-top: 15px;">
-                    <button type="button" class="btn-secondary" onclick="closeProductModal()">إلغاء</button>
-                    <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ المنتج</button>
-                </div>
-            </form>
-        </div>
+          <div class="form-group">
+                <label><i class="fa-solid fa-cloud-arrow-up"></i> رفع صور وفيديوهات إضافية:</label>
+                <input type="file" id="productMediaInput" accept="image/*,video/*" multiple style="width:100%;padding:0.7rem;border-radius:12px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
+            </div>
+            <div id="dynamicMediaPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
+            
+            <div class="modal-buttons" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; border-top: 1px solid var(--admin-border); padding-top: 15px;">
+                <button type="button" class="btn-secondary" onclick="closeProductModal()">إلغاء</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ المنتج</button>
+            </div>
+        </form>
     </div>
-
+</div>
     <div id="imagePreviewModal" class="image-preview-modal" onclick="window.closeImagePreview()">
         <img id="previewImage" class="preview-img" src="" alt="معاينة">
     </div>
@@ -1807,6 +1652,7 @@
         </div>
     </div>
 
+    <!-- ===== نافذة تعيين الموظف (جديدة) ===== -->
     <div id="assignEmployeeModal" class="modal-overlay">
         <div class="modal-container">
             <button class="close-modal" id="closeAssignModal">&times;</button>
@@ -1814,24 +1660,23 @@
             <form id="assignEmployeeForm">
                 <input type="hidden" id="assignUserId">
                 <div class="form-group">
-                    <div class="form-group">
-                        <label>الدور الوظيفي</label>
-                        <select id="assignRole">
-                            <option value="cake">كعكات</option>
-                            <option value="sweet">حلويات</option>
-                            <option value="decor">ديكور</option>
-                            <option value="photo">تصوير</option>
-                            <option value="hall">صالات</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>معرف التليجرام (Chat ID)</label>
-                        <input type="text" id="assignTelegramId" placeholder="مثال: 123456789">
-                    </div>
-                    <div class="modal-buttons">
-                        <button type="button" class="btn-secondary" id="cancelAssignBtn">إلغاء</button>
-                        <button type="submit" class="btn-primary">تعيين</button>
-                    </div>
+                 <div class="form-group">
+    <label>الدور الوظيفي</label>
+    <select id="assignRole">
+        <option value="cake">كعكات</option>
+        <option value="sweet">حلويات</option>
+        <option value="decor">ديكور</option>
+        <option value="photo">تصوير</option>
+        <option value="hall">صالات</option>
+    </select>
+</div>
+                <div class="form-group">
+                    <label>معرف التليجرام (Chat ID)</label>
+                    <input type="text" id="assignTelegramId" placeholder="مثال: 123456789">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="cancelAssignBtn">إلغاء</button>
+                    <button type="submit" class="btn-primary">تعيين</button>
                 </div>
             </form>
         </div>
@@ -2372,13 +2217,13 @@
             function renderRecentOrders(orders) {
                 const list = document.getElementById('recentOrdersList');
                 if (!list) return;
-                const statusNamesAr = {
-                    'Pending': 'قيد الانتظار',
-                    'Studying': 'قيد التواصل',
+                const statusNamesAr = { 
+                    'Pending': 'قيد الانتظار', 
+                    'Studying': 'قيد التواصل', 
                     'Approved': 'الموافقة والانجاز',
-                    'InProgress': 'تم التجهيز',
-                    'Delivered': 'تم التسليم',
-                    'Cancelled': 'ملغي'
+                    'InProgress': 'تم التجهيز', 
+                    'Delivered': 'تم التسليم', 
+                    'Cancelled': 'ملغي' 
                 };
                 const dotColors = { 'Pending': 'amber', 'Studying': 'amber', 'Approved': 'teal', 'InProgress': 'purple',
                     'Delivered': 'teal', 'Cancelled': 'rose' };
@@ -2524,96 +2369,95 @@
                 document.querySelectorAll('#productsTableBody .delete').forEach(b => b.addEventListener('click', () =>
                     deleteProduct(b.dataset.id, b.dataset.name)));
             }
+           // ====== دالة فتح نموذج المنتج (معدلة ومصححة للكعكة) ======
+function openProductModal(data = {}) {
+    const modal = document.getElementById('productModal');
+    if (!modal) return;
+    document.getElementById('productModalTitle').innerText = data.id ? 'تعديل المنتج' : 'إضافة منتج جديد';
+    document.getElementById('productId').value = data.id || '';
+    document.getElementById('productName').value = data.name || '';
+    document.getElementById('productDesc').value = data.desc || '';
+    let priceVal = data.price || 0;
+    document.getElementById('productPrice').value = (parseFloat(priceVal) > 0) ? priceVal : '';
+    const catValue = data.cat || localStorage.getItem('admin_last_cat') || 'cake';
+    document.getElementById('productCategory').value = catValue;
+    document.getElementById('productUnitType').value = data.unittype || 'none';
+    document.getElementById('productActive').value = (data.active === 'false' || data.active === false) ? 'false' : 'true';
+    
+    const hallFieldsDiv = document.getElementById('hallSpecificFields');
+    const cakeFieldsDiv = document.getElementById('cakeSpecificFields');
+    
+    if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
+    if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
+    
+    // ====== جزء الكعكة المصحح ======
+  if (catValue === 'cake') {
+        const occasionSelect = document.getElementById('cakeOccasion');
+        if (occasionSelect) occasionSelect.value = data.features || 'general';
+        
+        try {
+            let parsedSizes = JSON.parse(data.sizes || '{}');
+            document.getElementById('cakePriceSmall').value = parsedSizes["صغير"] || parsedSizes.small || '';
+            document.getElementById('cakePriceMedium').value = parsedSizes["متوسط"] || parsedSizes.medium || '';
+            document.getElementById('cakePriceLarge').value = parsedSizes["كبير"] || parsedSizes.large || '';
+        } catch(e) {
+            document.getElementById('cakePriceSmall').value = '';
+            document.getElementById('cakePriceMedium').value = data.price || '';
+            document.getElementById('cakePriceLarge').value = '';
+        }
+    }
 
-            function openProductModal(data = {}) {
-                const modal = document.getElementById('productModal');
-                if (!modal) return;
-                document.getElementById('productModalTitle').innerText = data.id ? 'تعديل المنتج' : 'إضافة منتج جديد';
-                document.getElementById('productId').value = data.id || '';
-                document.getElementById('productName').value = data.name || '';
-                document.getElementById('productDesc').value = data.desc || '';
-                let priceVal = data.price || 0;
-                document.getElementById('productPrice').value = (parseFloat(priceVal) > 0) ? priceVal : '';
-                const catValue = data.cat || localStorage.getItem('admin_last_cat') || 'cake';
-                document.getElementById('productCategory').value = catValue;
-                document.getElementById('productUnitType').value = data.unittype || 'none';
-                document.getElementById('productActive').value = (data.active === 'false' || data.active === false) ?
-                    'false' : 'true';
+    document.getElementById('hallLocation').value = data.location || '';
+    document.getElementById('hallCapacity').value = data.capacity || '';
+    document.getElementById('hallLat').value = data.lat || '';
+    document.getElementById('hallLng').value = data.lng || '';
+    document.getElementById('hallFeatures').value = data.features || '';
+    
+    selectedFilesArray = [];
+    let mediaArray = [];
+    try { 
+        if (data.media && data.media !== '[]') mediaArray = JSON.parse(data.media); 
+        else if (data.img && data.img !== 'default.jpg') mediaArray = [data.img]; 
+    } catch (e) { 
+        mediaArray = []; 
+    }
+    
+    if (mediaArray.length > 0) selectedFilesArray = [...mediaArray];
+    
+    // عرض الصورة الحالية
+    const previewContainer = document.getElementById('dynamicMediaPreview');
+    previewContainer.innerHTML = ''; 
+    if (data.img && data.img !== 'default.jpg' && data.img !== '') {
+        const imgSrc = data.img.startsWith('http') ? data.img : `/${data.img}`;
+        previewContainer.innerHTML = `
+            <div style="width: 100%; margin-bottom: 10px; padding: 10px; background: rgba(201,150,62,0.05); border-radius: 8px; border: 1px dashed var(--gold);">
+                <p style="font-size: 12px; color: var(--gold); margin-bottom: 8px; font-weight: bold;">الصورة الحالية للمنتج:</p>
+                <img src="${imgSrc}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold);">
+            </div>
+        `;
+    }
+    renderMediaPreview();
 
-                const hallFieldsDiv = document.getElementById('hallSpecificFields');
-                const cakeFieldsDiv = document.getElementById('cakeSpecificFields');
+    const mediaInput = document.getElementById('productMediaInput');
+    if (mediaInput) mediaInput.value = '';
+    modal.classList.add('active');
+    
+    if (catValue === 'hall') { 
+        setTimeout(() => { 
+            initAdminMap(); 
+            const latVal = parseFloat(data.lat);
+            const lngVal = parseFloat(data.lng); 
+            if (!isNaN(latVal) && !isNaN(lngVal) && latVal !== 0 && lngVal !== 0 && adminMap) { 
+                const newCenter = L.latLng(latVal, lngVal); 
+                if (adminMarker) adminMarker.setLatLng(newCenter); 
+                else adminMarker = L.marker(newCenter).addTo(adminMap);
+                adminMap.setView(newCenter, 15); 
+            } 
+        }, 150); 
+    }
+}
 
-                if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
-                if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
-
-                if (catValue === 'cake') {
-                    const occasionSelect = document.getElementById('cakeOccasion');
-                    if (occasionSelect) occasionSelect.value = data.features || 'general';
-
-                    try {
-                        let parsedSizes = JSON.parse(data.sizes || '{}');
-                        document.getElementById('cakePriceSmall').value = parsedSizes["صغير"] || parsedSizes.small ||
-                            '';
-                        document.getElementById('cakePriceMedium').value = parsedSizes["متوسط"] || parsedSizes.medium ||
-                            '';
-                        document.getElementById('cakePriceLarge').value = parsedSizes["كبير"] || parsedSizes.large ||
-                            '';
-                    } catch (e) {
-                        document.getElementById('cakePriceSmall').value = '';
-                        document.getElementById('cakePriceMedium').value = data.price || '';
-                        document.getElementById('cakePriceLarge').value = '';
-                    }
-                }
-
-                document.getElementById('hallLocation').value = data.location || '';
-                document.getElementById('hallCapacity').value = data.capacity || '';
-                document.getElementById('hallLat').value = data.lat || '';
-                document.getElementById('hallLng').value = data.lng || '';
-                document.getElementById('hallFeatures').value = data.features || '';
-
-                selectedFilesArray = [];
-                let mediaArray = [];
-                try {
-                    if (data.media && data.media !== '[]') mediaArray = JSON.parse(data.media);
-                    else if (data.img && data.img !== 'default.jpg') mediaArray = [data.img];
-                } catch (e) {
-                    mediaArray = [];
-                }
-
-                if (mediaArray.length > 0) selectedFilesArray = [...mediaArray];
-
-                const previewContainer = document.getElementById('dynamicMediaPreview');
-                previewContainer.innerHTML = '';
-                if (data.img && data.img !== 'default.jpg' && data.img !== '') {
-                    const imgSrc = data.img.startsWith('http') ? data.img : `/${data.img}`;
-                    previewContainer.innerHTML = `
-                            <div style="width: 100%; margin-bottom: 10px; padding: 10px; background: rgba(201,150,62,0.05); border-radius: 8px; border: 1px dashed var(--gold);">
-                                <p style="font-size: 12px; color: var(--gold); margin-bottom: 8px; font-weight: bold;">الصورة الحالية للمنتج:</p>
-                                <img src="${imgSrc}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold);">
-                            </div>
-                        `;
-                }
-                renderMediaPreview();
-
-                const mediaInput = document.getElementById('productMediaInput');
-                if (mediaInput) mediaInput.value = '';
-                modal.classList.add('active');
-
-                if (catValue === 'hall') {
-                    setTimeout(() => {
-                        initAdminMap();
-                        const latVal = parseFloat(data.lat);
-                        const lngVal = parseFloat(data.lng);
-                        if (!isNaN(latVal) && !isNaN(lngVal) && latVal !== 0 && lngVal !== 0 && adminMap) {
-                            const newCenter = L.latLng(latVal, lngVal);
-                            if (adminMarker) adminMarker.setLatLng(newCenter);
-                            else adminMarker = L.marker(newCenter).addTo(adminMap);
-                            adminMap.setView(newCenter, 15);
-                        }
-                    }, 150);
-                }
-            }
-
+            // ====== دالة حفظ المنتج (معدلة للكعكة) ======
             async function saveProduct(e) {
                 e.preventDefault();
                 const id = document.getElementById('productId')?.value;
@@ -2630,98 +2474,96 @@
                 fd.append('isActive', document.getElementById('productActive')?.value || 'true');
                 fd.append('unitType', document.getElementById('productUnitType')?.value || 'none');
                 const category = document.getElementById('productCategory')?.value || 'cake';
-
+                
                 if (category === 'hall') {
                     fd.append('location', document.getElementById('hallLocation')?.value || '');
                     fd.append('capacity', document.getElementById('hallCapacity')?.value || '');
                     fd.append('lat', document.getElementById('hallLat')?.value || '');
                     fd.append('lng', document.getElementById('hallLng')?.value || '');
                     fd.append('features', document.getElementById('hallFeatures')?.value || '');
-                } else if (category === 'cake') {
+  } else if (category === 'cake') {
+            fd.append('location', '');
+            fd.append('capacity', '');
+            fd.append('lat', '');
+            fd.append('lng', '');
+            
+            let smallPrice = document.getElementById('cakePriceSmall')?.value || '';
+            let mediumPrice = document.getElementById('cakePriceMedium')?.value || '';
+            let largePrice = document.getElementById('cakePriceLarge')?.value || '';
+            let occasionVal = document.getElementById('cakeOccasion')?.value || 'general';
+            
+            let sizesObj = {};
+            if (smallPrice) sizesObj["صغير"] = smallPrice;
+            if (mediumPrice) sizesObj["متوسط"] = mediumPrice;
+            if (largePrice) sizesObj["كبير"] = largePrice;
+            
+            let sizesData = Object.keys(sizesObj).length > 0 ? JSON.stringify(sizesObj) : '{}';
+            
+            fd.append('sizes', sizesData); 
+            fd.append('features', occasionVal); 
+        } else {
                     fd.append('location', '');
                     fd.append('capacity', '');
                     fd.append('lat', '');
                     fd.append('lng', '');
-
-                    let smallPrice = document.getElementById('cakePriceSmall')?.value || '';
-                    let mediumPrice = document.getElementById('cakePriceMedium')?.value || '';
-                    let largePrice = document.getElementById('cakePriceLarge')?.value || '';
-                    let occasionVal = document.getElementById('cakeOccasion')?.value || 'general';
-
-                    let sizesObj = {};
-                    if (smallPrice) sizesObj["صغير"] = smallPrice;
-                    if (mediumPrice) sizesObj["متوسط"] = mediumPrice;
-                    if (largePrice) sizesObj["كبير"] = largePrice;
-
-                    let sizesData = Object.keys(sizesObj).length > 0 ? JSON.stringify(sizesObj) : '{}';
-
-                    fd.append('sizes', sizesData);
-                    fd.append('features', occasionVal);
-                } else {
-                    fd.append('location', '');
-                    fd.append('capacity', '');
-                    fd.append('lat', '');
-                    fd.append('lng', '');
-                    fd.append('features', '');
+                    fd.append('features', ''); 
                 }
-                const keptMedia = selectedFilesArray.filter(file => typeof file === 'string');
+             const keptMedia = selectedFilesArray.filter(file => typeof file === 'string');
                 const newMediaFiles = selectedFilesArray.filter(file => typeof file !== 'string');
-
+                
                 fd.append('keptMedia', JSON.stringify(keptMedia));
-
+                
                 const mainFileInput = document.getElementById('productFile');
                 if (mainFileInput && mainFileInput.files.length > 0) {
-                    fd.append('media', mainFileInput.files[0]);
+                    fd.append('media', mainFileInput.files[0]); 
                 }
 
                 if (newMediaFiles.length > 0) {
                     newMediaFiles.forEach(file => fd.append('media', file));
                 }
-
+                
                 const url = id ? `${API_BASE}/admin/products/${id}` : `${API_BASE}/admin/products`;
                 const method = id ? 'PUT' : 'POST';
-
+                
                 try {
-                    const res = await fetch(url, {
-                        method,
+                    const res = await fetch(url, { 
+                        method, 
                         headers: { 'Authorization': `Bearer ${token}` },
-                        body: fd
+                        body: fd 
                     });
-
+                    
                     const text = await res.text();
-                    let data;
-
-                    try {
-                        data = JSON.parse(text);
-                    } catch (err) {
-                        alert("❌ السيرفر لا يرد بصيغة JSON:\n" + text.substring(0, 150));
-                        return;
+                    let data; 
+                    
+                    try { 
+                        data = JSON.parse(text); 
+                    } catch (err) { 
+                        alert("❌ السيرفر لا يرد بصيغة JSON:\n" + text.substring(0, 150)); 
+                        return; 
                     }
-
-                    if (data.success) {
+                    
+                    if (data.success) { 
                         alert('✅ ' + data.message);
                         document.getElementById('productModal')?.classList.remove('active');
                         selectedFilesArray = [];
                         document.getElementById('dynamicMediaPreview').innerHTML = '';
                         fetchProducts();
-                        fetchStats();
+                        fetchStats(); 
                     } else {
                         alert('❌ خطأ: ' + (data.error || 'غير معروف'));
                     }
-                } catch (err) {
+                } catch (err) { 
                     console.error(err);
-                    alert("❌ فشل الاتصال بالسيرفر.");
+                    alert("❌ فشل الاتصال بالسيرفر."); 
                 }
-            }
-
+            } // نهاية الدالة
             async function deleteProduct(id, name) {
                 if (!id || id === 'undefined') return alert('خطأ: معرّف المنتج مفقود!');
                 if (!confirm(`هل تريد بالتأكيد حذف المنتج "${name}"؟`)) return;
                 try {
                     const res = await fetch(`${API_BASE}/admin/products/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
                     const text = await res.text();
-                    let data;
-                    try { data = JSON.parse(text); } catch (err) { alert("❌ انهيار في السيرفر:\n" + text
+                    let data; try { data = JSON.parse(text); } catch (err) { alert("❌ انهيار في السيرفر:\n" + text
                             .substring(0, 150)); return; }
                     if (res.ok && data.success) { fetchProducts();
                         fetchStats();
@@ -2761,8 +2603,7 @@
                 } catch (error) {
                     console.error("خطأ في جلب الطلبات:", error);
                     const tbody = document.getElementById('ordersTableBody');
-                    if (tbody) tbody.innerHTML =
-                        `<tr><td colspan="10" style="color:red;">❌ فشل تحميل الطلبات: ${error.message}</td></tr>`;
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="10" style="color:red;">❌ فشل تحميل الطلبات: ${error.message}</td></tr>`;
                 }
             }
 
@@ -2772,97 +2613,93 @@
 
                 let filtered = allOrdersData.filter(o => {
                     if (statusFilter !== 'all' && o.Status !== statusFilter) return false;
-                    if (search && !String(o.OrderId).includes(search) && !(o.CustomerName || '').toLowerCase()
-                        .includes(search) && !(o.CustomerPhone || '').includes(search)) return false;
+                    if (search && !String(o.OrderId).includes(search) && !(o.CustomerName || '').toLowerCase().includes(search) && !(o.CustomerPhone || '').includes(search)) return false;
                     return true;
                 });
 
                 const tbody = document.getElementById('ordersTableBody');
                 if (!tbody) return;
-
-                if (!filtered.length) {
-                    tbody.innerHTML =
-                        '<tr><td colspan="10" style="text-align: center; padding: 20px;">لا توجد طلبات متطابقة</td></tr>';
-                    return;
+                
+                if (!filtered.length) { 
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">لا توجد طلبات متطابقة</td></tr>'; 
+                    return; 
                 }
 
-                const statusNamesAr = {
-                    'Pending': 'قيد الانتظار',
-                    'Studying': 'قيد التواصل',
+                const statusNamesAr = { 
+                    'Pending': 'قيد الانتظار', 
+                    'Studying': 'قيد التواصل', 
                     'Approved': 'الموافقة والانجاز',
-                    'InProgress': 'تم التجهيز',
-                    'Delivered': 'تم التسليم',
-                    'Cancelled': 'ملغي'
+                    'InProgress': 'تم التجهيز', 
+                    'Delivered': 'تم التسليم', 
+                    'Cancelled': 'ملغي' 
                 };
 
                 tbody.innerHTML = filtered.map(o => {
                     let notesText = o.Notes || '';
                     let imageLinkHtml = '';
-                    const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
+const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                     if (imgMatch) {
                         const fileName = imgMatch[1];
                         imageLinkHtml = `
-                            <div style="margin-top: 10px; border-top: 1px dashed rgba(201, 150, 62, 0.3); padding-top: 10px; text-align: right;">
-                                <strong style="color: var(--info); display: block; margin-bottom: 5px;"><i class="fa-solid fa-image"></i> الصورة المرفقة من الزبون:</strong>
-                                <a href="${fileName}" target="_blank" title="اضغط لتكبير الصورة">
-                                    <img src="${fileName}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 2px solid var(--info); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                </a>
-                            </div>`;
+                        <div style="margin-top: 10px; border-top: 1px dashed rgba(201, 150, 62, 0.3); padding-top: 10px; text-align: right;">
+                            <strong style="color: var(--info); display: block; margin-bottom: 5px;"><i class="fa-solid fa-image"></i> الصورة المرفقة من الزبون:</strong>
+                            <a href="${fileName}" target="_blank" title="اضغط لتكبير الصورة">
+                                <img src="${fileName}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 2px solid var(--info); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            </a>
+                        </div>`;
                         notesText = notesText.replace(imgMatch[0], '').trim();
                     }
                     let formattedNotes = notesText.replace(/\n/g, '<br>').replace(/,/g, '، <br>');
 
                     let itemsHtml = '';
                     if (o.items && o.items.length > 0) {
-                        itemsHtml =
-                            `<div style="margin-top: 10px; border-top: 1px dashed rgba(201, 150, 62, 0.3); padding-top: 10px;">
-                                <strong style="color: var(--gold); display: block; margin-bottom: 8px;">المنتجات المطلوبة:</strong>`;
+                        itemsHtml = `<div style="margin-top: 10px; border-top: 1px dashed rgba(201, 150, 62, 0.3); padding-top: 10px;">
+                            <strong style="color: var(--gold); display: block; margin-bottom: 8px;">المنتجات المطلوبة:</strong>`;
 
                         itemsHtml += o.items.map(item => `
-                                <div class="admin-product-item" style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.4); padding: 6px; border-radius: 8px; border: 1px solid rgba(201,150,62,0.2);">
-                                    <img src="${item.ImageUrl || 'https://placehold.co/50x50?text=No+Img'}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border);" alt="${item.Name}">
-                                    <div style="line-height: 1.3; flex: 1;">
-                                        <strong style="color: var(--text); font-size: 0.85rem;">${item.Name}</strong><br>
-                                        <span style="font-size: 0.75rem; color: var(--text-soft);">الكمية: ${item.Quantity} | السعر: ${parseFloat(item.UnitPrice).toLocaleString()} دج</span>
-                                    </div>
+                            <div class="admin-product-item" style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.4); padding: 6px; border-radius: 8px; border: 1px solid rgba(201,150,62,0.2);">
+                                <img src="${item.ImageUrl || 'https://placehold.co/50x50?text=No+Img'}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border);" alt="${item.Name}">
+                                <div style="line-height: 1.3; flex: 1;">
+                                    <strong style="color: var(--text); font-size: 0.85rem;">${item.Name}</strong><br>
+                                    <span style="font-size: 0.75rem; color: var(--text-soft);">الكمية: ${item.Quantity} | السعر: ${parseFloat(item.UnitPrice).toLocaleString()} دج</span>
                                 </div>
-                            `).join('');
+                            </div>
+                        `).join('');
 
                         itemsHtml += `</div>`;
                     } else if (o.OrderItemsList) {
-                        itemsHtml =
-                            `<div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(201, 150, 62, 0.3); color: #5c4030;"><strong style="color: var(--gold);">المنتجات المطلوبة:</strong><br><span style="font-size: 0.8rem; color: var(--text);">${o.OrderItemsList.replace(/ \| /g, '<br>')}</span></div>`;
+                        itemsHtml = `<div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(201, 150, 62, 0.3); color: #5c4030;"><strong style="color: var(--gold);">المنتجات المطلوبة:</strong><br><span style="font-size: 0.8rem; color: var(--text);">${o.OrderItemsList.replace(/ \| /g, '<br>')}</span></div>`;
                     }
 
                     const finalNotesCell = `
-                            <div style="max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; font-size: 0.85rem; line-height: 1.6; text-align: right; padding: 8px; background: rgba(201, 150, 62, 0.06); border-radius: 6px; border: 1px dashed rgba(201, 150, 62, 0.25);">
-                                ${formattedNotes}
-                                ${itemsHtml}
-                            </div>
-                            <div style="margin-top: 5px;">${imageLinkHtml}</div>
-                        `;
+                        <div style="max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; font-size: 0.85rem; line-height: 1.6; text-align: right; padding: 8px; background: rgba(201, 150, 62, 0.06); border-radius: 6px; border: 1px dashed rgba(201, 150, 62, 0.25);">
+                            ${formattedNotes}
+                            ${itemsHtml}
+                        </div>
+                        <div style="margin-top: 5px;">${imageLinkHtml}</div>
+                    `;
 
-                    const deliveryAddressHtml = o.DeliveryAddress ?
-                        `<span style="color: var(--info); font-weight: 500; word-break: break-word;">${o.DeliveryAddress}</span>` :
+                    const deliveryAddressHtml = o.DeliveryAddress ? 
+                        `<span style="color: var(--info); font-weight: 500; word-break: break-word;">${o.DeliveryAddress}</span>` : 
                         '<span style="color: var(--text-muted);">غير محدد</span>';
 
                     return `<tr data-id="${o.OrderId}">
-                            <td><strong>#${o.OrderId}</strong></td>
-                            <td>${o.CustomerName || o.Username || '-'}</td>
-                            <td>${o.CustomerPhone || '-'}</td>
-                            <td>${parseFloat(o.TotalAmount).toLocaleString()} دج</td>
-                            <td>${new Date(o.OrderDate).toLocaleDateString('ar-DZ')}</td>
-                            <td>${o.DeliveryDate ? new Date(o.DeliveryDate).toLocaleDateString('ar-DZ') : '-'}</td>
-                            <td>${deliveryAddressHtml}</td>
-                            <td><span class="status-badge status-${o.Status}">${statusNamesAr[o.Status] || o.Status}</span></td>
-                            <td style="min-width: 250px;">${finalNotesCell}</td>
-                            <td class="action-buttons">
-                                <button class="action-btn edit" onclick="openOrderStatusModal(${o.OrderId}, '${o.Status}')" title="تغيير الحالة"><i class="fa-solid fa-pen"></i></button>
-                                <button class="action-btn delete" onclick="deleteOrderFromServer(${o.OrderId})" title="إخفاء الطلب من الجدول" style="color: #dc3545;">
-                                    <i class="fa-solid fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>`;
+                        <td><strong>#${o.OrderId}</strong></td>
+                        <td>${o.CustomerName || o.Username || '-'}</td>
+                        <td>${o.CustomerPhone || '-'}</td>
+                        <td>${parseFloat(o.TotalAmount).toLocaleString()} دج</td>
+                        <td>${new Date(o.OrderDate).toLocaleDateString('ar-DZ')}</td>
+                        <td>${o.DeliveryDate ? new Date(o.DeliveryDate).toLocaleDateString('ar-DZ') : '-'}</td>
+                        <td>${deliveryAddressHtml}</td>
+                        <td><span class="status-badge status-${o.Status}">${statusNamesAr[o.Status] || o.Status}</span></td>
+                        <td style="min-width: 250px;">${finalNotesCell}</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit" onclick="openOrderStatusModal(${o.OrderId}, '${o.Status}')" title="تغيير الحالة"><i class="fa-solid fa-pen"></i></button>
+                            <button class="action-btn delete" onclick="deleteOrderFromServer(${o.OrderId})" title="إخفاء الطلب من الجدول" style="color: #dc3545;">
+                                <i class="fa-solid fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>`;
                 }).join('');
             }
 
@@ -2878,9 +2715,9 @@
                         method: 'DELETE',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` }
                     });
-
+                    
                     const data = await response.json();
-
+                    
                     if (data.success) {
                         alert('تم إخفاء الطلب من الجدول بنجاح');
                         const row = document.querySelector(`tr[data-id="${orderId}"]`);
@@ -2901,7 +2738,7 @@
                 document.getElementById('orderNewStatus').value = currentStatus;
                 document.getElementById('orderStatusModal').classList.add('active');
             };
-
+            
             async function updateOrderStatus(e) {
                 e.preventDefault();
                 const id = document.getElementById('orderIdInput')?.value;
@@ -2926,8 +2763,7 @@
                     alert('فشل الاتصال بالخادم');
                 }
             }
-
-            // ==================== USERS (باستخدام النافذة المنبثقة) ====================
+            // ============ USERS (معدل) ============
             async function fetchUsers() {
                 try {
                     const res = await fetch(`${API_BASE}/admin/users`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -2937,7 +2773,7 @@
                 } catch (err) { console.error(err); }
             }
 
-            // ====== دالة عرض المستخدمين (مع زر تعديل يفتح النافذة) ======
+            // ====== دالة عرض المستخدمين (المطلوبة) ======
             function renderUsersTable(users) {
                 const tbody = document.getElementById('usersTableBody');
                 if (!tbody) return;
@@ -2947,26 +2783,27 @@
 
                 if (search) {
                     filtered = filtered.filter(u => {
-                        return (u.Username || '').toLowerCase().includes(search) ||
-                            (u.Email || '').toLowerCase().includes(search);
+                        return (u.Username || '').toLowerCase().includes(search) || 
+                               (u.Email || '').toLowerCase().includes(search);
                     });
                 }
 
                 if (!filtered.length) {
-                    tbody.innerHTML =
-                        '<tr><td colspan="5" style="text-align:center;padding:30px;">لا يوجد مستخدمين مسجلين</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;">لا يوجد مستخدمين مسجلين</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = '';
 
                 filtered.forEach(user => {
+                    // التحقق من المدير الأساسي
                     const isMainAdmin = user.IsAdmin === 1 || user.IsAdmin === true;
 
+                    // اسم الدور
                     let roleDisplayName = 'عميل عادي';
                     if (user.Role && user.Role !== 'customer' && user.Role !== null) {
                         const roleNames = {
-                            'cake': 'الكعكات',
+                            'cakes': 'الكعكات',
                             'sweets': 'الحلويات',
                             'decor': 'الديكور',
                             'photo': 'التصوير',
@@ -2976,47 +2813,50 @@
                     }
 
                     const tr = document.createElement('tr');
-
+                    
                     tr.innerHTML = `
-                            <td>${user.Username || '-'}</td>
-                            <td>${user.Email || '-'}</td>
-                            <td><strong>${isMainAdmin ? 'المدير الأساسي' : roleDisplayName}</strong></td>
-                            <td>${user.TelegramChatId || user.TelegramChatID || 'غير متوفر'}</td>
-                            <td>
-                                ${isMainAdmin ? 
-                                    `<span style="color: gray; font-size: 0.85rem;">🔒 صلاحيات مقفلة</span>` 
-                                    : 
-                                    `<button onclick="openEditModal(${user.UserID}, '${user.Role || 'customer'}', '${user.TelegramChatId || user.TelegramChatID || ''}')" class="btn-edit-user">
-                                        <i class="fa-solid fa-pen"></i> تعديل
-                                    </button>`
-                                }
-                            </td>
-                        `;
+                        <td>${user.Username || '-'}</td>
+                        <td>${user.Email || '-'}</td>
+                        <td><strong>${isMainAdmin ? 'المدير الأساسي' : roleDisplayName}</strong></td>
+                        <td>${user.TelegramChatId || user.TelegramChatID || 'غير متوفر'}</td>
+                        <td>
+                            ${isMainAdmin ? 
+                                `<span style="color: gray; font-size: 0.85rem;">🔒 صلاحيات مقفلة (مدير)</span>` 
+                                : 
+                                `<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center;">
+                                    <select id="role-select-${user.UserID}" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--admin-border); background: var(--admin-glass); color: var(--text); font-size: 0.75rem;">
+                                        <option value="customer" ${(!user.Role || user.Role === 'customer') ? 'selected' : ''}>عميل عادي</option>
+                                        <option value="cakes" ${user.Role === 'cakes' ? 'selected' : ''}>مساعد - قسم الكعكات</option>
+                                        <option value="sweets" ${user.Role === 'sweets' ? 'selected' : ''}>مساعد - قسم الحلويات</option>
+                                        <option value="decor" ${user.Role === 'decor' ? 'selected' : ''}>مساعد - قسم الديكور</option>
+                                        <option value="photo" ${user.Role === 'photo' ? 'selected' : ''}>مساعد - قسم التصوير</option>
+                                    </select>
+                                    
+                                    <input type="text" id="tg-input-${user.UserID}" value="${user.TelegramChatId || user.TelegramChatID || ''}" placeholder="آيدي التليجرام" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--admin-border); background: var(--admin-glass); color: var(--text); font-size: 0.75rem; width: 100px;">
+                                    
+                                    <button onclick="updateUserRole(${user.UserID})" class="btn-save" style="padding: 4px 12px; border-radius: 6px; border: none; background: var(--gold); color: #000; font-weight: 600; cursor: pointer; font-size: 0.7rem; transition: var(--transition);">
+                                        <i class="fa-solid fa-save"></i> حفظ
+                                    </button>
+                                </div>`
+                            }
+                        </td>
+                    `;
                     tbody.appendChild(tr);
                 });
             }
 
-            // ====== فتح نافذة التعديل ======
-            window.openEditModal = function(userId, role, telegramId) {
-                document.getElementById('editUserId').value = userId;
-                document.getElementById('editRole').value = role || 'customer';
-                document.getElementById('editTelegramId').value = telegramId || '';
-                document.getElementById('editModal').classList.add('active');
-            };
-
-            // ====== إغلاق نافذة التعديل ======
-            window.closeEditModal = function() {
-                document.getElementById('editModal').classList.remove('active');
-            };
-
-            // ====== حفظ التغييرات من النافذة ======
-            window.saveUserChanges = async function() {
-                const userId = document.getElementById('editUserId').value;
-                const role = document.getElementById('editRole').value;
-                const telegramId = document.getElementById('editTelegramId').value.trim();
-
+            // ====== دالة تحديث دور المستخدم (المطلوبة) ======
+            window.updateUserRole = async function(userId) {
                 if (!userId) {
                     alert('❌ معرف المستخدم غير صالح!');
+                    return;
+                }
+
+                const selectedRole = document.getElementById(`role-select-${userId}`)?.value;
+                const telegramId = document.getElementById(`tg-input-${userId}`)?.value?.trim() || '';
+
+                if (!selectedRole) {
+                    alert('❌ يرجى اختيار دور للمستخدم.');
                     return;
                 }
 
@@ -3024,13 +2864,13 @@
                 let roleType = 'customer';
                 let speciality = null;
 
-                if (role !== 'customer') {
+                if (selectedRole !== 'customer') {
                     roleType = 'assistant';
-                    speciality = role;
+                    speciality = selectedRole;
                 }
 
                 try {
-                    const response = await fetch(`${API_BASE}/admin/users/${userId}/assign-role`, {
+                    const response = await fetch(`/api/admin/users/${userId}/assign-role`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -3047,13 +2887,13 @@
 
                     if (data.success) {
                         alert('✅ تم حفظ البيانات بنجاح!');
-                        closeEditModal();
                         // تحديث الجدول فوراً
                         if (typeof fetchUsers === 'function') {
                             fetchUsers();
                         } else {
+                            // إعادة تحميل البيانات من السيرفر
                             try {
-                                const res = await fetch(`${API_BASE}/admin/users`, {
+                                const res = await fetch('/api/admin/users', {
                                     headers: { 'Authorization': `Bearer ${localStorage.getItem('sweet_event_token') || token}` }
                                 });
                                 const result = await res.json();
@@ -3074,18 +2914,17 @@
                 }
             };
 
-            // ====== دالة تعيين موظف ======
+            // ====== دالة تعيين موظف (احتفظ بها إن وجدت) ======
             async function assignEmployeeRole(userId, selectedRole, telegramId) {
                 try {
-                    const response = await fetch(`${API_BASE}/admin/users/${userId}/assign-role`, {
+                    const response = await fetch(`/api/admin/users/${userId}/assign-role`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('sweet_event_token')}`
                         },
                         body: JSON.stringify({
-                            accountType: 'assistant',
-                            speciality: selectedRole,
+                            role: selectedRole,
                             telegramChatId: telegramId
                         })
                     });
@@ -3115,7 +2954,7 @@
                 } catch (err) { console.error(err); }
             }
 
-            function renderReviewsTable() {
+function renderReviewsTable() {
                 const tbody = document.getElementById('reviewsTableBody');
                 if (!tbody) return;
                 if (!allReviewsData.length) { tbody.innerHTML = '<tr><td colspan="7">لا توجد تقييمات</td></tr>'; return; }
@@ -3133,19 +2972,19 @@
                     let toggleColor = r.IsApproved === 1 ? 'var(--warning)' : 'var(--success)';
 
                     return `<tr>
-                            <td>${r.ReviewId}</td>
-                            <td>${r.Username || r.ReviewerName || 'مجهول'}</td>
-                            <td>${'⭐'.repeat(r.Rating)}</td>
-                            <td style="max-width: 200px; white-space: normal;">${r.Comment}</td>
-                            <td>${new Date(r.CreatedAt).toLocaleDateString('ar')}</td>
-                            <td>${statusBadge}</td>
-                            <td class="action-buttons">
-                                <button class="action-btn toggle-review" style="color: ${toggleColor};" data-id="${r.ReviewId}" data-status="${r.IsApproved}" title="${toggleTitle}">
-                                    <i class="fa-solid ${toggleIcon}"></i>
-                                </button>
-                                <button class="action-btn delete" data-id="${r.ReviewId}" title="حذف نهائي"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>`;
+                        <td>${r.ReviewId}</td>
+                        <td>${r.Username || r.ReviewerName || 'مجهول'}</td>
+                        <td>${'⭐'.repeat(r.Rating)}</td>
+                        <td style="max-width: 200px; white-space: normal;">${r.Comment}</td>
+                        <td>${new Date(r.CreatedAt).toLocaleDateString('ar')}</td>
+                        <td>${statusBadge}</td>
+                        <td class="action-buttons">
+                            <button class="action-btn toggle-review" style="color: ${toggleColor};" data-id="${r.ReviewId}" data-status="${r.IsApproved}" title="${toggleTitle}">
+                                <i class="fa-solid ${toggleIcon}"></i>
+                            </button>
+                            <button class="action-btn delete" data-id="${r.ReviewId}" title="حذف نهائي"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>`;
                 }).join('');
 
                 document.querySelectorAll('#reviewsTableBody .toggle-review').forEach(b => b.addEventListener('click',
@@ -3160,7 +2999,7 @@
                                 body: JSON.stringify({ isApproved: newStatus })
                             });
                             const data = await res.json();
-                            if (data.success) {
+                            if(data.success){
                                 fetchReviews();
                             } else {
                                 alert("خطأ: " + data.error);
@@ -3168,16 +3007,15 @@
                         } catch (err) { alert('خطأ في الاتصال بالخادم'); }
                     }));
 
-                document.querySelectorAll('#reviewsTableBody .delete').forEach(b => b.addEventListener('click',
-                async () => {
+                document.querySelectorAll('#reviewsTableBody .delete').forEach(b => b.addEventListener('click', async () => {
                     if (!confirm('هل أنت متأكد من الحذف النهائي لهذا التقييم؟')) return;
                     try {
-                        const res = await fetch(`${API_BASE}/admin/reviews/${b.dataset.id}`, {
+                        const res = await fetch(`${API_BASE}/admin/reviews/${b.dataset.id}`, { 
                             method: 'DELETE',
-                            headers: { 'Authorization': `Bearer ${token}` }
+                            headers: { 'Authorization': `Bearer ${token}` } 
                         });
                         const data = await res.json();
-                        if (data.success) {
+                        if(data.success){
                             fetchReviews();
                         } else {
                             alert("خطأ: " + data.error);
@@ -3198,24 +3036,22 @@
 
                     badge.style.display = 'block';
                     const reviewsHtml = pendingReviews.map(rev => `
-                            <div class="noti-item" onclick="switchTab('reviews'); this.remove();">
-                                <i class="fa-solid fa-star" style="color:var(--warning);margin-left:8px;"></i>
-                                <span>تقييم ينتظر المراجعة من <strong>${rev.ReviewerName || rev.Username || 'زبون'}</strong></span>
-                                <span style="display:block;font-size:0.7rem;color:#888;margin-top:3px;">${new Date(rev.CreatedAt).toLocaleDateString('ar')}</span>
-                            </div>
-                        `).join('');
+                        <div class="noti-item" onclick="switchTab('reviews'); this.remove();">
+                            <i class="fa-solid fa-star" style="color:var(--warning);margin-left:8px;"></i>
+                            <span>تقييم ينتظر المراجعة من <strong>${rev.ReviewerName || rev.Username || 'زبون'}</strong></span>
+                            <span style="display:block;font-size:0.7rem;color:#888;margin-top:3px;">${new Date(rev.CreatedAt).toLocaleDateString('ar')}</span>
+                        </div>
+                    `).join('');
                     listBody.innerHTML = reviewsHtml;
                     badge.innerText = pendingReviews.length;
                 } else {
                     badge.style.display = 'none';
                     badge.innerText = '0';
                     if (listBody && (!listBody.innerHTML || listBody.innerHTML.includes('لا توجد إشعارات'))) {
-                        listBody.innerHTML =
-                            '<p style="text-align:center;padding:15px;margin:0;color:#888;">لا توجد إشعارات جديدة</p>';
+                        listBody.innerHTML = '<p style="text-align:center;padding:15px;margin:0;color:#888;">لا توجد إشعارات جديدة</p>';
                     }
                 }
             }
-
             // ============ GALLERY ============
             async function fetchGallery() {
                 try {
@@ -3236,14 +3072,14 @@
                 if (!tbody) return;
                 if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7">المعرض فارغ</td></tr>'; return; }
                 tbody.innerHTML = filtered.map(img => `<tr>
-                        <td>${img.GalleryId}</td>
-                        <td><img src="${img.ImageUrl}" class="product-img-sm" data-img-src="${img.ImageUrl}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;"></td>
-                        <td>${img.Title||'-'}</td>
-                        <td>${img.Category||'general'}</td>
-                        <td>${img.DisplayOrder||0}</td>
-                        <td><span class="status-badge ${img.IsActive?'status-Completed':'status-Cancelled'}">${img.IsActive?'نشط':'غير نشط'}</span></td>
-                        <td class="action-buttons"><button class="action-btn delete" data-id="${img.GalleryId}" data-name="${img.Title||'صورة'}"><i class="fa-solid fa-trash"></i></button></td>
-                    </tr>`).join('');
+                    <td>${img.GalleryId}</td>
+                    <td><img src="${img.ImageUrl}" class="product-img-sm" data-img-src="${img.ImageUrl}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;"></td>
+                    <td>${img.Title||'-'}</td>
+                    <td>${img.Category||'general'}</td>
+                    <td>${img.DisplayOrder||0}</td>
+                    <td><span class="status-badge ${img.IsActive?'status-Completed':'status-Cancelled'}">${img.IsActive?'نشط':'غير نشط'}</span></td>
+                    <td class="action-buttons"><button class="action-btn delete" data-id="${img.GalleryId}" data-name="${img.Title||'صورة'}"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`).join('');
                 document.querySelectorAll('#galleryTableBody .product-img-sm').forEach(img => { img.addEventListener(
                     'click', (e) => { e.stopPropagation();
                         openImagePreview(img.getAttribute('data-img-src')); }); });
@@ -3279,39 +3115,39 @@
                         const card = document.createElement('div');
                         card.className = 'admin-gallery-card';
                         card.style = `
-                                position: relative;
-                                border: 1px solid var(--admin-border);
-                                border-radius: 8px;
-                                overflow: hidden;
-                                background: var(--admin-card);
-                                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-                            `;
+                            position: relative;
+                            border: 1px solid var(--admin-border);
+                            border-radius: 8px;
+                            overflow: hidden;
+                            background: var(--admin-card);
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                        `;
 
                         card.innerHTML = `
-                                <img src="${img.ImageUrl}" style="width: 100%; height: 90px; object-fit: cover; display: block;" onerror="this.src='https://placehold.co/120x90?text=Error'">
-                                <div style="padding: 4px; font-size: 10px; text-align: center; background: rgba(0,0,0,0.03); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    ${img.Category || 'عام'}
-                                </div>
-                                <button onclick="deleteGalleryImage(${img.GalleryId})" style="
-                                    position: absolute;
-                                    top: 5px;
-                                    left: 5px;
-                                    background: #e74c3c;
-                                    color: white;
-                                    border: none;
-                                    border-radius: 50%;
-                                    width: 24px;
-                                    height: 24px;
-                                    cursor: pointer;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    font-size: 12px;
-                                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                " title="حذف الصورة">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            `;
+                            <img src="${img.ImageUrl}" style="width: 100%; height: 90px; object-fit: cover; display: block;" onerror="this.src='https://placehold.co/120x90?text=Error'">
+                            <div style="padding: 4px; font-size: 10px; text-align: center; background: rgba(0,0,0,0.03); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${img.Category || 'عام'}
+                            </div>
+                            <button onclick="deleteGalleryImage(${img.GalleryId})" style="
+                                position: absolute;
+                                top: 5px;
+                                left: 5px;
+                                background: #e74c3c;
+                                color: white;
+                                border: none;
+                                border-radius: 50%;
+                                width: 24px;
+                                height: 24px;
+                                cursor: pointer;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 12px;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                            " title="حذف الصورة">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        `;
                         grid.appendChild(card);
                     });
 
@@ -3326,7 +3162,7 @@
                 if (!confirm('هل أنت متأكد من رغبتك في حذف هذه الصورة نهائياً؟')) return;
 
                 try {
-                    const res = await fetch(`${API_BASE}/gallery/${id}`, {
+                    const res = await fetch(`/api/gallery/${id}`, {
                         method: 'DELETE',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
@@ -3482,117 +3318,111 @@
 
             document.getElementById('galleryForm')?.addEventListener('submit', saveGalleryImage);
 
-            // ============ TAB SWITCHING ============
-            function switchTab(tabId) {
-                const titleMap = {
-                    'dashboard': '📊 لوحة المعلومات',
-                    'products': '📦 إدارة المنتجات',
-                    'orders': '🚚 إدارة الطلبات',
-                    'users': '👥 المستخدمون والزبائن',
-                    'reviews': '⭐ التقييمات',
-                    'gallery': '🖼️ معرض الأعمال',
-                    'settings': '⚙️ الإعدادات والصلاحيات',
-                    'report': '📄 التقرير الشهري'
-                };
+          // ============ TAB SWITCHING ============
+function switchTab(tabId) {
+    const titleMap = { 
+        'dashboard': '📊 لوحة المعلومات', 
+        'products': '📦 إدارة المنتجات', 
+        'orders': '🚚 إدارة الطلبات', 
+        'users': '👥 المستخدمون والزبائن', 
+        'reviews': '⭐ التقييمات', 
+        'gallery': '🖼️ معرض الأعمال', 
+        'settings': '⚙️ الإعدادات والصلاحيات', 
+        'report': '📄 التقرير الشهري'
+    };
+    
+    const pageTitle = document.getElementById('pageTitle');
+    if (pageTitle && titleMap[tabId]) {
+        pageTitle.innerText = titleMap[tabId];
+    }
 
-                const pageTitle = document.getElementById('pageTitle');
-                if (pageTitle && titleMap[tabId]) {
-                    pageTitle.innerText = titleMap[tabId];
-                }
+    document.querySelectorAll('.nav-item').forEach(item => {
+        if (item.getAttribute('data-tab') === tabId) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
 
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    if (item.getAttribute('data-tab') === tabId) {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                });
+    const allTabs = ['dashboard', 'products', 'orders', 'users', 'reviews', 'gallery', 'settings', 'report'];
+    allTabs.forEach(id => {
+        const element = document.getElementById(id) || document.getElementById(`${id}Tab`);
+        if (element) {
+            element.style.display = 'none';
+        }
+    });
+    
+    const targetContent = document.getElementById(tabId) || document.getElementById(`${tabId}Tab`);
+    if (targetContent) {
+        targetContent.style.display = 'block';
+    }
+    
+    localStorage.setItem('admin_active_tab', tabId);
 
-                const allTabs = ['dashboard', 'products', 'orders', 'users', 'reviews', 'gallery', 'settings',
-                    'report'
-                ];
-                allTabs.forEach(id => {
-                    const element = document.getElementById(id) || document.getElementById(`${id}Tab`);
-                    if (element) {
-                        element.style.display = 'none';
-                    }
-                });
+    if (tabId === 'report') {
+        const startDateInput = document.getElementById('reportStartDate');
+        if (startDateInput && !startDateInput.value) {
+            startDateInput.value = "2000-01-01";
+        }
+    }
+}
+          // ==================== REPORTS ====================
+async function fetchMonthlyReport() {
+    try {
+        const currentToken = localStorage.getItem('sweet_event_token') || token;
+        const startDateInput = document.getElementById('reportStartDate');
+        const endDateInput = document.getElementById('reportEndDate');
+        
+        let startVal = startDateInput ? startDateInput.value : '';
+        let endVal = endDateInput ? endDateInput.value : '';
 
-                const targetContent = document.getElementById(tabId) || document.getElementById(`${tabId}Tab`);
-                if (targetContent) {
-                    targetContent.style.display = 'block';
-                }
+        if (!startVal) {
+            startVal = "2000-01-01";
+            if (startDateInput) startDateInput.value = "2000-01-01";
+        }
 
-                localStorage.setItem('admin_active_tab', tabId);
+        const res = await fetch(`${API_BASE}/admin/report?startDate=${startVal}&endDate=${endVal}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` }
+        });
 
-                if (tabId === 'report') {
-                    const startDateInput = document.getElementById('reportStartDate');
-                    if (startDateInput && !startDateInput.value) {
-                        startDateInput.value = "2000-01-01";
-                    }
-                }
+        const result = await res.json();
+        const tbody = document.getElementById('reportTableBody');
+        const grandTotalEl = document.getElementById('reportGrandTotal');
+
+        if (!res.ok) {
+            throw new Error(result.error || `HTTP error! status: ${res.status}`);
+        }
+
+        if (result.success) {
+            if (!result.data || result.data.length === 0) {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">لا توجد مبيعات في هذه الفترة.</td></tr>`;
+                if (grandTotalEl) grandTotalEl.textContent = '0.00 دج';
+                return;
             }
 
-            // ==================== REPORTS ====================
-            async function fetchMonthlyReport() {
-                try {
-                    const currentToken = localStorage.getItem('sweet_event_token') || token;
-                    const startDateInput = document.getElementById('reportStartDate');
-                    const endDateInput = document.getElementById('reportEndDate');
-
-                    let startVal = startDateInput ? startDateInput.value : '';
-                    let endVal = endDateInput ? endDateInput.value : '';
-
-                    if (!startVal) {
-                        startVal = "2000-01-01";
-                        if (startDateInput) startDateInput.value = "2000-01-01";
-                    }
-
-                    const res = await fetch(
-                        `${API_BASE}/admin/report?startDate=${startVal}&endDate=${endVal}`, {
-                            method: 'GET',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` }
-                        });
-
-                    const result = await res.json();
-                    const tbody = document.getElementById('reportTableBody');
-                    const grandTotalEl = document.getElementById('reportGrandTotal');
-
-                    if (!res.ok) {
-                        throw new Error(result.error || `HTTP error! status: ${res.status}`);
-                    }
-
-                    if (result.success) {
-                        if (!result.data || result.data.length === 0) {
-                            if (tbody) tbody.innerHTML =
-                                `<tr><td colspan="3" style="text-align:center;">لا توجد مبيعات في هذه الفترة.</td></tr>`;
-                            if (grandTotalEl) grandTotalEl.textContent = '0.00 دج';
-                            return;
-                        }
-
-                        if (tbody) {
-                            tbody.innerHTML = result.data.map(item => `
-                                    <tr>
-                                        <td>${item.ProductId || '#'}</td>
-                                        <td>${item.Name || item.ProductName || 'منتج غير معروف'}</td>
-                                        <td>${item.TotalQuantity || item.QuantitySold || 0}</td>
-                                        <td>${parseFloat(item.TotalRevenue).toFixed(2)} دج</td>
-                                    </tr>
-                                `).join('');
-                        }
-
-                        if (grandTotalEl) {
-                            grandTotalEl.textContent = `${parseFloat(result.grandTotal).toFixed(2)} دج`;
-                        }
-                    } else {
-                        alert('خطأ أثناء جلب التقرير: ' + result.error);
-                    }
-                } catch (error) {
-                    console.error("Report Fetch Error:", error);
-                    alert('خطأ: ' + error.message);
-                }
+            if (tbody) {
+                tbody.innerHTML = result.data.map(item => `
+                    <tr>
+                        <td>${item.ProductId || '#'}</td>
+                        <td>${item.Name || item.ProductName || 'منتج غير معروف'}</td>
+                        <td>${item.TotalQuantity || item.QuantitySold || 0}</td>
+                        <td>${parseFloat(item.TotalRevenue).toFixed(2)} دج</td>
+                    </tr>
+                `).join('');
             }
 
+            if (grandTotalEl) {
+                grandTotalEl.textContent = `${parseFloat(result.grandTotal).toFixed(2)} دج`;
+            }
+        } else {
+            alert('خطأ أثناء جلب التقرير: ' + result.error);
+        }
+    } catch (error) {
+        console.error("Report Fetch Error:", error);
+        alert('خطأ: ' + error.message);
+    }
+}
             // ============ الإعدادات ============
             function loadAdminProfileData() {
                 if (currentUser) {
@@ -3609,8 +3439,7 @@
                 const newPassword = document.getElementById('adminNewPassword').value;
                 const currentPassword = document.getElementById('adminCurrentPassword').value;
 
-                if (newPassword && !currentPassword) return alert(
-                    "يجب إدخال كلمة المرور الحالية لحفظ التعديلات!");
+                if (newPassword && !currentPassword) return alert("يجب إدخال كلمة المرور الحالية لحفظ التعديلات!");
 
                 const avatarInput = document.getElementById('adminAvatarUpload');
                 if (avatarInput.files.length > 0) {
@@ -3649,49 +3478,47 @@
                 } catch (e) { alert("حدث خطأ في الاتصال"); }
             }
 
-            async function fetchActivityLogs() {
-                if (typeof currentUser !== 'undefined' && currentUser && currentUser.Role === 'moderator') return;
+        async function fetchActivityLogs() {
+    if (typeof currentUser !== 'undefined' && currentUser && currentUser.Role === 'moderator') return;
 
-                try {
-                    const currentToken = localStorage.getItem('sweet_event_token') || token;
-                    const res = await fetch(`${API_BASE}/admin/logs`, {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` }
-                    });
+    try {
+        const currentToken = localStorage.getItem('sweet_event_token') || token;
+        const res = await fetch(`${API_BASE}/admin/logs`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` }
+        });
 
-                    const data = await res.json();
-                    const list = document.getElementById('activityLogsList');
+        const data = await res.json();
+        const list = document.getElementById('activityLogsList');
 
-                    if (data.success) {
-                        if (data.logs.length === 0) {
-                            list.innerHTML = '<li style="text-align:center;padding:20px;">لا توجد نشاطات مسجلة بعد.</li>';
-                            return;
-                        }
-
-                        list.innerHTML = data.logs.map(log => `
-                                <li>
-                                    <div style="flex:1;">
-                                        <strong>${log.AdminName}</strong> <span style="font-size:0.8rem; color:var(--gold);">${log.ActionType}</span><br>
-                                        <span style="font-size:0.85rem; color:var(--text-soft);">${log.Details}</span>
-                                    </div>
-                                    <span style="font-size:0.75rem; color:var(--text-muted);">${new Date(log.CreatedAt).toLocaleString('ar')}</span>
-                                </li>
-                            `).join('');
-                    } else {
-                        console.error("فشل في جلب النشاطات:", data.error);
-                    }
-                } catch (e) {
-                    console.error("Error fetching logs", e);
-                    const list = document.getElementById('activityLogsList');
-                    if (list) {
-                        list.innerHTML =
-                            '<li style="text-align:center;padding:20px;color:var(--danger);">حدث خطأ أثناء تحميل السجلات. يرجى التحقق من الاتصال.</li>';
-                    }
-                }
+        if (data.success) {
+            if (data.logs.length === 0) {
+                list.innerHTML = '<li style="text-align:center;padding:20px;">لا توجد نشاطات مسجلة بعد.</li>';
+                return;
             }
+            
+            list.innerHTML = data.logs.map(log => `
+                <li>
+                    <div style="flex:1;">
+                        <strong>${log.AdminName}</strong> <span style="font-size:0.8rem; color:var(--gold);">${log.ActionType}</span><br>
+                        <span style="font-size:0.85rem; color:var(--text-soft);">${log.Details}</span>
+                    </div>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">${new Date(log.CreatedAt).toLocaleString('ar')}</span>
+                </li>
+            `).join('');
+        } else {
+            console.error("فشل في جلب النشاطات:", data.error);
+        }
+    } catch (e) { 
+        console.error("Error fetching logs", e); 
+        const list = document.getElementById('activityLogsList');
+        if (list) {
+            list.innerHTML = '<li style="text-align:center;padding:20px;color:var(--danger);">حدث خطأ أثناء تحميل السجلات. يرجى التحقق من الاتصال.</li>';
+        }
+    }
+}
 
-            window.fetchActivityLogs = fetchActivityLogs;
-
+window.fetchActivityLogs = fetchActivityLogs;
             // ============ UTILITIES ============
             function initAdminMap() {
                 const mapContainer = document.getElementById('adminMap');
@@ -3797,8 +3624,7 @@
                 document.getElementById('refreshUsersBtn')?.addEventListener('click', fetchUsers);
                 document.getElementById('refreshReviewsBtn')?.addEventListener('click', fetchReviews);
                 document.querySelectorAll(
-                        '.close-modal, #cancelProductBtn, #cancelOrderStatusBtn, #cancelUserRoleBtn, #cancelGalleryBtn'
-                        )
+                        '.close-modal, #cancelProductBtn, #cancelOrderStatusBtn, #cancelUserRoleBtn, #cancelGalleryBtn')
                     .forEach(btn => {
                         btn.addEventListener('click', () => {
                             document.getElementById('productModal')?.classList.remove('active');
@@ -3812,9 +3638,9 @@
                     window.location.href = '/';
                 });
                 document.getElementById('profileLogoutBtn')?.addEventListener('click', () => {
-                    localStorage.removeItem('sweet_event_token');
-                    window.location.href = '/';
-                });
+    localStorage.removeItem('sweet_event_token');
+    window.location.href = '/';
+});
                 document.querySelectorAll('.stat-card-v2[data-click]').forEach(card => {
                     card.addEventListener('click', function() {
                         const target = this.getAttribute('data-click');
@@ -3825,14 +3651,15 @@
                 });
                 document.getElementById('productSearch')?.addEventListener('input', renderProductsTable);
                 document.getElementById('productCategoryFilter')?.addEventListener('change', renderProductsTable);
-                document.getElementById('productCategory')?.addEventListener('change', function() {
-                    const hallFields = document.getElementById('hallSpecificFields');
-                    const cakeFields = document.getElementById('cakeSpecificFields');
-                    if (hallFields) hallFields.style.display = this.value === 'hall' ? 'block' : 'none';
-                    if (cakeFields) cakeFields.style.display = this.value === 'cake' ? 'block' : 'none';
-                    if (this.value === 'hall') setTimeout(initAdminMap, 200);
-                    localStorage.setItem('admin_last_cat', this.value);
-                });
+              // ابحث عن هذا السطر وحدثه ليظهر ويخفي الحقول تلقائياً
+document.getElementById('productCategory')?.addEventListener('change', function() {
+    const hallFields = document.getElementById('hallSpecificFields');
+    const cakeFields = document.getElementById('cakeSpecificFields');
+    if (hallFields) hallFields.style.display = this.value === 'hall' ? 'block' : 'none';
+    if (cakeFields) cakeFields.style.display = this.value === 'cake' ? 'block' : 'none';
+    if (this.value === 'hall') setTimeout(initAdminMap, 200);
+    localStorage.setItem('admin_last_cat', this.value);
+});
                 document.getElementById('orderSearch')?.addEventListener('input', renderOrdersTable);
                 document.getElementById('orderStatusFilter')?.addEventListener('change', renderOrdersTable);
                 document.getElementById('userSearch')?.addEventListener('input', function() {
@@ -3864,6 +3691,7 @@
 
                 document.getElementById('generateReportBtn')?.addEventListener('click', fetchMonthlyReport);
 
+                // ===== ربط نموذج تعيين الموظف =====
                 document.getElementById('assignEmployeeForm')?.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const userId = document.getElementById('assignUserId').value;
@@ -3888,18 +3716,6 @@
                 document.getElementById('assignEmployeeModal')?.addEventListener('click', function(e) {
                     if (e.target === this) this.classList.remove('active');
                 });
-
-                // إغلاق نافذة التعديل عند النقر خارجها
-                document.getElementById('editModal')?.addEventListener('click', function(e) {
-                    if (e.target === this) closeEditModal();
-                });
-
-                // إغلاق نافذة التعديل بالضغط على Escape
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') {
-                        closeEditModal();
-                    }
-                });
             }
 
             setTimeout(() => {
@@ -3922,7 +3738,7 @@
                 syncTheme();
                 const savedTab = localStorage.getItem('admin_active_tab') || 'dashboard';
                 switchTab(savedTab);
-
+                
                 await fetchStats();
                 fetchProducts();
                 fetchOrders();
@@ -3931,17 +3747,16 @@
                 fetchGallery();
                 loadAdminProfileData();
                 fetchActivityLogs();
-
-                setInterval(() => {
-                    fetchStats();
-                    fetchOrders();
-                }, 60000);
-            })();
+                
+setInterval(() => {
+    fetchStats();
+    fetchOrders();
+}, 60000);            })();
 
             window.printReport = function() {
                 const startDate = document.getElementById('reportStartDate').value;
                 const endDate = document.getElementById('reportEndDate').value;
-                const dateTextElement = document.getElementById('printDateRange');
+                const dateTextElement = document.getElementById('printDateRange'); 
 
                 if (startDate && endDate) {
                     dateTextElement.innerText = `من تاريخ: ${startDate} | إلى تاريخ: ${endDate}`;
