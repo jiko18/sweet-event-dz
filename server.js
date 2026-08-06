@@ -563,11 +563,13 @@ ${superAdminProductsText}
 💰 <b>إجمالي المبلغ الكلي:</b> ${totalAmount} دج
         `;
 
-        // نجلب حسابات السوبر أدمن من قاعدة البيانات (يمكن إضافة معرفات إضافية يدوياً كضمان)
-        const superAdmins = await getTelegramIdsByRole('admin');
-        // إذا أردت إضافة الآيدي الخاص بك يدوياً كضمان: superAdmins.push("6283553550");
-        await sendTelegramNotification(superAdmins, superAdminMessage);
+      // نجلب حسابات السوبر أدمن من قاعدة البيانات
+const superAdmins = await getTelegramIdsByRole('admin');
 
+// إضافة الآيدي الخاص بك يدوياً كضمان (قم بتغيير الرقم إلى الآيدي الفعلي الخاص بك)
+superAdmins.push("6283553550"); 
+
+await sendTelegramNotification(superAdmins, superAdminMessage);
         // 2️⃣ إرسال رسالة مسؤول الديكور (بشكل هيكلي موحد وبدون أسعار)
         if (hasDecor) {
             let decorMessage = `🔔 <b>إشعار قسم الديكور والتنظيم</b> 🔔\n`;
