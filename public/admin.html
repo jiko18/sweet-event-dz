@@ -1346,20 +1346,26 @@
                 </div>
             </div>
 
-            <!-- ==================== USERS TAB ==================== -->
+            <!-- ==================== USERS TAB (معدل) ==================== -->
             <div id="usersTab" class="tab-content" style="display:none;">
                 <div class="section-card-v2">
                     <div class="section-header-v2">
                         <h2><i class="fa-solid fa-users"></i> إدارة المستخدمين والزبائن</h2>
                         <button class="btn-secondary" id="refreshUsersBtn"><i class="fa-solid fa-rotate"></i> تحديث</button>
                     </div>
-                    <input type="text" id="userSearch" placeholder="🔍 بحث بالاسم أو البريد الإلكتروني أو الهاتف..." style="width:100%;margin-bottom:1rem;padding:0.6rem 1rem;border-radius:25px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
+                    <input type="text" id="userSearch" placeholder="🔍 بحث بالاسم أو البريد الإلكتروني..." style="width:100%;margin-bottom:1rem;padding:0.6rem 1rem;border-radius:25px;border:1px solid var(--admin-border);background:var(--admin-glass);color:var(--text);">
                     <div class="data-table-wrap">
                         <table class="data-table" id="usersTable">
                             <thead>
-                                <tr><th>ID</th><th>الاسم</th><th>البريد</th><th>الهاتف</th><th>الولاية</th><th>الدور</th><th>تاريخ التسجيل</th><th>الإجراءات</th></tr>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>البريد</th>
+                                    <th>الدور</th>
+                                    <th>آيدي التليجرام</th>
+                                    <th>الإجراءات</th>
+                                </tr>
                             </thead>
-                            <tbody id="usersTableBody"><tr><td colspan="8">⏳ جاري التحميل...</td></tr>
+                            <tbody id="usersTableBody"><tr><td colspan="5">⏳ جاري التحميل...</td></tr>
                         </table>
                     </div> 
                 </div>
@@ -1907,7 +1913,6 @@
                 const ctx = canvas.getContext('2d');
                 if (!ctx) return;
 
-                // التسميات الجديدة
                 const statusNamesAr = {
                     'Pending': 'قيد الانتظار',
                     'Studying': 'قيد التواصل',
@@ -2212,7 +2217,6 @@
             function renderRecentOrders(orders) {
                 const list = document.getElementById('recentOrdersList');
                 if (!list) return;
-                // التسميات الجديدة
                 const statusNamesAr = { 
                     'Pending': 'قيد الانتظار', 
                     'Studying': 'قيد التواصل', 
@@ -2386,13 +2390,12 @@ function openProductModal(data = {}) {
     if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
     if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
     
-    // ====== جزء الكعكة المصحح (تم حذف الكود المكرر تحته) ======
+    // ====== جزء الكعكة المصحح ======
   if (catValue === 'cake') {
         const occasionSelect = document.getElementById('cakeOccasion');
         if (occasionSelect) occasionSelect.value = data.features || 'general';
         
         try {
-            // قراءة الأحجام من العمود الجديد مباشرة
             let parsedSizes = JSON.parse(data.sizes || '{}');
             document.getElementById('cakePriceSmall').value = parsedSizes["صغير"] || parsedSizes.small || '';
             document.getElementById('cakePriceMedium').value = parsedSizes["متوسط"] || parsedSizes.medium || '';
@@ -2403,7 +2406,6 @@ function openProductModal(data = {}) {
             document.getElementById('cakePriceLarge').value = '';
         }
     }
-    // ==============================================
 
     document.getElementById('hallLocation').value = data.location || '';
     document.getElementById('hallCapacity').value = data.capacity || '';
@@ -2422,11 +2424,10 @@ function openProductModal(data = {}) {
     
     if (mediaArray.length > 0) selectedFilesArray = [...mediaArray];
     
-    // --- الكود الجديد لعرض الصورة الحالية بوضوح ---
+    // عرض الصورة الحالية
     const previewContainer = document.getElementById('dynamicMediaPreview');
     previewContainer.innerHTML = ''; 
     if (data.img && data.img !== 'default.jpg' && data.img !== '') {
-        // فحص ما إذا كان الرابط سحابي (http) أم محلي
         const imgSrc = data.img.startsWith('http') ? data.img : `/${data.img}`;
         previewContainer.innerHTML = `
             <div style="width: 100%; margin-bottom: 10px; padding: 10px; background: rgba(201,150,62,0.05); border-radius: 8px; border: 1px dashed var(--gold);">
@@ -2436,7 +2437,6 @@ function openProductModal(data = {}) {
         `;
     }
     renderMediaPreview();
-    // ----------------------------------------------
 
     const mediaInput = document.getElementById('productMediaInput');
     if (mediaInput) mediaInput.value = '';
@@ -2492,7 +2492,6 @@ function openProductModal(data = {}) {
             let largePrice = document.getElementById('cakePriceLarge')?.value || '';
             let occasionVal = document.getElementById('cakeOccasion')?.value || 'general';
             
-            // بناء كائن الأحجام بشكل نظيف (تجاهل الأحجام الفارغة)
             let sizesObj = {};
             if (smallPrice) sizesObj["صغير"] = smallPrice;
             if (mediumPrice) sizesObj["متوسط"] = mediumPrice;
@@ -2514,12 +2513,10 @@ function openProductModal(data = {}) {
                 
                 fd.append('keptMedia', JSON.stringify(keptMedia));
                 
-                // --- الكود الجديد المضاف لرفع الصورة الأساسية ---
                 const mainFileInput = document.getElementById('productFile');
                 if (mainFileInput && mainFileInput.files.length > 0) {
                     fd.append('media', mainFileInput.files[0]); 
                 }
-                // ------------------------------------------------
 
                 if (newMediaFiles.length > 0) {
                     newMediaFiles.forEach(file => fd.append('media', file));
@@ -2550,7 +2547,6 @@ function openProductModal(data = {}) {
                         document.getElementById('productModal')?.classList.remove('active');
                         selectedFilesArray = [];
                         document.getElementById('dynamicMediaPreview').innerHTML = '';
-                        // تحديث الجداول والإحصائيات بعد الحفظ
                         fetchProducts();
                         fetchStats(); 
                     } else {
@@ -2629,7 +2625,6 @@ function openProductModal(data = {}) {
                     return; 
                 }
 
-                // التسميات الجديدة
                 const statusNamesAr = { 
                     'Pending': 'قيد الانتظار', 
                     'Studying': 'قيد التواصل', 
@@ -2684,7 +2679,6 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                         <div style="margin-top: 5px;">${imageLinkHtml}</div>
                     `;
 
-                    // عرض عنوان التسليم بشكل مميز
                     const deliveryAddressHtml = o.DeliveryAddress ? 
                         `<span style="color: var(--info); font-weight: 500; word-break: break-word;">${o.DeliveryAddress}</span>` : 
                         '<span style="color: var(--text-muted);">غير محدد</span>';
@@ -2769,17 +2763,158 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                     alert('فشل الاتصال بالخادم');
                 }
             }
-            // ============ USERS ============
+            // ============ USERS (معدل) ============
             async function fetchUsers() {
                 try {
                     const res = await fetch(`${API_BASE}/admin/users`, { headers: { 'Authorization': `Bearer ${token}` } });
                     const data = await res.json();
                     if (data.success) { allUsersData = data.users;
-                        renderUsersTable(); }
+                        renderUsersTable(allUsersData); }
                 } catch (err) { console.error(err); }
             }
 
-            // ============ تعيين موظف (دالة جديدة) ============
+            // ====== دالة عرض المستخدمين (المطلوبة) ======
+            function renderUsersTable(users) {
+                const tbody = document.getElementById('usersTableBody');
+                if (!tbody) return;
+
+                const search = (document.getElementById('userSearch')?.value || '').toLowerCase();
+                let filtered = users || allUsersData || [];
+
+                if (search) {
+                    filtered = filtered.filter(u => {
+                        return (u.Username || '').toLowerCase().includes(search) || 
+                               (u.Email || '').toLowerCase().includes(search);
+                    });
+                }
+
+                if (!filtered.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;">لا يوجد مستخدمين مسجلين</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+
+                filtered.forEach(user => {
+                    // التحقق من المدير الأساسي
+                    const isMainAdmin = user.IsAdmin === 1 || user.IsAdmin === true;
+
+                    // اسم الدور
+                    let roleDisplayName = 'عميل عادي';
+                    if (user.Role && user.Role !== 'customer' && user.Role !== null) {
+                        const roleNames = {
+                            'cakes': 'الكعكات',
+                            'sweets': 'الحلويات',
+                            'decor': 'الديكور',
+                            'photo': 'التصوير',
+                            'hall': 'الصالات'
+                        };
+                        roleDisplayName = 'مساعد مدير - قسم ' + (roleNames[user.Role] || user.Role);
+                    }
+
+                    const tr = document.createElement('tr');
+                    
+                    tr.innerHTML = `
+                        <td>${user.Username || '-'}</td>
+                        <td>${user.Email || '-'}</td>
+                        <td><strong>${isMainAdmin ? 'المدير الأساسي' : roleDisplayName}</strong></td>
+                        <td>${user.TelegramChatId || user.TelegramChatID || 'غير متوفر'}</td>
+                        <td>
+                            ${isMainAdmin ? 
+                                `<span style="color: gray; font-size: 0.85rem;">🔒 صلاحيات مقفلة (مدير)</span>` 
+                                : 
+                                `<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center;">
+                                    <select id="role-select-${user.UserID}" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--admin-border); background: var(--admin-glass); color: var(--text); font-size: 0.75rem;">
+                                        <option value="customer" ${(!user.Role || user.Role === 'customer') ? 'selected' : ''}>عميل عادي</option>
+                                        <option value="cakes" ${user.Role === 'cakes' ? 'selected' : ''}>مساعد - قسم الكعكات</option>
+                                        <option value="sweets" ${user.Role === 'sweets' ? 'selected' : ''}>مساعد - قسم الحلويات</option>
+                                        <option value="decor" ${user.Role === 'decor' ? 'selected' : ''}>مساعد - قسم الديكور</option>
+                                        <option value="photo" ${user.Role === 'photo' ? 'selected' : ''}>مساعد - قسم التصوير</option>
+                                    </select>
+                                    
+                                    <input type="text" id="tg-input-${user.UserID}" value="${user.TelegramChatId || user.TelegramChatID || ''}" placeholder="آيدي التليجرام" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--admin-border); background: var(--admin-glass); color: var(--text); font-size: 0.75rem; width: 100px;">
+                                    
+                                    <button onclick="updateUserRole(${user.UserID})" class="btn-save" style="padding: 4px 12px; border-radius: 6px; border: none; background: var(--gold); color: #000; font-weight: 600; cursor: pointer; font-size: 0.7rem; transition: var(--transition);">
+                                        <i class="fa-solid fa-save"></i> حفظ
+                                    </button>
+                                </div>`
+                            }
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // ====== دالة تحديث دور المستخدم (المطلوبة) ======
+            window.updateUserRole = async function(userId) {
+                if (!userId) {
+                    alert('❌ معرف المستخدم غير صالح!');
+                    return;
+                }
+
+                const selectedRole = document.getElementById(`role-select-${userId}`)?.value;
+                const telegramId = document.getElementById(`tg-input-${userId}`)?.value?.trim() || '';
+
+                if (!selectedRole) {
+                    alert('❌ يرجى اختيار دور للمستخدم.');
+                    return;
+                }
+
+                // تحويل الدور للصيغة المطلوبة من السيرفر
+                let roleType = 'customer';
+                let speciality = null;
+
+                if (selectedRole !== 'customer') {
+                    roleType = 'assistant';
+                    speciality = selectedRole;
+                }
+
+                try {
+                    const response = await fetch(`/api/admin/users/${userId}/assign-role`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('sweet_event_token') || token}`
+                        },
+                        body: JSON.stringify({
+                            accountType: roleType,
+                            speciality: speciality,
+                            telegramChatId: telegramId || null
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert('✅ تم حفظ البيانات بنجاح!');
+                        // تحديث الجدول فوراً
+                        if (typeof fetchUsers === 'function') {
+                            fetchUsers();
+                        } else {
+                            // إعادة تحميل البيانات من السيرفر
+                            try {
+                                const res = await fetch('/api/admin/users', {
+                                    headers: { 'Authorization': `Bearer ${localStorage.getItem('sweet_event_token') || token}` }
+                                });
+                                const result = await res.json();
+                                if (result.success) {
+                                    allUsersData = result.users;
+                                    renderUsersTable(allUsersData);
+                                }
+                            } catch (e) {
+                                console.error('فشل تحديث الجدول:', e);
+                            }
+                        }
+                    } else {
+                        alert('❌ حدث خطأ أثناء الحفظ: ' + (data.error || 'غير معروف'));
+                    }
+                } catch (error) {
+                    console.error('Error updating user:', error);
+                    alert('❌ فشل الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
+                }
+            };
+
+            // ====== دالة تعيين موظف (احتفظ بها إن وجدت) ======
             async function assignEmployeeRole(userId, selectedRole, telegramId) {
                 try {
                     const response = await fetch(`/api/admin/users/${userId}/assign-role`, {
@@ -2796,77 +2931,13 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                     const data = await response.json();
                     if (data.success) {
                         alert('✅ تم تعيين الموظف وتحديد قسمه بنجاح!');
-                        fetchUsers(); // تحديث الجدول
+                        fetchUsers();
                     } else {
                         alert('❌ حدث خطأ: ' + data.error);
                     }
                 } catch (error) {
                     console.error('Error:', error);
                     alert('❌ فشل الاتصال بالسيرفر');
-                }
-            }
-
-            function renderUsersTable() {
-                const search = (document.getElementById('userSearch')?.value || '').toLowerCase();
-                let filtered = allUsersData.filter(u => {
-                    if (search && !(u.Username || '').toLowerCase().includes(search) && !(u.Email || '')
-                        .toLowerCase().includes(search) && !(u.Phone || '').includes(search)) return false;
-                    return true;
-                });
-                const tbody = document.getElementById('usersTableBody');
-                if (!tbody) return;
-                if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="8">لا يوجد مستخدمين مسجلين</td></tr>'; return; }
-                tbody.innerHTML = filtered.map(u => `<tr>
-                    <td>${u.UserID}</td>
-                    <td>${u.Username} ${u.LastName||''}</td>
-                    <td>${u.Email}</td>
-                    <td>${u.Phone||'-'}</td>
-                    <td>${u.Wilaya||'-'}</td>
-                    <td><span class="status-badge ${u.IsAdmin?'status-Completed':'status-Pending'}">${u.IsAdmin?'مدير':'عميل'}</span></td>
-                    <td>${new Date(u.CreatedAt).toLocaleDateString('ar')}</td>
-                    <td class="action-buttons">
-                        <button class="action-btn edit" data-id="${u.UserID}" data-role="${u.IsAdmin}"><i class="fa-solid fa-user-shield"></i></button>
-                        <button class="action-btn employee" data-id="${u.UserID}" title="تعيين كموظف (ديكور/تصوير)"><i class="fa-solid fa-user-tie"></i></button>
-                    </td>
-                </tr>`).join('');
-
-                // ربط أزرار تعديل الصلاحيات (admin)
-                document.querySelectorAll('#usersTableBody .edit').forEach(b => b.addEventListener('click', () =>
-                    openUserRoleModal(b.dataset.id, b.dataset.role === 'true')));
-
-                // ربط أزرار تعيين الموظف (جديد)
-                document.querySelectorAll('#usersTableBody .employee').forEach(b => b.addEventListener('click', function() {
-                    const userId = this.dataset.id;
-                    if (!userId) return alert('معرف المستخدم غير صالح');
-                    // فتح النافذة المنبثقة وتعيين userId
-                    document.getElementById('assignUserId').value = userId;
-                    document.getElementById('assignEmployeeModal').classList.add('active');
-                }));
-            }
-
-            function openUserRoleModal(userId, isAdmin) {
-                document.getElementById('userIdInput').value = userId;
-                document.getElementById('userNewRole').value = isAdmin ? '1' : '0';
-                document.getElementById('userRoleModal').classList.add('active');
-            }
-
-            async function updateUserRole(e) {
-                e.preventDefault();
-                const id = document.getElementById('userIdInput')?.value;
-                const isAdmin = document.getElementById('userNewRole')?.value === '1';
-                try {
-                    const res = await fetch(`${API_BASE}/admin/users/${id}/role`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ isAdmin })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        document.getElementById('userRoleModal').classList.remove('active');
-                        fetchUsers();
-                    }
-                } catch (err) {
-                    alert('فشل تعديل الصلاحية');
                 }
             }
 
@@ -3591,7 +3662,9 @@ document.getElementById('productCategory')?.addEventListener('change', function(
 });
                 document.getElementById('orderSearch')?.addEventListener('input', renderOrdersTable);
                 document.getElementById('orderStatusFilter')?.addEventListener('change', renderOrdersTable);
-                document.getElementById('userSearch')?.addEventListener('input', renderUsersTable);
+                document.getElementById('userSearch')?.addEventListener('input', function() {
+                    renderUsersTable(allUsersData);
+                });
                 document.getElementById('gallerySearch')?.addEventListener('input', renderGalleryTable);
                 document.getElementById('chartTimeframe')?.addEventListener('change', fetchStats);
                 document.getElementById('chartTypeSelector')?.addEventListener('change', updateChartDisplay);
@@ -3630,19 +3703,16 @@ document.getElementById('productCategory')?.addEventListener('change', function(
                     }
                     await assignEmployeeRole(userId, selectedRole, telegramId);
                     document.getElementById('assignEmployeeModal').classList.remove('active');
-                    // تنظيف الحقول
                     document.getElementById('assignUserId').value = '';
                     document.getElementById('assignTelegramId').value = '';
                 });
 
-                // إلغاء النافذة
                 document.getElementById('cancelAssignBtn')?.addEventListener('click', function() {
                     document.getElementById('assignEmployeeModal').classList.remove('active');
                 });
                 document.getElementById('closeAssignModal')?.addEventListener('click', function() {
                     document.getElementById('assignEmployeeModal').classList.remove('active');
                 });
-                // إغلاق النافذة عند النقر خارج المحتوى
                 document.getElementById('assignEmployeeModal')?.addEventListener('click', function(e) {
                     if (e.target === this) this.classList.remove('active');
                 });
@@ -3680,7 +3750,7 @@ document.getElementById('productCategory')?.addEventListener('change', function(
                 
 setInterval(() => {
     fetchStats();
-    fetchOrders(); // لجلب الطلبات الجديدة وتحديث جرس الإشعارات تلقائياً
+    fetchOrders();
 }, 60000);            })();
 
             window.printReport = function() {
