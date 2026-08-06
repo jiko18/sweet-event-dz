@@ -1120,6 +1120,135 @@
         grid-template-columns: 1fr !important;
     }
 }
+
+        /* ===========================================================
+           الأنماط الجديدة المحسنة لقسم إجراءات المستخدمين (Users)
+           =========================================================== */
+        .user-actions-modern {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px 12px;
+            background: rgba(201, 150, 62, 0.05);
+            padding: 8px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(201, 150, 62, 0.15);
+            backdrop-filter: blur(4px);
+            min-width: 300px;
+        }
+
+        .user-action-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .action-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .user-role-select,
+        .user-tg-input {
+            padding: 6px 10px;
+            border-radius: 10px;
+            border: 1.5px solid var(--admin-border);
+            background: var(--admin-glass);
+            color: var(--text);
+            font-size: 0.8rem;
+            font-family: inherit;
+            transition: all 0.25s ease;
+            width: 100%;
+            min-width: 110px;
+        }
+
+        .user-role-select:focus,
+        .user-tg-input:focus {
+            border-color: var(--gold);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(201, 150, 62, 0.15);
+            background: var(--admin-card);
+        }
+
+        .user-tg-input {
+            min-width: 130px;
+        }
+
+        .btn-save-modern {
+            padding: 6px 18px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(201, 150, 62, 0.25);
+            white-space: nowrap;
+            height: 36px;
+        }
+
+        .btn-save-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(201, 150, 62, 0.35);
+        }
+
+        .btn-save-modern:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 4px rgba(201, 150, 62, 0.2);
+        }
+
+        .admin-locked-badge {
+            background: rgba(231, 76, 60, 0.08);
+            color: var(--danger);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(231, 76, 60, 0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-locked-badge::before {
+            content: "🔒";
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .user-actions-modern {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+                min-width: unset;
+                padding: 10px;
+            }
+            .user-action-group {
+                width: 100%;
+            }
+            .user-role-select,
+            .user-tg-input {
+                width: 100%;
+                min-width: unset;
+            }
+            .btn-save-modern {
+                justify-content: center;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2369,7 +2498,7 @@
                 document.querySelectorAll('#productsTableBody .delete').forEach(b => b.addEventListener('click', () =>
                     deleteProduct(b.dataset.id, b.dataset.name)));
             }
-           // ====== دالة فتح نموذج المنتج (معدلة ومصححة للكعكة) ======
+
 function openProductModal(data = {}) {
     const modal = document.getElementById('productModal');
     if (!modal) return;
@@ -2390,7 +2519,6 @@ function openProductModal(data = {}) {
     if (hallFieldsDiv) hallFieldsDiv.style.display = catValue === 'hall' ? 'block' : 'none';
     if (cakeFieldsDiv) cakeFieldsDiv.style.display = catValue === 'cake' ? 'block' : 'none';
     
-    // ====== جزء الكعكة المصحح ======
   if (catValue === 'cake') {
         const occasionSelect = document.getElementById('cakeOccasion');
         if (occasionSelect) occasionSelect.value = data.features || 'general';
@@ -2424,7 +2552,6 @@ function openProductModal(data = {}) {
     
     if (mediaArray.length > 0) selectedFilesArray = [...mediaArray];
     
-    // عرض الصورة الحالية
     const previewContainer = document.getElementById('dynamicMediaPreview');
     previewContainer.innerHTML = ''; 
     if (data.img && data.img !== 'default.jpg' && data.img !== '') {
@@ -2457,7 +2584,6 @@ function openProductModal(data = {}) {
     }
 }
 
-            // ====== دالة حفظ المنتج (معدلة للكعكة) ======
             async function saveProduct(e) {
                 e.preventDefault();
                 const id = document.getElementById('productId')?.value;
@@ -2556,7 +2682,7 @@ function openProductModal(data = {}) {
                     console.error(err);
                     alert("❌ فشل الاتصال بالسيرفر."); 
                 }
-            } // نهاية الدالة
+            }
             async function deleteProduct(id, name) {
                 if (!id || id === 'undefined') return alert('خطأ: معرّف المنتج مفقود!');
                 if (!confirm(`هل تريد بالتأكيد حذف المنتج "${name}"؟`)) return;
@@ -2763,7 +2889,8 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                     alert('فشل الاتصال بالخادم');
                 }
             }
-            // ============ USERS (معدل) ============
+            
+            // ============ USERS (معدل - تصميم حديث) ============
             async function fetchUsers() {
                 try {
                     const res = await fetch(`${API_BASE}/admin/users`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -2773,7 +2900,7 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                 } catch (err) { console.error(err); }
             }
 
-            // ====== دالة عرض المستخدمين (المطلوبة) ======
+            // ====== دالة عرض المستخدمين (المعدلة بتصميم حديث) ======
             function renderUsersTable(users) {
                 const tbody = document.getElementById('usersTableBody');
                 if (!tbody) return;
@@ -2796,10 +2923,8 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                 tbody.innerHTML = '';
 
                 filtered.forEach(user => {
-                    // التحقق من المدير الأساسي
                     const isMainAdmin = user.IsAdmin === 1 || user.IsAdmin === true;
 
-                    // اسم الدور
                     let roleDisplayName = 'عميل عادي';
                     if (user.Role && user.Role !== 'customer' && user.Role !== null) {
                         const roleNames = {
@@ -2813,29 +2938,34 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                     }
 
                     const tr = document.createElement('tr');
-                    
+
                     tr.innerHTML = `
                         <td>${user.Username || '-'}</td>
                         <td>${user.Email || '-'}</td>
                         <td><strong>${isMainAdmin ? 'المدير الأساسي' : roleDisplayName}</strong></td>
                         <td>${user.TelegramChatId || user.TelegramChatID || 'غير متوفر'}</td>
                         <td>
-                            ${isMainAdmin ? 
-                                `<span style="color: gray; font-size: 0.85rem;">🔒 صلاحيات مقفلة (مدير)</span>` 
-                                : 
-                                `<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center;">
-                                    <select id="role-select-${user.UserID}" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--admin-border); background: var(--admin-glass); color: var(--text); font-size: 0.75rem;">
-                                        <option value="customer" ${(!user.Role || user.Role === 'customer') ? 'selected' : ''}>عميل عادي</option>
-                                        <option value="cakes" ${user.Role === 'cakes' ? 'selected' : ''}>مساعد - قسم الكعكات</option>
-                                        <option value="sweets" ${user.Role === 'sweets' ? 'selected' : ''}>مساعد - قسم الحلويات</option>
-                                        <option value="decor" ${user.Role === 'decor' ? 'selected' : ''}>مساعد - قسم الديكور</option>
-                                        <option value="photo" ${user.Role === 'photo' ? 'selected' : ''}>مساعد - قسم التصوير</option>
-                                    </select>
-                                    
-                                    <input type="text" id="tg-input-${user.UserID}" value="${user.TelegramChatId || user.TelegramChatID || ''}" placeholder="آيدي التليجرام" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--admin-border); background: var(--admin-glass); color: var(--text); font-size: 0.75rem; width: 100px;">
-                                    
-                                    <button onclick="updateUserRole(${user.UserID})" class="btn-save" style="padding: 4px 12px; border-radius: 6px; border: none; background: var(--gold); color: #000; font-weight: 600; cursor: pointer; font-size: 0.7rem; transition: var(--transition);">
-                                        <i class="fa-solid fa-save"></i> حفظ
+                            ${isMainAdmin ?
+                                `<span class="admin-locked-badge">صلاحيات مقفلة</span>`
+                                :
+                                `<div class="user-actions-modern">
+                                    <div class="user-action-group">
+                                        <span class="action-label"><i class="fa-regular fa-circle-user"></i> الدور</span>
+                                        <select id="role-select-${user.UserID}" class="user-role-select">
+                                            <option value="customer" ${(!user.Role || user.Role === 'customer') ? 'selected' : ''}>عميل عادي</option>
+                                            <option value="cakes" ${user.Role === 'cakes' ? 'selected' : ''}>مساعد - كعكات</option>
+                                            <option value="sweets" ${user.Role === 'sweets' ? 'selected' : ''}>مساعد - حلويات</option>
+                                            <option value="decor" ${user.Role === 'decor' ? 'selected' : ''}>مساعد - ديكور</option>
+                                            <option value="photo" ${user.Role === 'photo' ? 'selected' : ''}>مساعد - تصوير</option>
+                                            <option value="hall" ${user.Role === 'hall' ? 'selected' : ''}>مساعد - صالات</option>
+                                        </select>
+                                    </div>
+                                    <div class="user-action-group">
+                                        <span class="action-label"><i class="fa-brands fa-telegram"></i> تليجرام</span>
+                                        <input type="text" id="tg-input-${user.UserID}" value="${user.TelegramChatId || user.TelegramChatID || ''}" placeholder="معرف التليجرام" class="user-tg-input">
+                                    </div>
+                                    <button onclick="updateUserRole(${user.UserID})" class="btn-save-modern">
+                                        <i class="fa-solid fa-floppy-disk"></i> حفظ
                                     </button>
                                 </div>`
                             }
@@ -2845,7 +2975,7 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                 });
             }
 
-            // ====== دالة تحديث دور المستخدم (المطلوبة) ======
+            // ====== دالة تحديث دور المستخدم (تظل كما هي) ======
             window.updateUserRole = async function(userId) {
                 if (!userId) {
                     alert('❌ معرف المستخدم غير صالح!');
@@ -2860,7 +2990,6 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                     return;
                 }
 
-                // تحويل الدور للصيغة المطلوبة من السيرفر
                 let roleType = 'customer';
                 let speciality = null;
 
@@ -2887,11 +3016,9 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
 
                     if (data.success) {
                         alert('✅ تم حفظ البيانات بنجاح!');
-                        // تحديث الجدول فوراً
                         if (typeof fetchUsers === 'function') {
                             fetchUsers();
                         } else {
-                            // إعادة تحميل البيانات من السيرفر
                             try {
                                 const res = await fetch('/api/admin/users', {
                                     headers: { 'Authorization': `Bearer ${localStorage.getItem('sweet_event_token') || token}` }
@@ -2914,7 +3041,6 @@ const imgMatch = notesText.match(/\[IMAGE:(.*?)\]/);
                 }
             };
 
-            // ====== دالة تعيين موظف (احتفظ بها إن وجدت) ======
             async function assignEmployeeRole(userId, selectedRole, telegramId) {
                 try {
                     const response = await fetch(`/api/admin/users/${userId}/assign-role`, {
@@ -3651,7 +3777,6 @@ window.fetchActivityLogs = fetchActivityLogs;
                 });
                 document.getElementById('productSearch')?.addEventListener('input', renderProductsTable);
                 document.getElementById('productCategoryFilter')?.addEventListener('change', renderProductsTable);
-              // ابحث عن هذا السطر وحدثه ليظهر ويخفي الحقول تلقائياً
 document.getElementById('productCategory')?.addEventListener('change', function() {
     const hallFields = document.getElementById('hallSpecificFields');
     const cakeFields = document.getElementById('cakeSpecificFields');
@@ -3691,7 +3816,6 @@ document.getElementById('productCategory')?.addEventListener('change', function(
 
                 document.getElementById('generateReportBtn')?.addEventListener('click', fetchMonthlyReport);
 
-                // ===== ربط نموذج تعيين الموظف =====
                 document.getElementById('assignEmployeeForm')?.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const userId = document.getElementById('assignUserId').value;
