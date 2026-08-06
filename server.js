@@ -918,27 +918,6 @@ app.get('/api/fix-db', async (req, res) => {
 });
 
 // =====================================================
-// 12.6. تعيين دور ومُعرف تليجرام لموظف من قبل الإدارة
-// =====================================================
-app.put('/api/admin/users/:id/assign-role', verifyAdmin, async (req, res) => {
-    try {
-        // role يمكن أن يكون: 'admin', 'customer', 'decor', 'photo', 'sweets', 'cakes'
-        const { role, telegramChatId } = req.body; 
-        const userId = req.params.id;
-        
-        // تحديث دور المستخدم وإضافة آيدي تليجرام الخاص به
-        await runAsync(
-            `UPDATE Users SET Role = ?, TelegramChatId = ? WHERE UserID = ?`, 
-            [role, telegramChatId || null, userId]
-        );
-        
-        res.json({ success: true, message: 'تم تعيين الموظف بنجاح!' });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// =====================================================
 // 12.7. إدارة التقييمات للأدمن
 // =====================================================
 app.get('/api/admin/reviews', verifyAdmin, async (req, res) => {
@@ -1112,23 +1091,49 @@ app.delete('/api/admin/products/:id', verifyAdmin, async (req, res) => {
     }
 });
 // =====================================================
-// مسارات المستخدمين للإدارة
+// مسارات المستخدمين للإدارة (تم التعديل لجلب الدور ومعرف التليجرام)
 // =====================================================
 app.get('/api/admin/users', verifyAdmin, async (req, res) => {
     try {
-        const users = await allAsync(`SELECT UserID, Username, LastName, Email, Phone, Wilaya, IsAdmin, CreatedAt FROM Users ORDER BY CreatedAt DESC`);
+        // أضفنا Role و TelegramChatId إلى جملة الاستعلام
+        const users = await allAsync(`SELECT UserID, Username, LastName, Email, Phone, Wilaya, IsAdmin, Role, TelegramChatId, CreatedAt FROM Users ORDER BY CreatedAt DESC`);
         res.json({ success: true, users });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
 });
 
-app.put('/api/admin/users/:id/role', verifyAdmin, async (req, res) => {
+// تعيين نوع الحساب، الدور، ومُعرف تليجرام للموظف
+app.put('/api/admin/users/:id/assign-role', verifyAdmin, async (req, res) => {
     try {
-        const { isAdmin } = req.body;
-        const role = isAdmin ? 'admin' : 'customer';
-        await runAsync(`UPDATE Users SET IsAdmin = ?, Role = ? WHERE UserID = ?`, [isAdmin ? 1 : 0, role, req.params.id]);
-        res.json({ success: true, message: 'تم تحديث صلاحيات المستخدم' });
+        // accountType: 'admin' | 'assistant' | 'customer'
+        // speciality: 'cakes' | 'decor' | 'photo' | 'sweets' (مطلوب فقط إذا كان مساعد مدير)
+        // telegramChatId: المعرف الخاص به
+        const { accountType, speciality, telegramChatId } = req.body; 
+        const userId = req.params.id;
+        
+        let isAdmin = 0;
+        let finalRole = 'customer';
+
+        if (accountType === 'admin') {
+            isAdmin = 1;
+            finalRole = 'admin';
+        } else if (accountType === 'assistant') {
+            // المساعد ليس مديراً عاماً، لكن يمتلك دوراً وظيفياً مخصصاً
+            isAdmin = 0; 
+            finalRole = speciality; 
+        } else {
+            isAdmin = 0;
+            finalRole = 'customer';
+        }
+
+        // تحديث جميع الصلاحيات في قاعدة البيانات دفعة واحدة
+        await runAsync(
+            `UPDATE Users SET IsAdmin = ?, Role = ?, TelegramChatId = ? WHERE UserID = ?`, 
+            [isAdmin, finalRole, telegramChatId || null, userId]
+        );
+        
+        res.json({ success: true, message: 'تم تعيين الصلاحيات والدور بنجاح!' });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
