@@ -10,7 +10,6 @@
         return;
     }
     try {
-        // التصحيح: استخدام مسار التحقق من المستخدم الموجود بالفعل في server.js
         const res = await fetch('/api/user', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -596,6 +595,45 @@
                 background-color: #c0392b;
             }
         }
+
+        /* ===== تنسيقات زر حذف الحساب ===== */
+        .danger-zone {
+            margin-top: 2rem;
+            border-top: 2px solid rgba(231, 76, 60, 0.3);
+            padding-top: 1.5rem;
+        }
+        .danger-zone .card-title {
+            color: var(--danger);
+            border-bottom-color: rgba(231, 76, 60, 0.3);
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+        }
+        .btn-danger:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .warning-text {
+            color: var(--text-soft);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
     </style>
 </head> 
 
@@ -736,6 +774,7 @@
         </div>
     </div>
 
+    <!-- ===== تبويب الأمان (معدل بإضافة قسم حذف الحساب) ===== -->
     <div id="securityTab" class="tab-content">
         <div class="main-card">
             <div class="card-title"><i class="fa-solid fa-lock"></i> <span data-lang="profile_security_title">تغيير كلمة المرور</span></div>
@@ -755,6 +794,19 @@
                 <button type="submit" class="btn-primary"><i class="fa-solid fa-key"></i> <span data-lang="profile_change_password_btn">تغيير كلمة المرور</span></button>
                 <div class="status-message" id="passStatus"></div>
             </form>
+
+            <!-- ===== القسم الجديد: منطقة الخطر (حذف الحساب) ===== -->
+            <div class="danger-zone">
+                <div class="card-title" style="color: var(--danger); border-bottom: 2px solid rgba(231, 76, 60, 0.3);">
+                    <i class="fa-solid fa-triangle-exclamation"></i> <span>منطقة الخطر (حذف الحساب)</span>
+                </div>
+                <p class="warning-text">
+                    تحذير: هذا الإجراء نهائي ولا يمكن التراجع عنه. سيتم حذف جميع بياناتك الشخصية من النظام.
+                </p>
+                <button type="button" id="deleteMyAccountBtn" class="btn-danger">
+                    <i class="fa-solid fa-trash"></i> <span>حذف حسابي نهائياً</span>
+                </button>
+            </div>
         </div>
     </div>
 </main>
@@ -1313,6 +1365,47 @@
             window.location.href = '/';
         }
     });
+
+    // =========================================================
+    // ===== CODE ADDED: زر حذف الحساب =====
+    // =========================================================
+    const deleteMyAccountBtn = document.getElementById('deleteMyAccountBtn');
+    if (deleteMyAccountBtn) {
+        deleteMyAccountBtn.addEventListener('click', async () => {
+            // رسالة تأكيد مزدوجة لمنع الحذف بالخطأ
+            const confirmed = confirm("هل أنت متأكد تماماً أنك تريد حذف حسابك؟ لن تتمكن من استرجاع بياناتك أو طلباتك السابقة.");
+            
+            if (confirmed) {
+                const originalHtml = deleteMyAccountBtn.innerHTML;
+                deleteMyAccountBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحذف...';
+                deleteMyAccountBtn.disabled = true;
+
+                try {
+                    const res = await fetch(`${API_BASE}/user/account`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        alert("تم حذف حسابك بنجاح. نأسف لمغادرتك!");
+                        // مسح التوكن وتسجيل الخروج
+                        localStorage.removeItem('sweet_event_token');
+                        window.location.href = '/'; // توجيه للصفحة الرئيسية
+                    } else {
+                        showToast(data.error || 'فشل حذف الحساب', true);
+                        deleteMyAccountBtn.innerHTML = originalHtml;
+                        deleteMyAccountBtn.disabled = false;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast('خطأ في الاتصال بالخادم', true);
+                    deleteMyAccountBtn.innerHTML = originalHtml;
+                    deleteMyAccountBtn.disabled = false;
+                }
+            }
+        });
+    }
 
     // تهيئة الصفحة
     (async function init() {
