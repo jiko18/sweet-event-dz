@@ -11,12 +11,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
-.hero {
-    background-color: #2c1810; /* لون بديل مؤقت حتى يتم تحميل الصورة */
-    background-size: cover;
-    background-position: center;
-    min-height: 80vh;
-}
+        /* ===== الأنماط الحالية (تظل كما هي) ===== */
+        .hero {
+            background-color: #2c1810;
+            background-size: cover;
+            background-position: center;
+            min-height: 80vh;
+        }
         .hero-content {
             display: flex;
             flex-direction: column;
@@ -25,7 +26,6 @@
             max-width: 800px;
             margin: 0 auto;
         }
-
         .hero-content h1 {
             font-family: 'Playfair Display', serif;
             font-size: clamp(3.5rem, 10vw, 7rem);
@@ -37,7 +37,6 @@
             position: relative;
             display: inline-block;
         }
-    
         .hero-content > p {
             font-size: clamp(1.2rem, 2.5vw, 1.8rem);
             color: var(--text-light);
@@ -45,13 +44,11 @@
             max-width: 600px;
             transition: all 0.4s ease;
         }
-        
         .hero-content > p:hover {
             color: var(--gold);
             transform: translateY(-3px);
             text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
-
         .category-boxes {
             display: flex;
             gap: 20px;
@@ -59,7 +56,6 @@
             flex-wrap: wrap;
             justify-content: center;
         }
-      
         .category-boxes .box {
             border: 2px solid var(--border);
             padding: 18px 32px;
@@ -78,13 +74,11 @@
             letter-spacing: 0.5px;
             text-decoration: none;
         }
-        
         .category-boxes .box i {
             font-size: 1.5rem;
             transition: all 0.4s ease;
             color: var(--gold);
         }
-        
         .category-boxes .box:hover {
             background: var(--gold);
             color: #000;
@@ -92,13 +86,11 @@
             transform: translateY(-8px) scale(1.05);
             box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4);
         }
-        
         .category-boxes .box:hover i {
             color: #000;
             transform: rotate(10deg) scale(1.2);
             filter: drop-shadow(0 0 6px rgba(0,0,0,0.3));
         }
-
         .promo-banner {
             display: flex;
             justify-content: center;
@@ -114,42 +106,35 @@
             max-width: 550px;
             margin: 0 auto;
         }
-        
         .promo-banner:hover {
             box-shadow: 0 12px 35px rgba(212, 175, 55, 0.3);
             transform: translateY(-5px);
         }
-        
         .promo-text {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
         .promo-text i {
             color: #ff4757;
             font-size: 2rem;
             animation: heartbeat 1.2s infinite;
         }
-        
         @keyframes heartbeat {
             0%, 100% { transform: scale(1); }
             25% { transform: scale(1.2); }
             50% { transform: scale(1); }
             75% { transform: scale(1.15); }
         }
-        
         .promo-text strong {
             color: var(--gold);
             font-size: 1.2rem;
         }
-        
         .promo-text p {
             color: var(--text-light);
             margin: 0;
             font-size: 0.9rem;
         }
-
         @media (max-width: 768px) {
             .hero-content h1 {
                 font-size: 3rem;
@@ -162,12 +147,10 @@
                 padding: 15px 20px;
             }
         }
-
         .dark-mode .btn-primary {
             color: #1a1310;
             font-weight: 600;
         }
-
         .dark-mode .btn-primary:hover {
             background-color: #e2b84d;
             color: #0d0806;
@@ -175,7 +158,6 @@
             transform: translateY(-3px);
             text-shadow: none;
         }
-
         .dark-mode #mainRegisterBtn {
             color: #1a1310;
             font-weight: 700;
@@ -185,7 +167,6 @@
             color: #0d0806 !important;
             box-shadow: 0 8px 25px rgba(212, 175, 55, 0.55);
         }
-
         .dark-mode .btn-primary.order-now-btn:hover,
         .dark-mode button[type="submit"].btn-primary:hover {
             background-color: #e2b84d;
@@ -193,7 +174,7 @@
             box-shadow: 0 8px 25px rgba(212, 175, 55, 0.55);
         }
 
-        /* ========== الأزرار العائمة الجديدة ========== */
+        /* ===== الأزرار العائمة القديمة (تظل كما هي) ===== */
         .floating-actions {
             position: fixed;
             bottom: 30px;
@@ -203,7 +184,6 @@
             gap: 18px;
             z-index: 9999;
         }
-
         .float-btn {
             width: 55px;
             height: 55px;
@@ -219,16 +199,13 @@
             position: relative;
             cursor: pointer;
         }
-
         .whatsapp-btn { background: #25D366; }
         .location-btn { background: #e67e22; }
         .info-btn { background: #c9963e; }
-
         .float-btn:hover {
             transform: scale(1.1) translateY(-5px);
             box-shadow: 0 12px 24px rgba(0,0,0,0.3);
         }
-
         .float-tooltip {
             position: absolute;
             left: 70px;
@@ -245,7 +222,6 @@
             pointer-events: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-
         .float-tooltip::after {
             content: '';
             position: absolute;
@@ -255,12 +231,10 @@
             border: 6px solid transparent;
             border-right-color: #2c1810;
         }
-
         .float-btn:hover .float-tooltip {
             opacity: 1;
             visibility: visible;
         }
-
         @media (max-width: 768px) {
             .floating-actions {
                 left: 15px;
@@ -278,11 +252,10 @@
             }
         }
 
-        /* ========== النافذة الزجاجية الصغيرة (GLASS TOOLTIP) ========== */
+        /* ===== النافذة الزجاجية الصغيرة ===== */
         .category-tooltip {
             position: fixed;
             background: rgba(255, 248, 240, 0.92);
-            
             -webkit-backdrop-filter: blur(14px);
             backdrop-filter: blur(14px);
             border: 1px solid rgba(201, 150, 62, 0.5);
@@ -330,105 +303,244 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* ===== أنماط الأقسام الأخرى ===== */
         .premium-message{
-        margin:0px 50px;
+            margin:0px 50px;
         }
         .premium-gallery > h3{
             margin:0px 50px;
         }
-        /* ===================================================== */
-/* تحسين مساحة الصفحة الرئيسية على الهواتف (عنصرين في السطر) */
-/* ===================================================== */
-@media (max-width: 768px) {
-    /* 1. قسم الإحصائيات (10 مناسبات كبرى، إلخ) */
-    .premium-stats {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 12px !important;
-        padding: 0 10px !important;
-    }
-    
-    /* جعل العنصر الثالث (رضا العملاء) يأخذ العرض كاملاً ليتوسط السطر الأخير */
-    .premium-stats .stat-block:last-child:nth-child(odd) {
-        grid-column: 1 / -1;
-    }
 
-    /* تصغير النصوص قليلاً داخل الإحصائيات لكي لا تتداخل */
-    .stat-block {
-        padding: 15px 10px !important;
-    }
-    .stat-number {
-        font-size: 1.8rem !important;
-    }
-    .stat-label {
-        font-size: 0.9rem !important;
-    }
-    .stat-desc {
-        font-size: 0.75rem !important;
-    }
+        /* ===== تحسينات الموبايل الحالية ===== */
+        @media (max-width: 768px) {
+            .premium-stats {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+                padding: 0 10px !important;
+            }
+            .premium-stats .stat-block:last-child:nth-child(odd) {
+                grid-column: 1 / -1;
+            }
+            .stat-block {
+                padding: 15px 10px !important;
+            }
+            .stat-number {
+                font-size: 1.8rem !important;
+            }
+            .stat-label {
+                font-size: 0.9rem !important;
+            }
+            .stat-desc {
+                font-size: 0.75rem !important;
+            }
+            .gallery-grid-premium {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+                padding: 0 10px !important;
+            }
+            .gallery-item-premium img {
+                height: 150px !important;
+                width: 100% !important;
+                object-fit: cover !important;
+            }
+            .gallery-overlay {
+                font-size: 0.75rem !important;
+                padding: 5px !important;
+                line-height: 1.2 !important;
+            }
+            .services-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .service-card {
+                margin: 0 !important;
+                padding: 10px !important;
+            }
+        }
 
-    /* 2. قسم الصور (بصمة إبداعنا في أرقى المناسبات) */
-    .gallery-grid-premium {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
-        padding: 0 10px !important;
-    }
+        /* ============================================================
+           الأنماط الجديدة للحاوية العائمة (خدمات إضافية)
+           ============================================================ */
+        .floating-menu-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
+            z-index: 1000;
+            direction: ltr; /* لتثبيت الاتجاه أثناء التصميم */
+        }
 
-    /* ضبط أبعاد الصور لتبدو كشبكة متناسقة (مربعات أو مستطيلات صغيرة) */
-    .gallery-item-premium img {
-        height: 150px !important; /* يمكنك تعديل هذا الرقم إذا أردتها أطول أو أقصر */
-        width: 100% !important;
-        object-fit: cover !important;
-    }
+        .extra-services-wrapper {
+            position: relative;
+        }
 
-    /* تصغير النص الذي يظهر فوق الصور ليناسب حجمها الجديد */
-    .gallery-overlay {
-        font-size: 0.75rem !important;
-        padding: 5px !important;
-        line-height: 1.2 !important;
-    }
-}
-   /* ===================================================== */
-/* حل نهائي لجعل كل الأقسام (2 عمود) على الموبايل */
-/* ===================================================== */
-@media (max-width: 768px) {
-    
-    /* 1. قسم الإحصائيات */
-    .premium-stats {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
-    }
-    /* جعل العنصر الثالث في المنتصف */
-    .premium-stats .stat-block:last-child:nth-child(odd) {
-        grid-column: 1 / span 2;
-    }
+        /* الزر الرئيسي لخدمات إضافية */
+        .floating-bubble {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #c9963e;
+            color: #1a0e04;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Poppins', 'Tajawal', sans-serif;
+            width: fit-content;
+            min-width: 160px;
+            justify-content: center;
+        }
+        .floating-bubble:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.3);
+        }
+        .floating-bubble .bubble-icon {
+            font-size: 1.4rem;
+        }
+        .floating-bubble .bubble-text {
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
 
-    /* 2. قسم الصور (بصمة إبداعنا) */
-    .gallery-grid-premium {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
-    }
-    .gallery-item-premium img {
-        height: 120px !important;
-        object-fit: cover !important;
-        width: 100% !important;
-    }
+        /* القائمة المنسدلة للخدمات */
+        .services-dropdown {
+            display: none; /* مخفية افتراضياً */
+            position: absolute;
+            bottom: 100%; /* تفتح للأعلى */
+            right: 0;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            padding: 12px;
+            min-width: 220px;
+            margin-bottom: 18px;
+            flex-direction: column;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            direction: rtl;
+            border: 1px solid rgba(201,150,62,0.2);
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        .dark-mode .services-dropdown {
+            background: rgba(30, 24, 20, 0.95);
+            border-color: rgba(201,150,62,0.3);
+        }
 
-    /* 3. قسم الخدمات الإضافية */
-    .services-grid {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
-    }
-    .service-card {
-        margin: 0 !important;
-        padding: 10px !important;
-    }
+        .extra-services-wrapper:hover .services-dropdown,
+        .services-dropdown.show {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-}
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            text-decoration: none;
+            color: var(--text, #2c1810);
+            border-radius: 12px;
+            transition: background 0.2s ease, transform 0.15s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .service-item:hover {
+            background: rgba(201, 150, 62, 0.12);
+            transform: translateX(-4px);
+        }
+        .service-item .service-color-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            filter: none !important;
+            flex-shrink: 0;
+        }
+        .service-item span {
+            flex: 1;
+            text-align: right;
+        }
+
+        /* الحاوية التي تحتوي الفقاعات الثلاث الأصلية (نضبطها لتصبح في الأسفل) */
+        .original-bubbles {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+        /* إعادة تنسيق الفقاعات الأصلية لتناسب الحاوية الجديدة */
+        .original-bubbles .floating-bubble {
+            background: #c9963e;
+            color: #1a0e04;
+            min-width: 140px;
+            padding: 10px 18px;
+        }
+        .original-bubbles .floating-bubble:hover {
+            background: #b08235;
+        }
+
+        /* توافق الوضع المظلم مع الفقاعات الجديدة */
+        .dark-mode .floating-bubble {
+            background: #b08235;
+            color: #0d0806;
+        }
+        .dark-mode .floating-bubble:hover {
+            background: #c9963e;
+        }
+        .dark-mode .service-item {
+            color: #e8d5c0;
+        }
+        .dark-mode .service-item:hover {
+            background: rgba(201,150,62,0.2);
+        }
+
+        /* تنسيق رسالة "لا توجد خدمات" */
+        .no-services-msg {
+            padding: 12px;
+            color: #999;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* ضبط المسافات على الموبايل */
+        @media (max-width: 768px) {
+            .floating-menu-container {
+                bottom: 15px;
+                right: 15px;
+                gap: 12px;
+            }
+            .floating-bubble {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+                min-width: 120px;
+            }
+            .services-dropdown {
+                min-width: 180px;
+                right: -10px;
+            }
+            .service-item {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            .service-item .service-color-icon {
+                width: 22px;
+                height: 22px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -442,31 +554,25 @@
             <i class="fa-solid fa-cake-candles gold-text"></i>
             <span>Sweet<br>Event DZ</span>
         </div>
-<nav>
-    <ul>
-        <li><a href="/cakes" class="nav-link" data-lang="cakes">كعكات</a></li>
-        <li><a href="/decor" class="nav-link" data-lang="decor">ديكور</a></li>
-        <li><a href="/" class="nav-link active" data-lang="home">الرئيسية</a></li>
-        <li><a href="/photography" class="nav-link" data-lang="photography">تصوير</a></li>
-        <li><a href="/menu" class="nav-link" data-lang="sweets">حلويات</a></li>
-    </ul>
-</nav>
-<div class="header-actions">
-    <div id="google_translate_element"></div>
-    
-    <button id="customLangBtn" class="custom-lang-btn">AR</button>
-    
-    <div class="toggle-switch" id="themeToggle">
-        <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
-    </div>
-    
-    <button class="btn-icon" id="accountBtn"><i class="fa-regular fa-user"></i></button>
-    
-    <span id="userGreetingContainer"></span>
-    
-    <button class="btn-primary" id="mainRegisterBtn" data-lang="nav_register">إنشاء حساب</button>
-</div>
-
+        <nav>
+            <ul>
+                <li><a href="/cakes" class="nav-link" data-lang="cakes">كعكات</a></li>
+                <li><a href="/decor" class="nav-link" data-lang="decor">ديكور</a></li>
+                <li><a href="/" class="nav-link active" data-lang="home">الرئيسية</a></li>
+                <li><a href="/photography" class="nav-link" data-lang="photography">تصوير</a></li>
+                <li><a href="/menu" class="nav-link" data-lang="sweets">حلويات</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <div id="google_translate_element"></div>
+            <button id="customLangBtn" class="custom-lang-btn">AR</button>
+            <div class="toggle-switch" id="themeToggle">
+                <div class="toggle-circle"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+            </div>
+            <button class="btn-icon" id="accountBtn"><i class="fa-regular fa-user"></i></button>
+            <span id="userGreetingContainer"></span>
+            <button class="btn-primary" id="mainRegisterBtn" data-lang="nav_register">إنشاء حساب</button>
+        </div>
     </header>
 
     <!-- Auth Modal -->
@@ -644,7 +750,7 @@
                         <p data-lang="promo_first_order_discount">خصم على الطلبات الأولى</p>
                     </div>
                 </div>
-<a href="/order" class="btn-primary" style="text-decoration:none;" data-lang="promo_order_now">اطلب الآن</a>
+                <a href="/order" class="btn-primary" style="text-decoration:none;" data-lang="promo_order_now">اطلب الآن</a>
             </div>
         </div>
     </section>
@@ -659,7 +765,6 @@
                 <p class="premium-subtitle" data-lang="about_subtitle">من الطابع الملكي إلى أجمل الصالات في الجزائر، ننقل رؤيتك إلى واقع يخطف الأنفاس</p>
             </div>
 
-            <!-- 3 بطاقات (الأصلية + جديدتين) -->
             <div class="premium-stats">
                 <div class="stat-block">
                     <div class="stat-number">10+</div>
@@ -938,7 +1043,7 @@
                 </div>
                 <div class="socials">
                     <a href="https://www.facebook.com/profile.php?id=61559428446416" class="fa-brands fa-facebook"></a>
-                    <a  href="https://www.instagram.com/gateaux_hassen_taher_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="fa-brands fa-instagram"></a>
+                    <a href="https://www.instagram.com/gateaux_hassen_taher_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="fa-brands fa-instagram"></a>
                 </div>
             </div>
             <div class="col">
@@ -973,27 +1078,45 @@
         </div>
     </footer>
 
-    <!-- ========== الأزرار العائمة الثلاثة ========== -->
-    <div class="floating-actions">
-        <a href="/about" class="float-btn info-btn">
-            <i class="fa-solid fa-circle-info"></i>
-            <span class="float-tooltip" data-lang="about_tooltip">معلومات عنا</span>
-        </a>
-        <div class="float-btn location-btn" onclick="window.open('map.html', '_blank')">
-            <i class="fa-solid fa-location-dot"></i>
-            <span class="float-tooltip" data-lang="location_tooltip">ابحث عن صالاتنا</span>
+    <!-- ============================================================
+         الحاوية العائمة الجديدة (خدمات إضافية + الأزرار الثلاثة الأصلية)
+         ============================================================ -->
+    <div class="floating-menu-container">
+        <!-- فقاعة خدمات إضافية مع قائمة منسدلة -->
+        <div class="extra-services-wrapper">
+            <button id="extraServicesBtn" class="floating-bubble extra-bubble">
+                <span class="bubble-icon">✨</span>
+                <span class="bubble-text">خدمات إضافية</span>
+            </button>
+            
+            <!-- القائمة المنسدلة (ستمتلئ عبر JavaScript) -->
+            <div id="servicesDropdown" class="services-dropdown">
+                <!-- ستُضاف العناصر هنا ديناميكياً -->
+            </div>
         </div>
-        <a href="https://wa.me/213794489833?text=مرحباً، أريد الاستفسار عن خدماتكم" target="_blank" rel="noopener noreferrer" class="float-btn whatsapp-btn">
-            <i class="fa-brands fa-whatsapp"></i>
-            <span class="float-tooltip" data-lang="whatsapp_tooltip">تواصل معنا</span>
-        </a>
+
+        <!-- الفقاعات الثلاث الأصلية -->
+        <div class="original-bubbles">
+            <a href="/about" class="floating-bubble info-btn">
+                <span class="bubble-icon">ℹ️</span>
+                <span class="bubble-text" data-lang="about_tooltip">معلومات عنا</span>
+            </a>
+            <div class="floating-bubble location-btn" onclick="window.open('map.html', '_blank')" style="cursor:pointer;">
+                <span class="bubble-icon">📍</span>
+                <span class="bubble-text" data-lang="location_tooltip">ابحث عن صالاتنا</span>
+            </div>
+            <a href="https://wa.me/213794489833?text=مرحباً، أريد الاستفسار عن خدماتكم" target="_blank" rel="noopener noreferrer" class="floating-bubble whatsapp-btn">
+                <span class="bubble-icon">💬</span>
+                <span class="bubble-text" data-lang="whatsapp_tooltip">تواصل معنا</span>
+            </a>
+        </div>
     </div>
 
     <!-- ========== النافذة الزجاجية الصغيرة (GLASS TOOLTIP) ========== -->
     <div id="glassTooltip" class="category-tooltip"></div>
 
     <script>
-        // ========== النافذة الزجاجية التفاعلية (تظهر عند التمرير على أزرار الخدمات) ==========
+        // ========== النافذة الزجاجية التفاعلية ==========
         (function() {
             const tooltip = document.getElementById('glassTooltip');
             if (!tooltip) return;
@@ -1036,20 +1159,77 @@
             window.addEventListener('scroll', () => hideTooltip());
             window.addEventListener('resize', () => hideTooltip());
         })();
+
+        // =============================================================
+        // ===== الكود الخاص بخدمات إضافية (جلب البيانات من الخادم) =====
+        // =============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const extraServicesBtn = document.getElementById('extraServicesBtn');
+            const servicesDropdown = document.getElementById('servicesDropdown');
+
+            // 1. تفعيل القائمة عند الضغط (للهواتف)
+            extraServicesBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                servicesDropdown.classList.toggle('show');
+            });
+
+            // 2. إغلاق القائمة عند الضغط خارجها
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.extra-services-wrapper')) {
+                    servicesDropdown.classList.remove('show');
+                }
+            });
+
+            // 3. دالة لجلب الخدمات من قاعدة البيانات وعرضها
+            async function loadAdditionalServices() {
+                try {
+                    // استدعاء الـ API الخاص بالخدمات الإضافية
+                    const response = await fetch('/api/additional-services');
+                    if (!response.ok) throw new Error('فشل تحميل الخدمات');
+                    
+                    const services = await response.json();
+
+                    if (services.length > 0) {
+                        servicesDropdown.innerHTML = ''; // تفريغ المحتوى
+                        services.forEach(service => {
+                            const serviceLink = document.createElement('a');
+                            serviceLink.href = service.Link || `/service/${service.ServiceId}`;
+                            serviceLink.className = 'service-item';
+                            
+                            // استخدام الصورة مباشرة مع ضمان عدم تطبيق أي فلتر رمادي
+                            serviceLink.innerHTML = `
+                                <img src="${service.IconUrl}" class="service-color-icon" alt="${service.ServiceName}">
+                                <span>${service.ServiceName}</span>
+                            `;
+                            
+                            servicesDropdown.appendChild(serviceLink);
+                        });
+                    } else {
+                        servicesDropdown.innerHTML = '<div class="no-services-msg">لا توجد خدمات إضافية حالياً</div>';
+                    }
+                } catch (error) {
+                    console.error('Error fetching services:', error);
+                    servicesDropdown.innerHTML = '<div class="no-services-msg">⚠️ تعذر تحميل الخدمات</div>';
+                }
+            }
+
+            // 4. استدعاء الدالة عند تحميل الصفحة
+            loadAdditionalServices();
+        });
     </script>
 
     <!-- الملف الموحد الذي يدير كل شيء (المصادقة، السلة، الوضع المظلم، الترجمة) -->
     <script type="text/javascript">
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-    pageLanguage: 'ar',            // لغة الموقع الأساسية (العربية)
-    includedLanguages: 'ar,en,fr', // اللغات التي تظهر للزوار (عربي، إنجليزي، فرنسي)
-    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-    autoDisplay: false
-  }, 'google_translate_element');
-}
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script src="script.js"></script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'ar',
+                includedLanguages: 'ar,en,fr',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script src="script.js"></script>
 </body>
 </html>
