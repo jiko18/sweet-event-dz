@@ -413,7 +413,25 @@ app.put('/api/user/update', verifyToken, async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
-
+// =====================================================
+// حذف المستخدم لحسابه الخاص (من البروفايل)
+// =====================================================
+app.delete('/api/user/account', verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        
+        // خطوة اختيارية: إذا أردت مسح بياناته من الجداول الأخرى (مثل التقييمات)
+        // await runAsync(`DELETE FROM Reviews WHERE UserId = ?`, [userId]);
+        
+        // حذف الحساب من جدول المستخدمين
+        await runAsync(`DELETE FROM Users WHERE UserID = ?`, [userId]);
+        
+        res.json({ success: true, message: 'تم حذف حسابك نهائياً' });
+    } catch (err) {
+        console.error("Delete Account Error:", err.message);
+        res.status(500).json({ success: false, error: 'حدث خطأ أثناء محاولة حذف الحساب' });
+    }
+});
 // =====================================================
 // 5.5. رفع الصورة الرمزية
 // =====================================================
